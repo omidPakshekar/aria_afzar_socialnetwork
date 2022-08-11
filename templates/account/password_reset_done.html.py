@@ -1,0 +1,16 @@
+BBBBBBB BBBBBBBBBBBBBBBBBBB
+
+BBBB BBBB
+BBBB BBBBBBB
+
+BBBBB BBBBBBBBBB gettext(u'Password Reset') BBBBBBBB
+
+BBBBB BBBBBBB
+    XXXX gettext(u'Password Reset') XXXXX
+    
+    BB BBBBBBBBBBBBBBBBBBBBB
+    BBBBBBB BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB
+    BBBBB
+    
+    XXX gettext(u'We have sent you an e-mail. If you have not received it please check your spam folder. Otherwise contact us if you do not receive it in a few minutes.') SS SSSS SSSS SSS SS SSSSSSS SS SSS SSSS SSS SSSSSSSS SS SSSSSS SSSSS SSSS SSSS SSSSSSS SSSSSSSSS SSSSSSS SS SS SSS SS SSS SSSSSSS SS SS S SSS SSSSSSSSXXXX
+BBBBBBBB
