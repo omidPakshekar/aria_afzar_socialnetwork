@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin 
-from .models import CustomeUserModel
+from .models import CustomeUserModel, Wallet
 
 class CustomUserAdmin(UserAdmin):
     list_display = ('id', 'email', 'username', 'date_joined', 'last_login', 'is_admin', 'is_staff')
@@ -13,3 +13,4 @@ class CustomUserAdmin(UserAdmin):
 
 admin.site.register(CustomeUserModel, CustomUserAdmin)
 
+admin.site.register(Wallet)

@@ -5,7 +5,7 @@ from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
 from django.contrib.auth.models import PermissionsMixin
 from django.db.models.signals import (pre_save, post_save)
-
+from django.dispatch import receiver
 
 def get_profile_image_filepath(self, filename):
     return f'profile_images/{self.username + ".png"}'
@@ -90,16 +90,38 @@ class CustomeUserModel(AbstractBaseUser, PermissionsMixin):
 class Wallet(models.Model):
     owner = models.OneToOneField(CustomeUserModel, related_name='owners', on_delete=models.CASCADE)
     amount = models.DecimalField(default=0, decimal_places=2, max_digits=10)
-    wallet_key = models.CharField(max_length=12, editable=False,
+    wallet_key = models.CharField(max_length=20, editable=False,
             default=create_wallet_key , blank=False, null=False)
     created_time = models.DateTimeField(auto_now_add = True)
     updated_time = models.DateTimeField(auto_now = True)
     
+    def __str__(self) -> str:
+         return self.owner.username + "wallet"
 
 
 
 
 
+
+
+
+
+
+"""
+    signal -- we use signal to create wallet automaticly
+"""
+@receiver(post_save, sender=CustomeUserModel)
+def user_post_save_receiver(sender, instance, created, *args, **kwargs):
+    """
+    after saved in the database
+    """
+    if created:
+        # send email with celery
+        print("Send email to", instance.username)
+        # create wallet 
+        wallet = Wallet(owner=instance)
+        wallet.save()
+        print(wallet.__dict__)
 
 
 
