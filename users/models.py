@@ -1,7 +1,10 @@
-from tabnanny import verbose
+import string 
+import random
+
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
 from django.contrib.auth.models import PermissionsMixin
+from django.db.models.signals import (pre_save, post_save)
 
 
 def get_profile_image_filepath(self, filename):
@@ -10,6 +13,15 @@ def get_profile_image_filepath(self, filename):
 def get_default_profile_image():
     return "students/default_profile_image.png"
 
+def create_wallet_key():
+    # lenght of key
+    length = 14
+    # chose what charecter we want 
+    letters = string.ascii_letters
+    number = ''.join([str(i) for i in range(0, 10)])
+    charecter = letters + number 
+    # the final key is like = 'wallet(key)' 
+    return  'wallet' + ''.join(random.choice(charecter) for i in range(length))
 
 
 class MyAccountManager(BaseUserManager):
@@ -73,3 +85,21 @@ class CustomeUserModel(AbstractBaseUser, PermissionsMixin):
 	# Does this user have permission to view this app? (ALWAYS YES FOR SIMPLICITY)
     # def has_module_perms(self, app_label):
     # 	return True
+
+
+class Wallet(models.Model):
+    owner = models.OneToOneField(CustomeUserModel, related_name='owners', on_delete=models.CASCADE)
+    amount = models.DecimalField(default=0, decimal_places=2, max_digits=10)
+    wallet_key = models.CharField(max_length=12, editable=False,
+            default=create_wallet_key , blank=False, null=False)
+    created_time = models.DateTimeField(auto_now_add = True)
+    updated_time = models.DateTimeField(auto_now = True)
+    
+
+
+
+
+
+
+
+
