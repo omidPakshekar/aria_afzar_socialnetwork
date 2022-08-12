@@ -15,7 +15,7 @@ def get_default_profile_image():
 
 def create_wallet_key():
     # lenght of key
-    length = 23
+    length = 28
     # chose what charecter we want 
     letters = string.ascii_letters
     number = ''.join([str(i) for i in range(0, 10)])
@@ -61,6 +61,7 @@ COUNTRY_CHOICES = (
         ('FR', 'French'),
         ('PL', 'Poland'),
 )
+
 GENDER_CHOICES = (
     ('M', 'Male'),
     ('F', 'Female'),
@@ -82,6 +83,7 @@ class CustomeUserModel(AbstractBaseUser, PermissionsMixin):
     hide_email          = models.BooleanField(default=True)
     gender              = models.CharField(max_length=1, choices=GENDER_CHOICES)
     country             = models.CharField(max_length=20, choices=COUNTRY_CHOICES)
+    activity            = models.IntegerField(default=0)
     objects = MyAccountManager()
 
     USERNAME_FIELD = 'email'
@@ -102,9 +104,9 @@ class CustomeUserModel(AbstractBaseUser, PermissionsMixin):
 
 
 class Wallet(models.Model):
-    owner = models.OneToOneField(CustomeUserModel, related_name='owners', on_delete=models.CASCADE)
+    owner = models.OneToOneField(CustomeUserModel, related_name='wallet', on_delete=models.CASCADE)
     amount = models.DecimalField(default=0, decimal_places=2, max_digits=10)
-    wallet_key = models.CharField(max_length=30, editable=False,
+    wallet_key = models.CharField(max_length=35, editable=False,
             default=create_wallet_key , blank=False, null=False)
     created_time = models.DateTimeField(auto_now_add = True)
     updated_time = models.DateTimeField(auto_now = True)
