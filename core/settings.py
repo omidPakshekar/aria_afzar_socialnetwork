@@ -48,6 +48,7 @@ class Dev(Configuration):
         # my own app
         'users',
         'homepage',
+        'payment',
         
         # third package party
         'allauth',

@@ -11,6 +11,12 @@ class CustomUserAdmin(UserAdmin):
     list_filter = () 
     fieldsets= ()
 
-admin.site.register(CustomeUserModel, CustomUserAdmin)
+class UserInline(admin.StackedInline):
+    model = CustomeUserModel
 
-admin.site.register(Wallet)
+class WalletAdmin(admin.ModelAdmin):
+    list_display = ['id', 'owner', 'amount', 'wallet_key']
+
+
+admin.site.register(CustomeUserModel, CustomUserAdmin)
+admin.site.register( Wallet, WalletAdmin)

@@ -15,13 +15,13 @@ def get_default_profile_image():
 
 def create_wallet_key():
     # lenght of key
-    length = 14
+    length = 23
     # chose what charecter we want 
     letters = string.ascii_letters
     number = ''.join([str(i) for i in range(0, 10)])
     charecter = letters + number 
     # the final key is like = 'wallet(key)' 
-    return  'wallet' + ''.join(random.choice(charecter) for i in range(length))
+    return  'wallet_' + ''.join(random.choice(charecter) for i in range(length))
 
 
 class MyAccountManager(BaseUserManager):
@@ -52,6 +52,20 @@ class MyAccountManager(BaseUserManager):
 		user.save()
 		return user
 
+COUNTRY_CHOICES = (
+        ('IR', 'Iran'),
+        ('US', 'United State'),
+        ('UK', 'United Kindom'),
+        ('CH', 'China'),
+        ('BR', 'Brazil'),
+        ('FR', 'French'),
+        ('PL', 'Poland'),
+)
+GENDER_CHOICES = (
+    ('M', 'Male'),
+    ('F', 'Female'),
+)
+
 class CustomeUserModel(AbstractBaseUser, PermissionsMixin):
     class Meta:
         verbose_name_plural = 'users'
@@ -66,8 +80,8 @@ class CustomeUserModel(AbstractBaseUser, PermissionsMixin):
     is_superuser		= models.BooleanField(default=False)
     profile_image       = models.ImageField(max_length=255, upload_to=get_profile_image_filepath, null=True, blank=True, default=get_default_profile_image)
     hide_email          = models.BooleanField(default=True)
-    is_student          = models.BooleanField(default=True)
-    
+    gender              = models.CharField(max_length=1, choices=GENDER_CHOICES)
+    country             = models.CharField(max_length=20, choices=COUNTRY_CHOICES)
     objects = MyAccountManager()
 
     USERNAME_FIELD = 'email'
@@ -90,13 +104,14 @@ class CustomeUserModel(AbstractBaseUser, PermissionsMixin):
 class Wallet(models.Model):
     owner = models.OneToOneField(CustomeUserModel, related_name='owners', on_delete=models.CASCADE)
     amount = models.DecimalField(default=0, decimal_places=2, max_digits=10)
-    wallet_key = models.CharField(max_length=20, editable=False,
+    wallet_key = models.CharField(max_length=30, editable=False,
             default=create_wallet_key , blank=False, null=False)
     created_time = models.DateTimeField(auto_now_add = True)
     updated_time = models.DateTimeField(auto_now = True)
     
     def __str__(self) -> str:
-         return self.owner.username + "wallet"
+         return self.owner.username + " wallet"
+
 
 
 
@@ -121,7 +136,6 @@ def user_post_save_receiver(sender, instance, created, *args, **kwargs):
         # create wallet 
         wallet = Wallet(owner=instance)
         wallet.save()
-        print(wallet.__dict__)
 
 
 
