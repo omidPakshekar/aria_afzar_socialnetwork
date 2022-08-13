@@ -11,6 +11,9 @@ urlpatterns = [
     path('', index, name='home'),
     path('accounts/', include('allauth.urls')),
     path('admin/', admin.site.urls),
+    path('users/', include('users.urls')),
+    path('payment/', include('payment.urls')),
+    
     # path(
     #     "accounts-rest/registration/account-confirm-email/<str:key>/",
     #     confirm_email,
