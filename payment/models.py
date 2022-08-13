@@ -23,11 +23,12 @@ class Payment(models.Model):
     created_date    = models.DateTimeField(verbose_name='date create', auto_now_add=True)
     created_time    = models.TimeField(blank=False,  auto_now_add=True)
     amount          = models.DecimalField(blank=False, decimal_places=2, max_digits=10)
-    payment_system  = models.CharField(max_length=20, default='Pending' ,choices=PAYMENT_MESSAGE)
-    status          = models.CharField(max_length=20, choices=STATUS_MESSAGE)
+    payment_system  = models.CharField(max_length=20, choices=PAYMENT_MESSAGE)
+    status          = models.CharField(max_length=20, default='Pending', choices=STATUS_MESSAGE)
+    description     = models.TextField(blank=True)
 
     def __str__(self) -> str:
-        return f"{self.user.wallet} / amount= {self.amount} / {self.created_date}" 
+        return f"{self.user.username} / amount= {self.amount} / {self.created_date}" 
 
 class PiggyBank(models.Model):
     amount          = models.DecimalField(blank=False, decimal_places=2, max_digits=10)
