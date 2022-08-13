@@ -1,0 +1,75 @@
+{% extends 'customers_base.html' %}
+{% load static %}
+
+{% block css %}
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+{% endblock css %}
+
+{% block content2 %}
+  <div class="" style=" margin-right:10px; text-align:right;">
+    <h5 style="margin-top:20px; margin-bottom:20px;">سفارش های اخیر</h5>
+    <div class="row"  style="border-bottom:1px groove; margin-bottom:10px;">
+
+      <div class="col-2">
+        status
+      </div>
+      <div class="col-2">
+        amount
+      </div>
+      <div class="col-5">
+        created date
+      </div>
+      <div class="col-3">
+        description
+      </div>
+
+    </div>
+    {% for i in payment %}
+    <div class="row" style="border-bottom:1px groove; margin-bottom:10px;">
+      <div  class="col-2">
+        {{i.status}}
+      </div>
+      <div class="col-2">
+        {{i.amount}}
+      </div>
+      <div class="col-5">
+        {{i.created_date}}
+      </div>
+
+      <div class="col-3">
+          <button type="button" class="btn btn-info btn-sm" data-toggle="modal" data-target="#myModal{{i.id}}">description</button>
+      </div>
+
+
+      <!-- Modal -->
+      <div id="myModal{{i.id}}" class="modal fade" role="dialog">
+        <div class="modal-dialog">
+
+          <!-- Modal content-->
+          <div  class="modal-content">
+
+            <div class="modal-body">
+                <div class="">
+                  <h4 style="margin-top:10px; margin-bottom:20px;" class="modal-title">admin message</h4>
+                </div>
+                <p> {{i.description}}</p>
+            </div>
+            <div class="modal-footer">
+              <button  type="button" class="btn btn-default" data-dismiss="modal">close</button>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+
+    </div>
+    {% endfor %}
+
+
+  </div>
+
+{% endblock %}
