@@ -3,17 +3,17 @@
 <html>
 <head>
   {% block title %}
-  <title> مغازه علی قلی</title>
+  <title> jobino</title>
   {% endblock title %}
   <meta name="google-site-verification" content="i9iQKTYPEcPtDosFF1r3DvRnUg1Kc-AXT1KF-o4KwOA" />
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="title" content="مسکن دیوار به دیوار رشت , مسکن دیوار به دیوار  , مشاوراملاک رشت , مشاوراملاک در رشت" >
+  <meta name="title" content=" " >
    <meta name="robots" content="index , follow">
-   <meta name="description" content=" دیوار به دیوار , ویلا , رهن و اجاره ,  فروش , تبلت , مشاوراملاک رشت , رشت , مسکن دیوار ,  رشت , استارا , کیاشهر , مشاوراملاک در رشت , مسکن دیوار به دیوار">
+   <meta name="description" content="">
   <meta charset="utf-8">
   <meta name="googlebot">
-  <meta name="keywords" content="مسکن دیوار به دیوار , ویلا, رهن و اجاره,فروش , تبلت , مشاوراملاک رشت , رشت , مسکن دیوار" />
-  <meta name="twitter:description" content=" دیوار به دیوار , ویلا , رهن و اجاره , فروش , تبلت , مشاوراملاک رشت , رشت , مسکن دیوار , رشت , استارا , کیاشهر , مشاوراملاک در رشت , مسکن دیوار به دیوار">
+  <meta name="keywords" content="" />
+  <meta name="twitter:description" content="">
   <link rel="icon" href="{% static 'home/assets/photo/logo/logo.jpeg' %}">
 
   <link rel="stylesheet" href="{% static 'home/css/style.css' %}">
@@ -40,13 +40,13 @@
 <header>
   <nav class="nav-s navbar navbar-expand-lg navbar-light ">
     <div class="logo " >
-      <a  href="">
+      <a  href="{% url 'users:profile' %}">
           <img   class="rounded-circle" style="width:75%;" src="{% static 'home/assets/photo/profile_pic.jpg' %}" alt="لوگو">
       </a>
 
     </div>
    <div class="nav-margin">
-    <a  style="" class="nav-a-font nav-a navbar-brand change-nav-h1" href=""><h1 style="font-size:1.2rem;">مغازه علی قلی</h1></a>
+    <a  style="" class="nav-a-font nav-a navbar-brand change-nav-h1" href=""><h1 style="font-size:1.2rem;">jobino</h1></a>
   </div>
     <button  style=" background-color: white!important;" class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
@@ -57,37 +57,28 @@
               <a  class="nav-a nav-a-ul-font nav-link" href=""><span style="color: #e99c2e;"></span> </a>
             </li>
             <li class=" nav-item">
-              <a class="nav-a nav-a-ul-font nav-link" href="">
-                <span style="{% if slug == 'laptop' %}color: #e99c2e; {% endif %}">لپ تاپ</span>
+              <a  class="nav-a nav-a-ul-font nav-link " href="">
+                 <span style="{% if slug == 'watch' %}color: #e99c2e; {% endif %}">empty</span>
               </a>
-            </li>
-            <li class=" nav-item">
-              <a  class="nav-a nav-a-ul-font nav-link" href="">
-                <span style="{% if slug == 'mobile' %}color: #e99c2e; {% endif %}">موبایل</span>
-              </a>
-            </li>
+           </li>
+           <li class=" nav-item">
+            <a  class="nav-a nav-a-ul-font nav-link " href="">
+               <span style="{% if slug == 'watch' %}color: #e99c2e; {% endif %}">empty</span>
+            </a>
+         </li>
             <li class=" nav-item">
               <a  class="nav-a nav-a-ul-font nav-link " href="">
-                 <span style="{% if slug == 'watch' %}color: #e99c2e; {% endif %}">ساعت</span>
+                 <span style="{% if slug == 'watch' %}color: #e99c2e; {% endif %}">empty</span>
               </a>
            </li>
            <li class=" nav-item">
                  <a class="nav-a nav-a-ul-font nav-link " href="">
-                   <span style="{% if slug == 'tablet' %}color: #e99c2e; {% endif %}"> تبلت</span>
+                   <span style="{% if slug == 'tablet' %}color: #e99c2e; {% endif %}"> empty</span>
                  </a>
             </li>
               <li class=" nav-item">
                     <a class="nav-a nav-a-ul-font nav-link" style="" href="">
-                      {% with total_items=cart|length %}
-                        {% if cart|length > 0 %}
-                          سبد خرید شما:
-                            <span style="color:#e99c2e;" >
-                              {{ total_items }} کالا , {{cart.get_total_price}}
-                            </span>
-                        {% else %}
-                          سبد خرید شما خالی است
-                        {% endif %}
-                      {% endwith %}
+                      empty
                     </a>
               </li>
           </ul>
@@ -107,30 +98,30 @@
     <div class="container" style=" margin-block-end: 0;">
       <div style="flex-direction: row-reverse!important;" class="row text-center text-xs-center text-sm-left text-md-left">
         <div class="col-xs-12 col-sm-4 col-md-4">
-          <h5 class="tx-r m-r-15">مغازه علی قلی</h5>
+          <h5 class="tx-r m-r-15">jobino</h5>
           <ul class="tx-r list-unstyled quick-links" >
             <li>
               <a style="display: inline-flex;" href="">
-                <p class="m-r-5">لپ تاپ</p>
+                <p class="m-r-5">empty</p>
                 <i class="fa fa-angle-double-right"></i>
               </a>
             </li>
             <li>
               <a style="display: inline-flex;" href="">
-                <p class="m-r-5">موبایل</p>
+                <p class="m-r-5">empty</p>
                 <i class="fa fa-angle-double-right"></i>
               </a>
             </li>
             <li>
               <a style="display: inline-flex;" href="">
-                <p class="m-r-5">ساعت</p>
+                <p class="m-r-5">empty</p>
                 <i class="fa fa-angle-double-right"></i>
               </a>
             </li>
 
             <li>
               <a style="display: inline-flex;" href="">
-                <p class="m-r-5">تبلت</p>
+                <p class="m-r-5">empty</p>
                 <i class="fa fa-angle-double-right"></i>
               </a>
             </li>
@@ -141,14 +132,14 @@
           <ul class="tx-r list-unstyled quick-links" style="margin-top: 50px;">
             <li>
               <a style="display: inline-flex;" href="javascript:void();">
-                <p class="m-r-5">ادرس دفتر : فاز دو معلم بعد رشت بعد رشت بعد</p>
+                <p class="m-r-5">office address : rasht </p>
               <i class="fa fa-angle-double-right"></i>
               </a>
            </li>
 
             <li>
               <a style="display: inline-flex;" href="tel:41545412121">
-                <p class="m-r-5"> شماره دفتر : 454454503</p>
+                <p class="m-r-5"> phone number : 093812343</p>
                 <i class="fa fa-angle-double-right"></i>
               </a>
             </li>
@@ -159,14 +150,14 @@
           <ul  style="margin-top: 50px;" class="tx-r list-unstyled quick-links">
             <li>
               <a style="display: inline-flex;" href="tel:0938215544">
-                <p class="m-r-5">شماره تماس : 945454545546</p>
+                <p class="m-r-5">phne number: 313443</p>
                 <i class="fa fa-angle-double-right"></i>
               </a>
             </li>
             <li>
               <a style="display: inline-flex;" href="https://www.instagram.com/divar_b_divar/">
                 <i style="font-size: 1.5rem;" class="fa fa-instagram"></i>
-                <p class="m-r-5">  ما را در اینستاگرام دنبال کنید</p>
+                <p class="m-r-5">  follow us in instagram</p>
               </a>
            </li>
 

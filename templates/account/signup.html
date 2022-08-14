@@ -1,7 +1,7 @@
 {% extends "account/base.html" %}
 {% load static %}
 
-{% block head_title %}ثبت نام کنید{% endblock %}
+{% block head_title %}Sign Up{% endblock %}
 
 {% block content %}
 
@@ -10,7 +10,7 @@
     <div class="wrap-login100">
       <div style="padding-top:0px; margin-bottom:30%; ">
 
-              {% if form.errors %}
+              {% comment %} {% if form.errors %}
                 {% for field in form %}
                   {% for error in field.errors %}
                       <strong style="color:red; font-size:14px; float: right; text-align:right; ">
@@ -38,14 +38,14 @@
                       </strong>
 
                     {% endfor %}
-                {% endfor %}
+                {% endfor %} 
 
-              {% endif %}
+              {% endif %}{% endcomment %}
             </div>
       <form class="login100-form validate-form" method="POST" action="." style="margin-top:10px;">
         {% csrf_token %}
         <span class="login100-form-title p-b-26">
-          ثبت نام کنید
+          Sign Up
         </span>
 <!-- This password is too common. -->
 
@@ -56,13 +56,13 @@
         {% endif %}
         {% csrf_token %}
         <div  style="text-align: center;" class=" main validate-input input100">
-          <a href="{{ login_url }}">قبلا عضو شده‌اید؟ رفتن به صفحه ورود </a>
+          <a href="{{ login_url }}">are you have account ? login</a>
         </div>
         <div style="margin-top:10px;" class="">
           <div class="wrap-login100-form-btn">
             <div class="login100-form-bgbtn"></div>
             <button class="login100-form-btn" type="submit">
-              ثبت نام
+              Submit
             </button>
           </div>
         </div>

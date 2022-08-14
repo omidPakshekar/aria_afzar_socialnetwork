@@ -207,8 +207,8 @@ iframe {
   width: 100%;
 }
 .login100-form label{
-  text-align: right;
-  float: right;
+  text-align: left;
+  float: left;
 }
 
 .login100-form-title {

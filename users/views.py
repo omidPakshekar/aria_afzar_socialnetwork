@@ -15,10 +15,13 @@ class ProfileView(TemplateView):
         user_ = CustomeUserModel.objects.get(id=self.request.user.id)
         slug_ = self.kwargs.get('slug')
         payment_ = None
-        if slug_ == "payment-history":
-            payment_ = Payment.objects.filter(user= user_)
-            self.template_name = 'users/payment_history.html'
         form_ = None
+        if slug_ == "payment-history":
+            if not self.request.user.is_admin:
+                payment_ = Payment.objects.filter(user= user_)
+            else:
+                payment_ = Payment.objects.all()     
+            self.template_name = 'users/payment_history.html'
         if slug_ == "change-profile-image":
             form_ = ChangeProfileImageForm()
             self.template_name = 'users/change_profile_image.html'

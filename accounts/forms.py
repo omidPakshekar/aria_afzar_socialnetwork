@@ -21,47 +21,46 @@ class CustomSignupForm(SignupForm):
     def __init__(self, *args, **kwargs):
         kwargs.setdefault('label_suffix', '')
         super(CustomSignupForm, self).__init__(*args, **kwargs)
-        self.fields['password1'].error_messages = "fdkjj"
-        self.fields['username'] = forms.CharField(label=':نام کاربری',
+        self.fields['username'] = forms.CharField(label='username :',
             widget=forms.TextInput(
                 attrs={
                      "style" :"text-align:center; ",
                     "class" : " wrap-input100 main validate-input input100 ",
                     "id" : "username-signup",
-                    "placeholder" : "نام کاربری را وارد کنید"
+                    "placeholder" : "enter username"
                     }
                 )
         )
-        self.fields['email'] = forms.CharField(label=': ایمیل',
+        self.fields['email'] = forms.CharField(label=' email :',
                 widget=forms.EmailInput(
                     attrs={
                         "style" :"text-align:center; ",
                         "class" : " wrap-input100 main validate-input input100 ",
                         "id" : "email-signup",
-                        "placeholder" : "خود را وارد کنید  email "
+                        "placeholder" : "enter your email"
                         }
                     )
         )
-        self.fields['password1'] = forms.CharField(label=': کلمه عبور',
+        self.fields['password1'] = forms.CharField(label='password : ',
                 widget=forms.PasswordInput(
                     attrs={
                         "style" :"text-align:center; ",
                         "class" : " wrap-input100 main validate-input input100 ",
                         "id" : "password1",
-                        "placeholder" :" کلمه عبور را وارد کنید",
+                        "placeholder" :" enter your password",
                      }
                 ),
 
          )
         self.fields['password1'].error_messages  = {'required': 'custom required message'}
 
-        self.fields['password2'] = forms.CharField(label=': تکرار کلمه عبور',
+        self.fields['password2'] = forms.CharField(label=' repeat password :',
             widget=forms.PasswordInput(
                 attrs={
                 "style" :"text-align:center; ",
                 "class" : " wrap-input100 main validate-input input100 ",
                 "id" : "password2",
-                "placeholder" :" کلمه عبور خود را تکرار کنید",
+                "placeholder" :" repeat your password",
                 }
             ), error_messages=my_default_errors
         )
@@ -81,27 +80,27 @@ class CustomSignInForm(LoginForm):
     def __init__(self, *args, **kwargs):
         kwargs.setdefault('label_suffix', '')
         super(CustomSignInForm, self).__init__(*args, **kwargs)
-        self.fields['login'] = forms.CharField(label=': ایمیل',
+        self.fields['login'] = forms.CharField(label='email :',
             widget=forms.EmailInput(
                 attrs={
                     "style" :"text-align:center; ",
                     "class" : " wrap-input100 main validate-input input100 ",
                     "id" : "email-signup",
-                    "placeholder" : "خود را وارد کنید  email "
+                    "placeholder" : "enter your email :"
                 }
             )
         )
-        self.fields['password'] = forms.CharField(label=': کلمه عبور',
+        self.fields['password'] = forms.CharField(label='password : ',
                 widget=forms.PasswordInput(
                     attrs={
                         "style" :"text-align:center; ",
                         "class" : " wrap-input100 main validate-input input100 ",
                         "id" : "password1",
-                        "placeholder" :" کلمه عبور را وارد کنید",
+                        "placeholder" :" enter your password :",
                      }
                 ),
          )
-        self.fields['remember'] = forms.BooleanField(label=': مرا به خاطر بسپار', initial=False, required=False )
+        self.fields['remember'] = forms.BooleanField(label=' remmeber me :', initial=False, required=False )
 
 class CustomChangePasswordForm(ChangePasswordForm):
     def __init__(self, *args, **kwargs):

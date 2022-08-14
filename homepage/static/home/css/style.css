@@ -259,10 +259,10 @@ body {
 	font-family: "Lato", sans-serif;
   }
   .sidebar li {
-	margin-right: 25px;
+	margin-left: 25px;
   }
   .sidebar li, h3 {
-	margin-right: 25px;
+	margin-left: 25px;
   }
   .sidebar {
 	color: #f1f1f1;
@@ -294,7 +294,7 @@ body {
   .sidebar .closebtn {
 	position: absolute;
 	top: 0;
-	left: 0;
+	right: 0;
 	font-size: 36px;
 	}
 
@@ -391,7 +391,7 @@ body {
 }
 .sidebar-li-a a{
 	font-size: 1.1rem;
-	text-align: right;
+	text-align: left;
 }
 .btn-product-box{
 	width: 80%;
