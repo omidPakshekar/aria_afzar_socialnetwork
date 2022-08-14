@@ -8,7 +8,7 @@ from .forms import ChangeProfileImageForm
 from .models import CustomeUserModel
 
 from payment.models import Payment
-from payment.forms import ChangePaymentStatusForm
+from payment.forms import ChangePaymentStatusForm, PaymentForm
 
 class ProfileView(TemplateView):
     template_name = 'users/profile.html'
@@ -30,6 +30,10 @@ class ProfileView(TemplateView):
         if slug_ == "change-profile-image":
             form_ = ChangeProfileImageForm()
             self.template_name = 'users/change_profile_image.html'
+        if slug_ == 'deposit':
+            print('hiii')
+            form_ = PaymentForm()
+            self.template_name = 'users/deposit.html'     
         context.update({'user': user_, 'payment': payment_, 'form_' : form_, 'payment_status': payment_status })
         return context
 
