@@ -17,6 +17,7 @@
           <span><a style="{% if slug == '' %}color: #e99c2e; {% endif %}" class="font-Lalezar" href="{% url 'users:profile'  %}">detail</a></span>
           <span><a style="{% if slug == 'laptop' %}color: #e99c2e; {% endif %}"  class="font-Lalezar" href="{% url 'account_set_password' %}">change password</a></span>
           <span><a style="{% if slug == 'mobile' %}color: #e99c2e; {% endif %}" class="font-Lalezar" href="{% url  'users:customers-slug' slug='payment-history' %}"> payment history</a></span>
+          <span><a style="{% if slug == 'mobile' %}color: #e99c2e; {% endif %}" class="font-Lalezar" href="{% url  'users:customers-slug' slug='payment-history' %}"> deposit</a></span>
           <span><a style="{% if slug == 'watch' %}color: #e99c2e; {% endif %}" class="font-Lalezar" href="{% url  'users:customers-slug' slug='change-profile-image' %}">change profile pic</a></span>
       </div> 
       <div class="btn-collapse-cg col-sm-12 col-md-12">
@@ -28,7 +29,8 @@
             <ul>
               <li class="ul-li "  style="text-align:left;"><a class="col-3-a a-hover font-Lalezar" href="{% url 'users:profile' %}"><i class="fa fa-angle-double-left"></i> dashboard </a></li>
                 <li class="ul-li" style="text-align:left;"><a class="col-3-a a-hover  font-Lalezar" href="{% url 'account_set_password' %}"> <i class="fa fa-angle-double-left"></i> change password</a></li>
-                <li class="ul-li" style="text-align:left;"><a class="col-3-a  font-Lalezar" href="{% url  'users:customers-slug' slug='payment-history' %}"><i class="fa fa-angle-double-left"></i> payment </a></li>
+                <li class="ul-li" style="text-align:left;"><a class="col-3-a  font-Lalezar" href="{% url  'users:customers-slug' slug='payment-history' %}"><i class="fa fa-angle-double-left"></i> payment history</a></li>
+                <li class="ul-li" style="text-align:left;"><a class="col-3-a  font-Lalezar" href="{% url  'users:customers-slug' slug='payment-history' %}"><i class="fa fa-angle-double-left"></i> deposit </a></li>
                 <li class="ul-li" style="text-align:left;"> <a class="col-3-a  font-Lalezar" href="{% url  'users:customers-slug' slug='change-profile-image' %}"><i class="fa fa-angle-double-left"></i>change profile pic</a></li>
             </ul>
       </div>
@@ -50,7 +52,8 @@
 
               <li class="ul-li"><a class="col-3-a a-hover font-Lalezar" href="{% url 'users:profile' %}"><i class="fa fa-angle-double-left"> dashboard </i></a></li>
               <li class="ul-li"><a class="col-3-a a-hover font-Lalezar" href="{% url 'account_set_password' %}"><i class="fa fa-angle-double-left"> change password</i></a></li>
-              <li class="ul-li"><a class="col-3-a a-hover font-Lalezar" href="{% url  'users:customers-slug' slug='payment-history' %}"><i class="fa fa-angle-double-left"> payment</i></a></li>
+              <li class="ul-li"><a class="col-3-a a-hover font-Lalezar" href="{% url  'users:customers-slug' slug='payment-history' %}"><i class="fa fa-angle-double-left"> payment history</i></a></li>
+              <li class="ul-li"><a class="col-3-a a-hover font-Lalezar" href="{% url  'users:customers-slug' slug='deposit' %}"><i class="fa fa-angle-double-left"> deposit</i></a></li>
               <li class="ul-li"><a class="col-3-a  font-Lalezar" href="{% url  'users:customers-slug' slug='change-profile-image' %}"><i class="fa fa-angle-double-left"> change profile pic</i></a></li>
             </form>
           </ul>

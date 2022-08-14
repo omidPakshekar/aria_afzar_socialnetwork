@@ -8,7 +8,7 @@ from users.models import Wallet
 from .models import Payment
 from . import forms
 
-class PaymentView(LoginRequiredMixin, CreateView):
+class PaymentCreateView(LoginRequiredMixin, CreateView):
     model = Payment 
     template_name = 'payment/payment.html'
     context_object_name = 'object_list'
@@ -34,14 +34,12 @@ class ChangePaymentStatus(LoginRequiredMixin, UpdateView):
             form.instance.done = True
             wallet_ = Wallet.objects.get(owner=form.instance.user)
             wallet_.amount = wallet_.amount + obj.amount
-            wallet_.save()
-        
+            wallet_.save()        
         return super().form_valid(form)
     
     def get_success_url(self):
         return reverse_lazy('users:profile')
 
- 
 
 
 

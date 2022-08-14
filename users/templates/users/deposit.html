@@ -5,11 +5,12 @@
 
   <div class="" style="float:left; margin-left:10px; text-align:left;">
     <p ><img style="width:120px;" src="{{user.profile_image.url}}" alt=""></p>
-    <p>email : {{user.email}} </p>
-    <p>username : {{user.username}} </p>
-    <p>last login : {{user.last_login}} </p>
-    <p>registery date: {{user.date_joined}} </p>
+    <p>{{user.email}} : ایمیل</p>
+    <p>{{user.username}} : نام کاربری </p>
+    <p>{{user.last_login}} : اخرین زمانی که وارد شدید</p>
+    <p>{{user.date_joined}} : تاریخ عضویت</p>
     <p></p>
   </div>
 
 {% endblock %}
+
