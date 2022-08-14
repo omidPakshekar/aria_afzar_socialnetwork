@@ -10,3 +10,9 @@ class PaymentForm(forms.ModelForm):
     class Meta:
         model = Payment
         fields = ["amount", "payment_system"]
+
+
+class ChangePaymentStatusForm(forms.ModelForm):
+    class Meta:
+        model = Payment
+        fields = ['status', 'description']
