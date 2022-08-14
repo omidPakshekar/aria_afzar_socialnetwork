@@ -61,9 +61,10 @@
                 <div class="">
                   <h4 style="margin-top:10px; margin-bottom:20px;" class="modal-title">admin message</h4>
                 </div>
-                <form method="post">
-                    {{payment_form}}
-                    
+                <form method="post" action="{% url 'payment:change-status' pk=i.pk %}">
+                    {% csrf_token %}
+                    {{payment_form.as_p}}
+                    <p><input class='btn btn-dark' type="submit" name="" value="change status"></p>
                 </form>
             </div>
             <div class="modal-footer">

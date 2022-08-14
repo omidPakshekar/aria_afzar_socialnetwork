@@ -26,7 +26,8 @@ class Payment(models.Model):
     payment_system  = models.CharField(max_length=20, choices=PAYMENT_MESSAGE)
     status          = models.CharField(max_length=20, default='Pending', choices=STATUS_MESSAGE)
     description     = models.TextField(blank=True)
-
+    done            = models.BooleanField(default=False)
+    
     def __str__(self) -> str:
         return f"{self.user.username} / amount= {self.amount} / {self.created_date}" 
 
