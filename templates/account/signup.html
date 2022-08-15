@@ -9,38 +9,17 @@
   <div class="container-login100">
     <div class="wrap-login100">
       <div style="padding-top:0px; margin-bottom:30%; ">
-
-              {% comment %} {% if form.errors %}
+              {% if form.errors %}
                 {% for field in form %}
                   {% for error in field.errors %}
                       <strong style="color:red; font-size:14px; float: right; text-align:right; ">
-                        {% if error == "This password is entirely numeric."  %}
-                          پسورد باید ترکیبی از حرف و عدد باشد
-                        {% endif %}
-                        {% if error == "This password is too common."  %}
-                          بیش از 80 درصد مردم از این رمز عبور استفاده می کنند
-                        {% endif %}
-                        {% if error == "A user is already registered with this e-mail address."  %}
-                          کاربری قبلا با این ایمیل ثبت نام کرده است
-                        {% endif %}
-                        {% if error == "The password is too similar to the username."  %}
-                          رمز عبور با نام کاربری نباید تطابق داشته باشد
-                        {% endif %}
-                        {% if error == "The password is too similar to the email."  %}
-                          رمز عبور نباید با ایمیل تطابق داشته باشد
-                        {% endif %}
-                        {% if error == "This password is too short. It must contain at least 8 characters."  %}
-                          رمز عبور باید حداقل از 8 کارکتر تشکیل شده باشد
-                        {% endif %}
-                        {% if error == "CustomUser with this username already exists."  %}
-                          کاربری قبلا با این نام کاربری ثبت نام کرده است
-                        {% endif %}
+                        {{error}}
                       </strong>
 
                     {% endfor %}
                 {% endfor %} 
 
-              {% endif %}{% endcomment %}
+              {% endif %}
             </div>
       <form class="login100-form validate-form" method="POST" action="." style="margin-top:10px;">
         {% csrf_token %}

@@ -1,12 +1,16 @@
 {% extends 'customers_base.html' %}
 {% load static %}
 
+
+{% block title %}
+  <title>Profile</title>
+{% endblock title %}
+
+
 {% block content2 %}
 
   <div class="" style="float:left; margin-left:10px; text-align:left;">
     <p ><img style="width:120px;" src="{{user.profile_image.url}}" alt=""></p>
-    <p> your wallet amount : {{user.wallet.amount}} </p>
-    <p> your wallet address : {{user.wallet.wallet_key}} </p>
     <p>email : {{user.email}} </p>
     <p>username : {{user.username}} </p>
     <p>last login : {{user.last_login}} </p>

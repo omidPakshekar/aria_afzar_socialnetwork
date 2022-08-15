@@ -1,0 +1,19 @@
+{% extends 'customers_base.html' %}
+{% load static %}
+
+
+{% block title %}
+  <title>Wallet</title>
+{% endblock title %}
+
+
+{% block content2 %}
+
+    <div class="" style=" margin-left:10px; margin-bottom:100px; text-align:left;">
+    {% with request.user as user_  %}
+        <p> your wallet amount : {{user_.wallet.amount}} </p>
+        <p> your wallet address : {{user_.wallet.wallet_key}} </p>
+    {% endwith %}
+    </div>
+
+{% endblock %}

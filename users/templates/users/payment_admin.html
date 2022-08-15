@@ -8,9 +8,14 @@
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
 {% endblock css %}
 
+{% block title %}
+  <title>Payment History</title>
+{% endblock title %}
+
+
 {% block content2 %}
   <div class="" style=" margin-right:10px; ">
-    <h5 style="text-align:left; margin-top:20px; margin-bottom:20px;">payment history</h5>
+    <h5 style="text-align:left; margin-top:20px; margin-bottom:20px;">Payment History</h5>
     <div class="row"  style="border-bottom:1px groove; margin-bottom:10px;">
         <div class="col-2">
             user
@@ -25,7 +30,7 @@
         created date
       </div>
       <div class="col-2">
-        description
+        change status
       </div>
 
     </div>
@@ -46,7 +51,7 @@
       </div>
 
       <div class="col-2">
-          <button type="button" class="btn btn-info btn-sm" data-toggle="modal" data-target="#myModal{{i.id}}">description</button>
+          <button type="button" class="btn btn-info btn-sm" data-toggle="modal" data-target="#myModal{{i.id}}">change status</button>
       </div>
 
 
@@ -59,7 +64,7 @@
 
             <div class="modal-body">
                 <div class="">
-                  <h4 style="margin-top:10px; margin-bottom:20px;" class="modal-title">admin message</h4>
+                  <h4 style="margin-top:10px; margin-bottom:20px;" class="modal-title">send message</h4>
                 </div>
                 <form method="post" action="{% url 'payment:change-status' pk=i.pk %}">
                     {% csrf_token %}

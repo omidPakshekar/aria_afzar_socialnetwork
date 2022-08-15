@@ -19,7 +19,7 @@ class PaymentCreateView(LoginRequiredMixin, CreateView):
         return super().form_valid(form)
 
     def get_success_url(self):
-        return reverse_lazy('users:profile')
+        return reverse_lazy('payment:payment-history')
 
 class ChangePaymentStatus(LoginRequiredMixin, UpdateView):
     model = Payment 
@@ -35,7 +35,7 @@ class ChangePaymentStatus(LoginRequiredMixin, UpdateView):
         return super().form_valid(form)
     
     def get_success_url(self):
-        return reverse_lazy('users:profile')
+        return reverse_lazy('payment:payment-history')
 
 
 class PaymentHistoryView(LoginRequiredMixin, TemplateView):
@@ -56,4 +56,7 @@ class PaymentHistoryView(LoginRequiredMixin, TemplateView):
             self.template_name = 'users/payment_admin.html'
         context.update( {'payment' : payment_} )
         return context 
+
+
+
 

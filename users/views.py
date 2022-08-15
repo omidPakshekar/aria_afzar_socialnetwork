@@ -4,7 +4,7 @@ from django.views.generic import ( ListView, DetailView,
                     TemplateView, CreateView)
 
 from .forms import ChangeProfileImageForm
-from .models import CustomeUserModel
+from .models import CustomeUserModel, Wallet
 
 from payment.forms import  PaymentForm
 
@@ -29,7 +29,9 @@ class ProfileView(LoginRequiredMixin, TemplateView):
 
 
 
-
+class WalletView(LoginRequiredMixin, TemplateView):
+    model = Wallet
+    template_name = 'users/wallet.html'
 
 
 

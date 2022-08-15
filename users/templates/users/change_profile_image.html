@@ -1,12 +1,16 @@
 {% extends 'customers_base.html' %}
 
+{% block title %}
+  <title>Change Profile Pic</title>
+{% endblock title  %}
+
 {% block content2 %}
 
 
 <form style="text-align:center;"  method="POST" enctype="multipart/form-data" action=".">{% csrf_token %}
   <p ><img style="width:120px;" src="{{user.profile_image.url}}" alt=""></p>
   <p>{{ form_.as_p }}</p>
-  <p><button type="submit">بارگزاری عکس جدید</button></p>
+  <p><button class="btn btn-dark" type="submit">Upload</button></p>
 
 </form>
 
