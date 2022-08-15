@@ -6,14 +6,19 @@
 {% endblock title %}
 
 {% block content2 %}
-  
-  <div class="" style="float:left; margin-left:10px; text-align:left;">
+  <h3> membership </h3>
+  <div class="" style="margin-left:10px;">
+    {% if request.user.membership %}
+      <p> your membership day remain :  {{request.user.membership.expired_day}} </p>
+      <p> {{request.user.membership.month}} month</p>
+      <p> Your remaining membership money:  {{request.user.membership.amount}}</p>
+    {% else %}
     <form method="post">
         {% csrf_token %}
         {{form.as_p}}
         <p><input class='btn btn-dark' type="submit" name="" value="deposit"></p>
     </form>
-
+    {% endif %}
 </div>
 
 {% endblock %}

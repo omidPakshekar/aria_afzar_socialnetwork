@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.mixins import PermissionRequiredMixin, LoginRequiredMixin
 from django.views.generic import ( ListView, DetailView,
                     TemplateView, CreateView)
-
+from django.urls import reverse_lazy, reverse
 from .forms import *
 from .models import *
 
@@ -36,8 +36,13 @@ class MemberShipView(LoginRequiredMixin, CreateView):
     template_name = 'users/membership.html'
     model = MemberShip
     form_class = MemberShipCreateForm
-
+    success_url = reverse_lazy('users:membership')
     
+    def form_valid(self, form):
+        form.instance.user = self.request.user
+        return super().form_valid(form)
+
+
 
 
 

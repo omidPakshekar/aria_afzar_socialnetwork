@@ -194,9 +194,9 @@ class Dev(Configuration):
         'users.backends.CaseInSensitiveModelBackend'
     )
 
-    # from django.urls import reverse_lazy, reverse
-    # LOGIN_REDIRECT_URL = reverse_lazy('student_course_list')
-    LOGIN_REDIRECT_URL = '/'
+    from django.urls import reverse_lazy, reverse
+    LOGIN_REDIRECT_URL = reverse_lazy('users:profile')
+    # LOGIN_REDIRECT_URL = '/'
 
 
     ACCOUNT_FORMS = {
