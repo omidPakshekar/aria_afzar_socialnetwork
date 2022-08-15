@@ -3,10 +3,9 @@ from django.contrib.auth.mixins import PermissionRequiredMixin, LoginRequiredMix
 from django.views.generic import ( ListView, DetailView,
                     TemplateView, CreateView)
 
-from .forms import ChangeProfileImageForm
-from .models import CustomeUserModel, Wallet
+from .forms import *
+from .models import *
 
-from payment.forms import  PaymentForm
 
 class ProfileView(LoginRequiredMixin, TemplateView):
     template_name = 'users/profile.html'
@@ -33,9 +32,12 @@ class WalletView(LoginRequiredMixin, TemplateView):
     model = Wallet
     template_name = 'users/wallet.html'
 
+class MemberShipView(LoginRequiredMixin, CreateView):
+    template_name = 'users/membership.html'
+    model = MemberShip
+    form_class = MemberShipCreateForm
 
-
-
+    
 
 
 

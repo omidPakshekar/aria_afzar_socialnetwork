@@ -8,6 +8,7 @@ app_name='users'
 urlpatterns = [
     path('profile/', views.ProfileView.as_view(), name='profile'),
     path('profile/wallet/', views.WalletView.as_view(), name='wallet'),
+    path('profile/membership/', views.MemberShipView.as_view(), name='membership'),
     path('profile/<slug:slug>/', views.ProfileView.as_view(), name='customers-slug'),
 
 ]    

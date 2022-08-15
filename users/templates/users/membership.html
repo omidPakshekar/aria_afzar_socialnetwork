@@ -1,0 +1,20 @@
+{% extends 'customers_base.html' %}
+{% load static %}
+
+{% block title %}
+  <title>MemberShip</title>
+{% endblock title %}
+
+{% block content2 %}
+  
+  <div class="" style="float:left; margin-left:10px; text-align:left;">
+    <form method="post">
+        {% csrf_token %}
+        {{form.as_p}}
+        <p><input class='btn btn-dark' type="submit" name="" value="deposit"></p>
+    </form>
+
+</div>
+
+{% endblock %}
+
