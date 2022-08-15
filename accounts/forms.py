@@ -112,7 +112,7 @@ class CustomChangePasswordForm(ChangePasswordForm):
                         "style" :"text-align:center; ",
                         "class" : " wrap-input100 main validate-input input100 ",
                         "id" : "password1",
-                        "placeholder" :" کلمه عبور فعلی خود را وارد کنید",
+                        "placeholder" :" enter your current password : ",
                      }
                 ),
          )
@@ -122,7 +122,7 @@ class CustomChangePasswordForm(ChangePasswordForm):
                      "style" :"text-align:center; ",
                      "class" : " wrap-input100 main validate-input input100 ",
                      "id" : "password1",
-                     "placeholder" :" رمز عبور جدید را وارد کنید",
+                     "placeholder" :" enter your new password : ",
                   }
              ),
         )
@@ -132,7 +132,7 @@ class CustomChangePasswordForm(ChangePasswordForm):
                       "style" :"text-align:center; ",
                       "class" : " wrap-input100 main validate-input input100 ",
                       "id" : "password1",
-                      "placeholder" :" رمز عبور جدید خود را تکرار کنید",
+                      "placeholder" :" repeat your new password : ",
                    }
               ),
         )
