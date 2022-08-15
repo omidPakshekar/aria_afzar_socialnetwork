@@ -21,11 +21,11 @@
       <div style="height: 20%; text-align:left;" class= "product-box product-box-display  col-sm-12 col-lg-3 col-md-12">
         <h3 class="ul-li font-Lalezar-h3" style="text-align:left; margin-top:10px;">Panel</h3>
             <ul>
-              <li class="ul-li "  style="text-align:left;"><a class="col-3-a a-hover font-Lalezar" href="{% url 'users:profile' %}"><i class="fa fa-angle-double-left"></i> dashboard </a></li>
-                <li class="ul-li" style="text-align:left;"><a class="col-3-a a-hover  font-Lalezar" href="{% url 'account_set_password' %}"> <i class="fa fa-angle-double-left"></i> change password</a></li>
-                <li class="ul-li" style="text-align:left;"><a class="col-3-a  font-Lalezar" href="{% url  'users:customers-slug' slug='payment-history' %}"><i class="fa fa-angle-double-left"></i> payment history</a></li>
-                <li class="ul-li" style="text-align:left;"><a class="col-3-a  font-Lalezar" href="{% url  'users:customers-slug' slug='deposit' %}"><i class="fa fa-angle-double-left"></i> deposit </a></li>
-                <li class="ul-li" style="text-align:left;"> <a class="col-3-a  font-Lalezar" href="{% url  'users:customers-slug' slug='change-profile-image' %}"><i class="fa fa-angle-double-left"></i>change profile pic</a></li>
+              <li class="ul-li "  style="text-align:left;"><a class="col-3-a a-hover font-Lalezar" href="{% url 'users:profile' %}"><i class="fa fa-angle-double-left"></i> Dashboard </a></li>
+                <li class="ul-li" style="text-align:left;"><a class="col-3-a a-hover  font-Lalezar" href="{% url 'account_set_password' %}"> <i class="fa fa-angle-double-left"></i> Change Password</a></li>
+                <li class="ul-li" style="text-align:left;"><a class="col-3-a  font-Lalezar" href="{% url  'payment:payment-history' %}"><i class="fa fa-angle-double-left"></i> Payment History</a></li>
+                <li class="ul-li" style="text-align:left;"><a class="col-3-a  font-Lalezar" href="{% url  'payment:payment-create'  %}"><i class="fa fa-angle-double-left"></i> Deposit </a></li>
+                <li class="ul-li" style="text-align:left;"> <a class="col-3-a  font-Lalezar" href="{% url  'users:customers-slug' slug='change-profile-image' %}"><i class="fa fa-angle-double-left"></i>Change Profile Pic</a></li>
             </ul>
       </div>
 
@@ -44,10 +44,10 @@
           <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">×</a>
           <form  action="." method="get">
 
-              <li class="ul-li"><a class="col-3-a a-hover font-Lalezar" href="{% url 'users:profile' %}"><i class="fa fa-angle-double-left"> dashboard </i></a></li>
-              <li class="ul-li"><a class="col-3-a a-hover font-Lalezar" href="{% url 'account_set_password' %}"><i class="fa fa-angle-double-left"> change password</i></a></li>
-              <li class="ul-li"><a class="col-3-a a-hover font-Lalezar" href="{% url  'users:customers-slug' slug='payment-history' %}"><i class="fa fa-angle-double-left"> payment history</i></a></li>
-              <li class="ul-li"><a class="col-3-a a-hover font-Lalezar" href="{% url  'users:customers-slug' slug='deposit' %}"><i class="fa fa-angle-double-left"> deposit</i></a></li>
+              <li class="ul-li"><a class="col-3-a a-hover font-Lalezar" href="{% url 'users:profile' %}"><i class="fa fa-angle-double-left"> Dashboard </i></a></li>
+              <li class="ul-li"><a class="col-3-a a-hover font-Lalezar" href="{% url 'account_set_password' %}"><i class="fa fa-angle-double-left"> Change Password</i></a></li>
+              <li class="ul-li"><a class="col-3-a a-hover font-Lalezar" href="{% url 'payment:payment-history' %}"><i class="fa fa-angle-double-left"> Payment History</i></a></li>
+              <li class="ul-li"><a class="col-3-a a-hover font-Lalezar" href="{% url 'payment:payment-create'  %}"><i class="fa fa-angle-double-left"> Deposit</i></a></li>
               <li class="ul-li"><a class="col-3-a  font-Lalezar" href="{% url  'users:customers-slug' slug='change-profile-image' %}"><i class="fa fa-angle-double-left"> change profile pic</i></a></li>
             </form>
           </ul>

@@ -1,40 +1,23 @@
 from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib.auth.mixins import PermissionRequiredMixin, LoginRequiredMixin
 from django.views.generic import ( ListView, DetailView,
                     TemplateView, CreateView)
-
-
 
 from .forms import ChangeProfileImageForm
 from .models import CustomeUserModel
 
-from payment.models import Payment
-from payment.forms import ChangePaymentStatusForm, PaymentForm
+from payment.forms import  PaymentForm
 
-class ProfileView(TemplateView):
+class ProfileView(LoginRequiredMixin, TemplateView):
     template_name = 'users/profile.html'
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         user_ = CustomeUserModel.objects.get(id=self.request.user.id)
-        slug_ = self.kwargs.get('slug')
-        payment_ = None ; form_ = None; payment_status = []
-        if slug_ == "payment-history":
-            if not self.request.user.is_admin:
-                payment_ = Payment.objects.filter(user= user_)
-                self.template_name = 'users/payment_history.html'
-            else:
-                payment_ = Payment.objects.all()
-                for i in payment_:
-                    payment_status.append(ChangePaymentStatusForm(instance=i))
-                payment_ = zip(payment_, payment_status)     
-                self.template_name = 'users/payment_admin.html'
+        slug_ = self.kwargs.get('slug'); form_ = None
         if slug_ == "change-profile-image":
             form_ = ChangeProfileImageForm()
             self.template_name = 'users/change_profile_image.html'
-        if slug_ == 'deposit':
-            print('hiii')
-            form_ = PaymentForm()
-            self.template_name = 'users/deposit.html'     
-        context.update({'user': user_, 'payment': payment_, 'form_' : form_, 'payment_status': payment_status })
+        context.update({'user': user_, 'form_' : form_})
         return context
 
     def post(self, request, *args, **kwargs):
@@ -42,7 +25,6 @@ class ProfileView(TemplateView):
             form = ChangeProfileImageForm(request.POST, request.FILES, instance=request.user)
             if form.is_valid():
                 form.save()
-
         return redirect('users:profile')
 
 

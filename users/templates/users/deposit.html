@@ -4,9 +4,9 @@
 {% block content2 %}
 
   <div class="" style="float:left; margin-left:10px; text-align:left;">
-    <form method="post" action="{% url 'payment:payment'  %}">
+    <form method="post">
         {% csrf_token %}
-        {{form_.as_p}}
+        {{form.as_p}}
         <p><input class='btn btn-dark' type="submit" name="" value="deposit"></p>
     </form>
 
