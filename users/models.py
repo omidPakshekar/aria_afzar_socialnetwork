@@ -29,6 +29,12 @@ MONTH_CHOICE = (
     ('12', '12 Month'),
     
 )
+MESSAGE_TYPE = (
+    ('Support', 'Support'),
+    ('Deposit', 'Deposit'),
+    ('Error Reporting', 'Error Reporting')
+)
+
 def get_profile_image_filepath(self, filename):
     return f'profile_images/{self.username + ".png"}'
 
@@ -168,8 +174,16 @@ def blog_post_pre_save(sender, instance, *args, **kwargs):
 
 
 
+# send message from user to admin and vice versa
+class Message(models.Model):
+    user        = models.ForeignKey(CustomeUserModel, related_name='messages',  on_delete=models.CASCADE)
+    title       = models.CharField(max_length = 30)
+    body        = models.TextField()
+    message_type= models.CharField(max_length=20, choices=MESSAGE_TYPE)
+    is_admin    = models.BooleanField(default=False)
 
-
+    def __str__(self):
+        return "{self.user} - {self.title[0:15]}..." 
 
 
 
