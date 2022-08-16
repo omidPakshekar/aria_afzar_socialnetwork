@@ -2,7 +2,12 @@ from django.contrib import admin
 
 from .models import *
 
-admin.site.register(Podcast)
-admin.site.register(Post)
+class PostAdmin(admin.ModelAdmin):
+    list_display = ['id', 'owner', 'short_title', 'created_time']
+
+
+
+admin.site.register(Podcast, PostAdmin)
+admin.site.register(Post, PostAdmin)
 
 
