@@ -39,14 +39,13 @@ def create_wallet_key():
     # lenght of key
     length = 28
     # chose what charecter we want 
-    letters = string.ascii_letters
-    number = ''.join([str(i) for i in range(0, 10)])
-    charecter = letters + number 
-    # the final key is like = 'wallet(key)' 
-    return  ('wallet_' + ''.join(random.choice(charecter) for i in range(15)) 
-                       + '-' + ''.join(random.choice(charecter) for i in range(4)) 
-                       + '-' + ''.join(random.choice(charecter) for i in range(7))
-            )
+    letters = string.ascii_uppercase
+    lst = []
+    for i in range(0, 13):
+        lst.append(str(random.randint(0, 10)))
+        lst.append(random.choice(letters))
+    lst[10] = '-'; lst[15] = '-'; lst[25] = ''
+    return ''.join(lst)
 
 
 class MyAccountManager(BaseUserManager):
@@ -115,7 +114,7 @@ class CustomeUserModel(AbstractBaseUser, PermissionsMixin):
 
 class Wallet(models.Model):
     owner       = models.OneToOneField(CustomeUserModel, related_name='wallet', on_delete=models.CASCADE)
-    amount      = models.DecimalField(default=0, decimal_places=2, max_digits=10)
+    amount      = models.DecimalField(default=0, decimal_places=4, max_digits=12)
     wallet_key  = models.CharField(max_length=35, editable=False,
                     default=create_wallet_key , blank=False, null=False)
     created_time= models.DateTimeField(auto_now_add = True)
@@ -143,7 +142,7 @@ def user_post_save_receiver(sender, instance, created, *args, **kwargs):
 class MemberShip(models.Model):
     user            = models.OneToOneField(CustomeUserModel, related_name='membership',  on_delete=models.CASCADE)
     month           =  models.CharField(max_length=20, choices=MONTH_CHOICE)
-    amount          = models.DecimalField(blank=True, decimal_places=2, max_digits=10)
+    amount          = models.DecimalField(blank=True, decimal_places=4, max_digits=12)
     started_date    =  models.DateTimeField(verbose_name='date_create', auto_now_add=True)  
     expired_day     = models.IntegerField(default=0)
     finished        = models.BooleanField(default=False)

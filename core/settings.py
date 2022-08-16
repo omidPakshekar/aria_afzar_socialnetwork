@@ -49,6 +49,7 @@ class Dev(Configuration):
         'users',
         'homepage',
         'payment',
+        'post',
         
         # third package party
         'allauth',
