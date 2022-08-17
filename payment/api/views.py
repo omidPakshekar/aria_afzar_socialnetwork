@@ -27,13 +27,23 @@ class PaymentViewSet(viewsets.ModelViewSet):
     
     @action(methods=["put"], detail=True, name="change status", url_path='change-status')
     def change_status(self, request, pk):
+        # get data and validated 
         instance = self.get_object()
-        print('instance=', instance.id)
         serializer = serializers.PaymentChangeStatus(instance, data=request.data)
         serializer.is_valid(raise_exception=True)
         serializer.save()
-        print('view4')
         return Response(serializer.data)
+   
+    @action(methods=["get"], detail=False, name="Posts by the logged in user")
+    def mine(self, request):
+        objects = self.get_queryset().filter(user=request.user)
+        page = self.paginate_queryset(objects)
+        if page is not None:
+            serializer = serializers.PaymentListSerializer(page, many=True, context={"request": request})
+        serializer = serializers.PaymentListSerializer(objects, many=True, context={"request": request})
+        return Response(serializer.data)
+
+        
 
 # partial = kwargs.pop('partial', False)
 #         instance = self.get_object()
