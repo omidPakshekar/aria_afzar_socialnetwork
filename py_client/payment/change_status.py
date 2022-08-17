@@ -15,13 +15,12 @@ endpoint = "http://localhost:8000/api/v1/payment/payment/"
 
 if auth_response.status_code == 200:
     token = auth_response.json()['access']    
-
     headers = {
         "Authorization" : f"Bearer {token}"
     }
     data = {
-        "amount" : 6789,
-        "payment_system" : "Bitcoin",        
+        "status" : "Accept",
+        "description" : "admin accept this request",        
     }
     get_response = requests.post( endpoint, headers=headers, json=data)
 
