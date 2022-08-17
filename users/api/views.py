@@ -7,7 +7,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import  Response
 from rest_framework.views import APIView
 # from .utils import get_tokens_for_user
-from .serializers import RegistrationSerializer
+from .serializers import PasswordChangeSerializer, RegistrationSerializer
 # Create your views here.
 
 
@@ -18,3 +18,15 @@ class RegistrationView(APIView):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class ChangePasswordView(APIView):
+    permission_classes = [IsAuthenticated, ]
+
+    def post(self, request):
+        serializer = PasswordChangeSerializer(context={'request': request}, data=request.data)
+        serializer.is_valid(raise_exception=True) #Another way to write is as in Line 17
+        request.user.set_password(serializer.validated_data['new_password'])
+        request.user.save()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+    

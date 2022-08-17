@@ -1,9 +1,10 @@
 from django.urls import path
-from .views import RegistrationView
+from . import views
 from rest_framework_simplejwt import views as jwt_views
 
 app_name = 'users_api'
 urlpatterns = [
-    path('register/', RegistrationView.as_view(), name='register'),
+    path('register/', views.RegistrationView.as_view(), name='register'),
+    path('change-password/', views.ChangePasswordView.as_view(), name='change-password'),
 
 ]
