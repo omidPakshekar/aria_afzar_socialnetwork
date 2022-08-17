@@ -4,6 +4,8 @@ from pathlib import Path
 from configurations import Configuration
 from configurations import values
 
+import datetime
+
 class Dev(Configuration):
     """
     Django settings for core project.
@@ -236,13 +238,23 @@ class Dev(Configuration):
             "rest_framework.authentication.SessionAuthentication",
             'rest_framework_simplejwt.authentication.JWTAuthentication',
         ],
-
-        "DEFAULT_PERMISSION_CLASSES" : [
-            "rest_framework.permissions.IsAuthenticatedOrReadOnly", # GET
+        # Use Django's standard `django.contrib.auth` permissions,
+        # or allow read-only access for unauthenticated users.
+        'DEFAULT_PERMISSION_CLASSES': [
+            'rest_framework.permissions.AllowAny'
         ],
+        # "DEFAULT_PERMISSION_CLASSES" : [
+        #     "rest_framework.permissions.IsAuthenticatedOrReadOnly", # GET
+        # ],
         "DEFAULT_PAGINATION_CLASS" : "rest_framework.pagination.PageNumberPagination",
         "PAGE_SIZE" : 4,
     }
+    SIMPLE_JWT = {
+        'ACCESS_TOKEN_LIFETIME': datetime.timedelta(days=1),
+        'REFRESH_TOKEN_LIFETIME': datetime.timedelta(days=1),
+    }
+    # AUTH_PROFILE_MODULE = 'users.MyUser'
+
 
 
 class Prod(Dev):

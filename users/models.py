@@ -99,11 +99,13 @@ class CustomeUserModel(AbstractBaseUser, PermissionsMixin):
     profile_image       = models.ImageField(max_length=255, upload_to=get_profile_image_filepath, null=True, blank=True, default=get_default_profile_image)
     hide_email          = models.BooleanField(default=True)
     gender              = models.CharField(max_length=1, choices=GENDER_CHOICES)
-    country             = models.CharField(max_length=20, choices=COUNTRY_CHOICES)
+    country             = models.CharField(max_length=20)
     activity            = models.IntegerField(default=0)
     black_list          = models.ForeignKey('CustomeUserModel', null=True, blank=True, related_name="blacklist", on_delete=models.CASCADE)
-    date_of_birth       = models.DateField(blank=True, null=True)
- 
+    year_of_birth       = models.CharField(max_length=20, blank=True, null=True)
+    month_of_birth      = models.CharField(max_length=20, blank=True, null=True)
+    day_of_birth        = models.CharField(max_length=20, blank=True, null=True)
+     
     objects = MyAccountManager()
 
     USERNAME_FIELD = 'email'

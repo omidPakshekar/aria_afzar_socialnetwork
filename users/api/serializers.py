@@ -8,15 +8,20 @@ class RegistrationSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = CustomeUserModel
-        fields = ['email', 'date_of_birth', 'password', 'password2', 'country']
+        fields = ['username', 'email', 'year_of_birth',  'month_of_birth', 'day_of_birth', 'password', 'password2', 'country']
         extra_kwargs = {
             'password': {'write_only': True}
         }
 
     def save(self):
-        user = CustomeUserModel(email=self.validated_data['email'],
-             date_of_birth=self.validated_data['date_of_birth'],
-             country=self.validated_data['country'])
+        user = CustomeUserModel(
+                username = self.validated_data['username'],
+                email=self.validated_data['email'],
+                year_of_birth=self.validated_data['year_of_birth'],
+                month_of_birth=self.validated_data['month_of_birth'],
+                day_of_birth=self.validated_data['day_of_birth'],
+                country=self.validated_data['country']
+        )
         password = self.validated_data['password']
         password2 = self.validated_data['password2']
         if password != password2:
