@@ -1,6 +1,8 @@
 from django.db import models
 
 from users.models import CustomeUserModel
+from datetime import datetime, timedelta
+
 
 TAG_CHOICE = {
     ('Programming', 'Programming'),
@@ -31,7 +33,7 @@ class ItemBase(models.Model):
         if len(self.title) > 16:
             return f'{self.title[0:15]}...'
         return self.title 
-        
+
     def __str__(self):
         return self.short_title
 
@@ -40,9 +42,12 @@ class Post(ItemBase):
 
 class Podcast(ItemBase):
     file         = models.FileField( upload_to=get_post_image_filepath, null=True, blank=True, default=get_default_post_image)
-  
+    is_verified  = models.BooleanField(default=False)
 
-
+class SuccessfulExperience(models.Model):
+    title       = models.CharField(max_length=50)
+    body        = models.TextField()
+    like        = models.ForeignKey(CustomeUserModel, related_name="successful_experience", on_delete=models.CASCADE)
 
 # class Comment(models.Model):
 #     product         = models.ForeignKey(Product, related_name='products',

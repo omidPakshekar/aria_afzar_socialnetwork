@@ -13,7 +13,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('users/', include('users.urls')),
     path('payment/', include('payment.urls')),
-    
+    path('api/v1/', include('core.api_urls')),
     # path(
     #     "accounts-rest/registration/account-confirm-email/<str:key>/",
     #     confirm_email,

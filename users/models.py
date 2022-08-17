@@ -6,6 +6,8 @@ from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
 from django.contrib.auth.models import PermissionsMixin
 from django.db.models.signals import (pre_save, post_save)
 from django.dispatch import receiver
+from datetime import datetime, timedelta
+
 
 COUNTRY_CHOICES = (
         ('IR', 'Iran'),
@@ -99,6 +101,9 @@ class CustomeUserModel(AbstractBaseUser, PermissionsMixin):
     gender              = models.CharField(max_length=1, choices=GENDER_CHOICES)
     country             = models.CharField(max_length=20, choices=COUNTRY_CHOICES)
     activity            = models.IntegerField(default=0)
+    black_list          = models.ForeignKey('CustomeUserModel', null=True, blank=True, related_name="blacklist", on_delete=models.CASCADE)
+    date_of_birth       = models.DateField(blank=True, null=True)
+ 
     objects = MyAccountManager()
 
     USERNAME_FIELD = 'email'
@@ -150,27 +155,53 @@ class MemberShip(models.Model):
     month           =  models.CharField(max_length=20, choices=MONTH_CHOICE)
     amount          = models.DecimalField(blank=True, decimal_places=4, max_digits=12)
     started_date    =  models.DateTimeField(verbose_name='date_create', auto_now_add=True)  
-    expired_day     = models.IntegerField(default=0)
-    finished        = models.BooleanField(default=False)
+    finish_time        = models.BooleanField(default=False)
+
+    @property 
+    def expired_day(self):
+        return self.finish_time - datetime.now()
+1
 """
     signal -- create expire day and amount automaticly  
 """
-@receiver(pre_save, sender=MemberShip)
-def blog_post_pre_save(sender, instance, *args, **kwargs):
-    if instance.amount == None:
-        if instance.month == '1':
-            instance.amount = 24.87
-            instance.expired_day = 30
-        elif instance.month == '3':
-            instance.amount = 64.47
-            instance.expired_day = 90
-        elif instance.month == '6':
-            instance.amount = 117.47
-            instance.expired_day = 180
-        else:
-            instance.amount = 238.87
-            instance.expired_day = 360
-        instance.save()
+# def create_piggy(week, days, amount):
+#     piggy_amount = 0.8 * amount * (1/week)
+#     start =  datetime.now()
+#     finish = datetime.now() + timedelta(weeks=1, hours=12)
+#     for i in week:
+#         piggy = PiggyBank(amount=piggy_amount,finish_time = finish,
+#             started_time = start)
+#         start = finish + timedelta(seconds=1)    
+#         piggy.save() 
+#     piggy = PiggyBank(amount=piggy_amount,finish_time = datetime.now() + timedelta(days),
+#             started_time = start)   
+#     piggy.save()
+
+# @receiver(pre_save, sender=MemberShip)
+# def blog_post_pre_save(sender, instance, *args, **kwargs):
+#     if instance.amount == None:
+#         if instance.month == '1':
+#             instance.amount = 24.87
+#             instance.finish_time = instance.started_date + timedelta(30)
+#             # 
+#             create_piggy(weeks=4, days = 30, amount = 24.87 * 0.8)
+#         elif instance.month == '3':
+#             instance.amount = 64.47
+#             instance.finish_time = instance.started_date + timedelta(90)
+        
+#             create_piggy(weeks=12, days = 90, amount = 64.47 * 0.8)
+#         elif instance.month == '6':
+#             instance.amount = 117.47
+#             instance.finish_time = instance.started_date + timedelta(180)
+        
+#             create_piggy(weeks=24, days = 180, amount = 117.47 * 0.8)             
+#         else:
+#             instance.amount = 238.87
+#             instance.finish_time = instance.started_date + timedelta(365)
+
+#             create_piggy(weeks=48, days = 365, amount = 238.87 * 0.8)             
+        
+#         instance.save()
 
 
 
