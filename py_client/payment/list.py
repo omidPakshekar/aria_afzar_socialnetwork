@@ -22,7 +22,7 @@ if get_response.status_code != "403":
         }
 
         get_response = requests.get( endpoint, headers=headers)
-        print('satatus code=', get_response.json())
+        print('status code=', get_response.json())
 
 
 

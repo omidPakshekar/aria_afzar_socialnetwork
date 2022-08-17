@@ -14,7 +14,7 @@ class PaymentPermission(permissions.BasePermission):
     def has_permission(self, request, view):
         if not request.user.is_authenticated:
             return False
-        if view.action in ['list']:
+        if view.action in ['list', "change_status"]:
             return request.user.is_admin or request.user.is_staff
         elif view.action == 'mine':
             return True
@@ -28,7 +28,7 @@ class PaymentPermission(permissions.BasePermission):
             return False
         if view.action in ['retrieve', 'update', 'partial_update']:
             return obj.user == request.user or request.user.is_admin or request.user.is_staff
-        elif view.action == 'destroy':
+        elif view.action in ['destroy', 'change_status']:
             return request.user.is_admin or request.user.is_staff
         else:
             return False
