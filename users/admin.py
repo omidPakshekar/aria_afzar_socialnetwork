@@ -82,7 +82,7 @@ class WalletAdmin(admin.ModelAdmin):
     list_display = ['id', 'owner', 'amount', 'wallet_key']
 
 class MemberShipAdmin(admin.ModelAdmin):
-    list_display = ['id', 'user', 'month', 'amount', 'started_date', 'expired_day']
+    list_display = ['id', 'user', 'month', 'amount', 'started_date', ]
 
 
 

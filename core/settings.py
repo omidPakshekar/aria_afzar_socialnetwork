@@ -124,7 +124,7 @@ class Dev(Configuration):
         # }
         'default': {
             'ENGINE': 'django.db.backends.postgresql_psycopg2',
-            'NAME': 'django_starter3', 
+            'NAME': 'django_starter4', 
             'USER': 'postgres', 
             'PASSWORD': 'est14641',
             'HOST': '127.0.0.1', 

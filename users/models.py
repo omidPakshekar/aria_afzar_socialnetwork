@@ -1,22 +1,22 @@
 import string 
 import random
+from datetime import datetime, timedelta
+from decimal import Decimal
 
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
 from django.contrib.auth.models import PermissionsMixin
 from django.db.models.signals import (pre_save, post_save)
 from django.dispatch import receiver
-from datetime import datetime, timedelta
-
 
 COUNTRY_CHOICES = (
-        ('IR', 'Iran'),
-        ('US', 'United State'),
-        ('UK', 'United Kindom'),
-        ('CH', 'China'),
-        ('BR', 'Brazil'),
-        ('FR', 'French'),
-        ('PL', 'Poland'),
+    ('IR', 'Iran'),
+    ('US', 'United State'),
+    ('UK', 'United Kindom'),
+    ('CH', 'China'),
+    ('BR', 'Brazil'),
+    ('FR', 'French'),
+    ('PL', 'Poland'),
 )
 
 GENDER_CHOICES = (
@@ -100,7 +100,6 @@ class CustomeUserModel(AbstractBaseUser, PermissionsMixin):
     hide_email          = models.BooleanField(default=True)
     gender              = models.CharField(max_length=1, choices=GENDER_CHOICES)
     country             = models.CharField(max_length=20)
-    activity            = models.IntegerField(default=0)
     black_list          = models.ForeignKey('CustomeUserModel', null=True, blank=True, related_name="blacklist", on_delete=models.CASCADE)
     year_of_birth       = models.CharField(max_length=20, blank=True, null=True)
     month_of_birth      = models.CharField(max_length=20, blank=True, null=True)
@@ -152,58 +151,80 @@ def user_post_save_receiver(sender, instance, created, *args, **kwargs):
         wallet.save()
 
 
+from payment.models import PiggyBank
+
+class Activity(models.Model):
+    piggy           = models.ForeignKey(PiggyBank,  related_name='piggys', on_delete=models.CASCADE)
+    user            = models.OneToOneField(CustomeUserModel, related_name='activity',  on_delete=models.CASCADE)
+    number          = models.PositiveIntegerField(default=0)
+
 class MemberShip(models.Model):
     user            = models.OneToOneField(CustomeUserModel, related_name='membership',  on_delete=models.CASCADE)
-    month           =  models.CharField(max_length=20, choices=MONTH_CHOICE)
+    month           = models.CharField(max_length=20, choices=MONTH_CHOICE)
     amount          = models.DecimalField(blank=True, decimal_places=4, max_digits=12)
-    started_date    =  models.DateTimeField(verbose_name='date_create', auto_now_add=True)  
-    finish_time        = models.BooleanField(default=False)
+    started_date    = models.DateTimeField(verbose_name='date_create', auto_now_add=True)  
+    finish_date     = models.DateTimeField(verbose_name='date_finish', blank=True, null=True)  
+    finished        = models.BooleanField(default=False)
 
-    @property 
-    def expired_day(self):
-        return self.finish_time - datetime.now()
-1
+    # @property 
+    # def expired_day(self):
+    #     return self.finish_date - datetime.now()
+
 """
     signal -- create expire day and amount automaticly  
 """
-# def create_piggy(week, days, amount):
-#     piggy_amount = 0.8 * amount * (1/week)
-#     start =  datetime.now()
-#     finish = datetime.now() + timedelta(weeks=1, hours=12)
-#     for i in week:
-#         piggy = PiggyBank(amount=piggy_amount,finish_time = finish,
-#             started_time = start)
-#         start = finish + timedelta(seconds=1)    
-#         piggy.save() 
-#     piggy = PiggyBank(amount=piggy_amount,finish_time = datetime.now() + timedelta(days),
-#             started_time = start)   
-#     piggy.save()
+def create_piggy(weeks, days, amount):
+    piggy_amount = 0.8 * amount * (1/weeks)
+    start =  datetime.now()
+    for i in range(weeks):
+        finish = start + timedelta(weeks=1, hours=12)
+        piggy = PiggyBank(amount=piggy_amount,finish_time = finish,
+            started_time = start)
+        start = finish + timedelta(microseconds=1)    
+        piggy.save()  
+    piggy = PiggyBank(amount=0.2*amount,finish_time = datetime.now() + timedelta(days),
+            started_time = datetime.now())   
+    piggy.save()
 
-# @receiver(pre_save, sender=MemberShip)
-# def blog_post_pre_save(sender, instance, *args, **kwargs):
-#     if instance.amount == None:
-#         if instance.month == '1':
-#             instance.amount = 24.87
-#             instance.finish_time = instance.started_date + timedelta(30)
-#             # 
-#             create_piggy(weeks=4, days = 30, amount = 24.87 * 0.8)
-#         elif instance.month == '3':
-#             instance.amount = 64.47
-#             instance.finish_time = instance.started_date + timedelta(90)
-        
-#             create_piggy(weeks=12, days = 90, amount = 64.47 * 0.8)
-#         elif instance.month == '6':
-#             instance.amount = 117.47
-#             instance.finish_time = instance.started_date + timedelta(180)
-        
-#             create_piggy(weeks=24, days = 180, amount = 117.47 * 0.8)             
-#         else:
-#             instance.amount = 238.87
-#             instance.finish_time = instance.started_date + timedelta(365)
+def add_to_admin_wallet(amount):
+    wallet_ =Wallet.objects.get(id=1)
+    wallet_.amount += Decimal(amount)
+    wallet_.save()
 
-#             create_piggy(weeks=48, days = 365, amount = 238.87 * 0.8)             
+@receiver(pre_save, sender=MemberShip)
+def blog_post_pre_save(sender, instance, *args, **kwargs):
+    
+    if instance.amount == None:
+        now = datetime.now()
+        if instance.month == '1':
+            instance.amount = 24.87
+            instance.finish_date = now + timedelta(30)
+            # 80 % amount --> piggy bank 
+            create_piggy(weeks=4, days = 30, amount = 24.87 * 0.8)
+            # 20% * amount --> admin wallet
+            add_to_admin_wallet(0.2 * 24.87)
+
+        elif instance.month == '3':
+            instance.amount = 64.47
+            instance.finish_date = now + timedelta(90)
+            create_piggy(weeks=12, days = 90, amount = 64.47 * 0.8)
+            # 20% * amount --> admin wallet
+            add_to_admin_wallet(0.2 * 64.47)
+
+        elif instance.month == '6':
+            instance.amount = 117.47
+            instance.finish_date = now + timedelta(180)
+            create_piggy(weeks=24, days = 180, amount = 117.47 * 0.8)    
+            # 20% * amount --> admin wallet
+            add_to_admin_wallet(0.2 * 117.47)
+        else:
+            instance.amount = 214.47
+            instance.finish_date = now + timedelta(365)
+            create_piggy(weeks=48, days = 365, amount = 214.47 * 0.8)             
+            # 20% * amount --> admin wallet
+            add_to_admin_wallet(0.2 * 214.47)
         
-#         instance.save()
+        instance.save()
 
 
 

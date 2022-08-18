@@ -4,7 +4,7 @@ from django.contrib.auth.mixins import PermissionRequiredMixin, LoginRequiredMix
 from django.views.generic import ( ListView, DetailView, UpdateView,
                     TemplateView, CreateView)
 
-from users.models import MemberShip, Wallet, CustomeUserModel
+from users.models import  Wallet, CustomeUserModel
 
 from .models import Payment
 from . import forms
@@ -56,16 +56,5 @@ class PaymentHistoryView(LoginRequiredMixin, TemplateView):
             self.template_name = 'users/payment_admin.html'
         context.update( {'payment' : payment_} )
         return context 
-
-
-    
-
-
-
-
-
-
-
-
 
 

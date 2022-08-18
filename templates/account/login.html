@@ -12,15 +12,13 @@
   <div class="container-login100">
     <div class="wrap-login100">
 
-      {% comment %} {% if form.errors %}
+      {% if form.errors %}
         {% for error in form.non_field_errors %}
-          <strong style="color:red; font-size:14px; float: right; text-align:right; ">
-            {% if error == "The username and/or password you specified are not correct."  %}
-              رمز عبور یا ایمیلی که وارد کردید اشتباه است
-            {% endif %}
+          <strong style="color:red; font-size:14px; float: left; text-align:left; ">
+            {{ error }}
           </strong>
         {% endfor %}
-      {% endif %} {% endcomment %}
+      {% endif %} 
 
       <form class="login100-form validate-form" method="POST" action="." style="margin-top:20%;">
         {% csrf_token %}
