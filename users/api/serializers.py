@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from ..models import CustomeUserModel, Wallet
+from ..models import CustomeUserModel, MemberShip, Wallet
 
 
 class RegistrationSerializer(serializers.ModelSerializer):
@@ -39,6 +39,31 @@ class WalletSerializer(serializers.ModelSerializer):
     class Meta:
         model = Wallet
         fields = ['amount', 'user']
+
+
+class MembershipCreateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = MemberShip
+        fields = ['month', ]
+
+class MembershipSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = MemberShip
+        exclude = ['user', 'id']
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 # class RegistrationSerializer(serializers.ModelSerializer):
 

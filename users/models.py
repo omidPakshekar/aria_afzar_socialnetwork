@@ -193,8 +193,9 @@ def add_to_admin_wallet(amount):
 
 @receiver(pre_save, sender=MemberShip)
 def blog_post_pre_save(sender, instance, *args, **kwargs):
-    
-    if instance.amount == None:
+    print(args, kwargs)
+    if not instance.amount :
+        print('instance.amount=',instance.amount)
         now = datetime.now()
         if instance.month == '1':
             instance.amount = 24.87

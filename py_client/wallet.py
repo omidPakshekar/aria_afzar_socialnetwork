@@ -10,7 +10,7 @@ if get_response.status_code != "403":
 
     data ={
         "email" : "mammad@gmail.com",
-        "password" : "omid1234"
+        "password" : "mammad1234"
     }
 
     auth_response = requests.post(auth_endpoint, json=data)
