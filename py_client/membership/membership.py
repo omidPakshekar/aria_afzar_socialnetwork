@@ -22,8 +22,8 @@ if get_response.status_code != "403":
     auth_endpoint = "http://127.0.0.1:8000/api/v1/token/"
 
     data ={
-        "email" : "omid@gmail.com",
-        "password" : "omid1234"
+        "email" : "amir@gmail.com",
+        "password" : "amir1234"
     }
 
     auth_response = requests.post(auth_endpoint, json=data)
@@ -35,7 +35,7 @@ if get_response.status_code != "403":
         data = {
             'month' : '1',
         }
-        get_response = requests.get(endpoint, headers=headers)
+        get_response = requests.post(endpoint, headers=headers, data=data)
         print('detail=', get_response.json())
         print('status code=', get_response.status_code)
 

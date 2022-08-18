@@ -225,7 +225,6 @@ def blog_post_pre_save(sender, instance, *args, **kwargs):
             # 20% * amount --> admin wallet
             add_to_admin_wallet(0.2 * 214.47)
         
-        instance.save()
 
 
 
