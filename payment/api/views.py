@@ -34,7 +34,7 @@ class PaymentViewSet(viewsets.ModelViewSet):
         serializer.save()
         return Response(serializer.data)
    
-    @action(methods=["get"], detail=False, name="Posts by the logged in user")
+    @action(methods=["get"], detail=False, name="payment that create by the logged in user")
     def mine(self, request):
         objects = self.get_queryset().filter(user=request.user)
         page = self.paginate_queryset(objects)
@@ -43,7 +43,11 @@ class PaymentViewSet(viewsets.ModelViewSet):
         serializer = serializers.PaymentListSerializer(objects, many=True, context={"request": request})
         return Response(serializer.data)
 
+    # @action(methods=["post"], detail=False, name="Posts by the logged in user")
+    # def donate(self, request):
+
         
+    
 
 # partial = kwargs.pop('partial', False)
 #         instance = self.get_object()

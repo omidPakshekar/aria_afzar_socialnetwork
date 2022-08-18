@@ -8,8 +8,8 @@ from rest_framework.response import  Response
 from rest_framework.views import APIView
 # from .utils import get_tokens_for_user
 from .serializers import PasswordChangeSerializer, RegistrationSerializer
-# Create your views here.
 
+import json
 
 class RegistrationView(APIView):
     def post(self, request):
@@ -30,3 +30,11 @@ class ChangePasswordView(APIView):
         request.user.save()
         return Response(status=status.HTTP_204_NO_CONTENT)
     
+class WalletView(APIView):
+
+    def get(self, request, format=None):
+        print(request.user)
+        return Response(json.dumps({
+                'user' : request.user.username,
+                'amount' : str(request.user.wallet.amount)
+            }))

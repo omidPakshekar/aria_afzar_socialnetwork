@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from ..models import CustomeUserModel
+from ..models import CustomeUserModel, Wallet
 
 
 class RegistrationSerializer(serializers.ModelSerializer):
@@ -35,6 +35,10 @@ class PasswordChangeSerializer(serializers.Serializer):
     current_password = serializers.CharField(style={"input_type": "password"}, required=True)
     new_password = serializers.CharField(style={"input_type": "password"}, required=True)
 
+class WalletSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Wallet
+        fields = ['amount', 'user']
 
 # class RegistrationSerializer(serializers.ModelSerializer):
 
