@@ -34,7 +34,7 @@ class Payment(models.Model):
 class PiggyBank(models.Model):
     # verbose_name='date create',
     amount          = models.DecimalField(blank=False, decimal_places=4, max_digits=12)
-    started_time    = models.DateTimeField( auto_now_add=True)
+    started_time    = models.DateTimeField()
     finish_time    = models.DateTimeField()
     expired_day     = models.IntegerField(default=0)
     
