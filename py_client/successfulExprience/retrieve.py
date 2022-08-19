@@ -19,10 +19,10 @@ if auth_response.status_code == 200:
         "Authorization" : f"Bearer {token}"
     }
     data = {
-        "title" : "java development",
-        "description" : "hi im java developer and im java developer and im java developer",        
+        "title" : "Django development",
+        "description" : "hi im django developer and im django developer and im django developer",        
     }
-    get_response = requests.post( endpoint, headers=headers, json=data)
+    get_response = requests.get( endpoint, headers=headers)
 
     print('status_code=', get_response.status_code)
     print('json=', get_response.json())

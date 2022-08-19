@@ -25,8 +25,6 @@ class ItemBase(models.Model):
     description  = models.TextField()
     created_time = models.DateTimeField(auto_now_add = True)
     updated_time = models.DateTimeField(auto_now = True)
-    user_saved   = models.ForeignKey(CustomeUserModel, related_name="%(class)s_saved", blank=True, null=True, on_delete=models.CASCADE)
-    user_liked   = models.ForeignKey(CustomeUserModel, related_name="%(class)s_liked", blank=True, null=True, on_delete=models.CASCADE)
     admin_check  = models.BooleanField(default=False)
 
     @property
@@ -40,13 +38,20 @@ class ItemBase(models.Model):
 
 class Post(ItemBase):
     image        = models.ImageField(max_length=255, upload_to=get_post_image_filepath, null=True, blank=True, default=get_default_post_image)
+    user_liked   = models.ManyToManyField(CustomeUserModel, related_name="posts_liked", blank=True)
+    user_saved   = models.ManyToManyField(CustomeUserModel, related_name="posts_saved", blank=True)
 
 class Podcast(ItemBase):
     file         = models.FileField( upload_to=get_post_image_filepath, null=True, blank=True, default=get_default_post_image)
-    is_verified  = models.BooleanField(default=False)
+    user_liked   = models.ManyToManyField(CustomeUserModel, related_name="podcasts_liked", blank=True)
+    user_saved   = models.ManyToManyField(CustomeUserModel, related_name="podcasts_saved", blank=True)
 
 class SuccessfullExperience(ItemBase):
-    pass
+    user_liked   = models.ManyToManyField(CustomeUserModel, related_name="exprience_liked", blank=True)
+    user_saved   = models.ManyToManyField(CustomeUserModel, related_name="exprience_saved", blank=True)
+
+
+
 # class Comment(models.Model):
 #     product         = models.ForeignKey(Product, related_name='products',
 #                         on_delete=models.CASCADE, blank=False)
