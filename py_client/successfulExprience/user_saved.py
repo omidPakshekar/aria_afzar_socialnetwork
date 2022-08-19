@@ -3,26 +3,23 @@ import requests
 auth_endpoint = "http://127.0.0.1:8000/api/v1/token/"
 
 data ={
-    "email" : "amir@gmail.com",
-    "password" : "amir1234"
+    "email" : "mammad@gmail.com",
+    "password" : "mammad1234"
 }
 
 auth_response = requests.post(auth_endpoint, json=data)
 print('auth_response=', auth_response.json())
 
 
-endpoint = "http://localhost:8000/api/v1/exprience/"
+endpoint = "http://localhost:8000/api/v1/exprience/1/save/"
 
 if auth_response.status_code == 200:
     token = auth_response.json()['access']    
     headers = {
         "Authorization" : f"Bearer {token}"
     }
-    data = {
-        "title" : "po development",
-        "description" : "hi im po developer and im po developer and im po developer",        
-    }
-    get_response = requests.post( endpoint, headers=headers, json=data)
+
+    get_response = requests.put( endpoint, headers=headers)
 
     print('status_code=', get_response.status_code)
     print('json=', get_response.json())
