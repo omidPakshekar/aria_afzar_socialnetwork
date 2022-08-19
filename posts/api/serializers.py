@@ -10,6 +10,13 @@ class ExprienceCreateSerializer(serializers.ModelSerializer):
 
 
 
+class ExprienceAdminSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = SuccessfullExperience
+        fields = ['title', 'description', 'admin_check']
+
+
+
 class ExprienceSerializer(serializers.ModelSerializer):
     likes = serializers.SerializerMethodField(read_only=True)
     save_number = serializers.SerializerMethodField(read_only=True)
@@ -24,7 +31,10 @@ class ExprienceSerializer(serializers.ModelSerializer):
     def get_save_number(self, obj):
         return obj.user_saved.count()
 
-
+# class ExprienceChangeSerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = SuccessfullExperience
+#         fields = 
 
 
 

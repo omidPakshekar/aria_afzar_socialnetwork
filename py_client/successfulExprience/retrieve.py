@@ -11,7 +11,7 @@ auth_response = requests.post(auth_endpoint, json=data)
 print('auth_response=', auth_response.json())
 
 
-endpoint = "http://localhost:8000/api/v1/exprience/1/"
+endpoint = "http://localhost:8000/api/v1/exprience/2/"
 
 if auth_response.status_code == 200:
     token = auth_response.json()['access']    
@@ -22,7 +22,10 @@ if auth_response.status_code == 200:
         "title" : "Django development",
         "description" : "hi im django developer and im django developer and im django developer",        
     }
-    get_response = requests.get( endpoint, headers=headers)
+    data = {
+        "title" : "javaaaaaaaaaaaaa",
+    }
+    get_response = requests.patch( endpoint, headers=headers, data = data)
 
     print('status_code=', get_response.status_code)
     print('json=', get_response.json())
