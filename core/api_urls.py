@@ -6,10 +6,11 @@ from rest_framework_simplejwt.views import (
 from rest_framework.routers import DefaultRouter
 
 from payment.api.views import PaymentViewSet
+from posts.api.views import ExprienceViewSet
 
 router = DefaultRouter()
 router.register('payment', PaymentViewSet)
-
+router.register('exprience', ExprienceViewSet, basename='exprience')
 
 urlpatterns = [
     path('accounts/', include('users.api.urls')),

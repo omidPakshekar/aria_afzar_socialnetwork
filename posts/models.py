@@ -27,6 +27,7 @@ class ItemBase(models.Model):
     updated_time = models.DateTimeField(auto_now = True)
     user_saved   = models.ForeignKey(CustomeUserModel, related_name="%(class)s_saved", blank=True, null=True, on_delete=models.CASCADE)
     user_liked   = models.ForeignKey(CustomeUserModel, related_name="%(class)s_liked", blank=True, null=True, on_delete=models.CASCADE)
+    admin_check  = models.BooleanField(default=False)
 
     @property
     def short_title(self):
@@ -44,11 +45,8 @@ class Podcast(ItemBase):
     file         = models.FileField( upload_to=get_post_image_filepath, null=True, blank=True, default=get_default_post_image)
     is_verified  = models.BooleanField(default=False)
 
-class SuccessfulExperience(models.Model):
-    title       = models.CharField(max_length=50)
-    body        = models.TextField()
-    like        = models.ForeignKey(CustomeUserModel, related_name="successful_experience", on_delete=models.CASCADE)
-
+class SuccessfullExperience(ItemBase):
+    pass
 # class Comment(models.Model):
 #     product         = models.ForeignKey(Product, related_name='products',
 #                         on_delete=models.CASCADE, blank=False)

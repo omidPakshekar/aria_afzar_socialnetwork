@@ -9,5 +9,6 @@ class PostAdmin(admin.ModelAdmin):
 
 admin.site.register(Podcast, PostAdmin)
 admin.site.register(Post, PostAdmin)
+admin.site.register(SuccessfullExperience)
 
 
