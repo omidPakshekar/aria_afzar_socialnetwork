@@ -120,7 +120,7 @@ class Dev(Configuration):
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.sqlite3',
-            'NAME': BASE_DIR / 'db.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite4',
         }
         # 'default': {
         #     'ENGINE': 'django.db.backends.postgresql_psycopg2',

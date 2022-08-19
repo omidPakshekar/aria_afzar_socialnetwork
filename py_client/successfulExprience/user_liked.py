@@ -11,7 +11,7 @@ auth_response = requests.post(auth_endpoint, json=data)
 print('auth_response=', auth_response.json())
 
 
-endpoint = "http://localhost:8000/api/v1/exprience/1/like/"
+endpoint = "http://localhost:8000/api/v1/exprience/2/like/"
 
 if auth_response.status_code == 200:
     token = auth_response.json()['access']    

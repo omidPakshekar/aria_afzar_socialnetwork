@@ -1,4 +1,8 @@
+from datetime import timedelta
 from decimal import Decimal
+
+from django.db.models import Q
+from django.utils import timezone
 
 from rest_framework import generics, viewsets
 from rest_framework.permissions import IsAuthenticated
@@ -8,21 +12,31 @@ from rest_framework import status
 
 from .serializers import ExprienceCreateSerializer, ExprienceSerializer
 from ..models import SuccessfullExperience
-from users.models import add_to_admin_wallet, Wallet
+from users.models import Activity, CustomeUserModel, add_to_admin_wallet, Wallet
 from posts.api.permissions import PostPermission
 
+user_admin = CustomeUserModel.objects.get(id=1)
 
 def add_money(owner, user, amount, trade_off):
-    owner.user_piggy
-    if owner.wallet.amount > trade_off:
+    piggy = owner.user_piggy.filter( Q(started_time__gte=timezone.now() )  )[0]
+    if piggy.amount > amount:
         w = Wallet.objects.get(id=user.id)
         w.amount += Decimal(amount)
         w.save()
+        piggy.amount = piggy.amount - Decimal(amount)
+        piggy.save()
+        try:
+            activity = Activity.objects.get(piggy=piggy, user=user)
+            activity.number += 1
+            activity.save()
+        except:
+            activity = Activity.objects.create(piggy=piggy, user=user)
+            activity.number += 1
+            activity.save()
 
 class ExprienceViewSet(viewsets.ModelViewSet):
     queryset = SuccessfullExperience.objects.all()
     permission_classes = [PostPermission]
-    # serializer_class = ExprienceCreateSerializer
 
     def get_serializer_class(self):
         if self.action == 'create':
@@ -47,8 +61,10 @@ class ExprienceViewSet(viewsets.ModelViewSet):
         instance.user_liked.add(self.request.user)
         # user member ship --> add money
         # cost money and add to admin if user dosent have member ship
-        # if request.user.have_permission:
-        # add_to_admin_wallet(0.01)
+        if self.request.user.have_membership:
+            add_money(self.request.user, instance.owner, 0.01, 0)
+        else:
+            add_money(self.request.user, user_admin, 0.01, 0)
 
         return Response(status.HTTP_200_OK)
     

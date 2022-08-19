@@ -32,14 +32,15 @@ class Payment(models.Model):
         return f"{self.user.username} / amount= {self.amount} / {self.created_date}" 
 
 class PiggyBank(models.Model):
-    # verbose_name='date create',
     user            = models.ForeignKey(CustomeUserModel, related_name='user_piggy', on_delete=models.CASCADE)
     amount          = models.DecimalField(blank=False, decimal_places=4, max_digits=12)
     started_time    = models.DateTimeField()
     finish_time     = models.DateTimeField()
     expired_day     = models.IntegerField(default=0)
     current         = models.BooleanField(default=False)
-    
+    long            = models.BooleanField(default=False)
+    class Meta:
+        ordering  = ['started_time']
 
 
 

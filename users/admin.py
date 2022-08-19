@@ -82,10 +82,13 @@ class WalletAdmin(admin.ModelAdmin):
     list_display = ['id', 'owner', 'amount', 'wallet_key']
 
 class MemberShipAdmin(admin.ModelAdmin):
-    list_display = ['id', 'user', 'month', 'amount', 'started_date', ]
+    list_display = ['id', 'user', 'month', 'amount', 'started_date', 'expired_day']
 
+class ActivityAdmin(admin.ModelAdmin):
+    list_display = ['id', 'user', 'number', 'piggy_owner', 'piggy_amount', ]
 
 
 admin.site.register(CustomeUserModel, CustomUserAdmin)
 admin.site.register(Wallet, WalletAdmin)
 admin.site.register(MemberShip, MemberShipAdmin)
+admin.site.register(Activity, ActivityAdmin)

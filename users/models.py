@@ -3,6 +3,7 @@ import random
 from datetime import datetime, timedelta
 from decimal import Decimal
 
+from django.utils import timezone
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
 from django.contrib.auth.models import PermissionsMixin
@@ -156,6 +157,13 @@ class Activity(models.Model):
     piggy           = models.ForeignKey(PiggyBank,  related_name='piggys', on_delete=models.CASCADE)
     user            = models.OneToOneField(CustomeUserModel, related_name='activity',  on_delete=models.CASCADE)
     number          = models.PositiveIntegerField(default=0)
+    @property
+    def piggy_owner(self):
+        return self.piggy.user 
+    @property
+    def piggy_amount(self):
+        return self.piggy.amount
+    
 
 class MemberShip(models.Model):
     user            = models.OneToOneField(CustomeUserModel, related_name='membership',  on_delete=models.CASCADE)
@@ -165,24 +173,24 @@ class MemberShip(models.Model):
     finish_date     = models.DateTimeField(verbose_name='date_finish', blank=True, null=True)  
     finished        = models.BooleanField(default=False)
 
-    # @property 
-    # def expired_day(self):
-    #     return self.finish_date - datetime.now()
+    @property 
+    def expired_day(self):
+        return self.finish_date - timezone.now()
 
 """
     signal -- create expire day and amount automaticly  
 """
 def create_piggy(weeks, days, amount, user):
     piggy_amount = 0.8 * amount * (1/weeks)
-    start =  datetime.now()
+    start =  timezone.now()
     for i in range(weeks):
         finish = start + timedelta(weeks=1, hours=12)
         piggy = PiggyBank(amount=piggy_amount,finish_time = finish,
             started_time = start, user=user)
         start = finish + timedelta(microseconds=1)    
         piggy.save()  
-    piggy = PiggyBank(amount=0.2*amount,finish_time = datetime.now() + timedelta(days),
-            started_time = datetime.now(), user=user)   
+    piggy = PiggyBank(amount=0.2*amount,finish_time = timezone.now() + timedelta(days),
+            started_time = timezone.now(), user=user)   
     piggy.save()
 
 def add_to_admin_wallet(amount):
@@ -195,7 +203,7 @@ def blog_post_pre_save(sender, instance, *args, **kwargs):
     print(args, kwargs)
     if not instance.amount :
         print('instance.amount=',instance.amount)
-        now = datetime.now()
+        now = timezone.now()
         if instance.month == '1':
             instance.amount = 24.87
             instance.finish_date = now + timedelta(30)
@@ -224,8 +232,15 @@ def blog_post_pre_save(sender, instance, *args, **kwargs):
             # 20% * amount --> admin wallet
             add_to_admin_wallet(0.2 * 214.47)
         
-
-
+@receiver(post_save, sender=MemberShip)
+def user_post_save_receiver(sender, instance, created, *args, **kwargs):
+    """
+    after saved in the database
+    """
+    if created:
+        u  = CustomeUserModel.objects.get(id=instance.user.id)
+        u.have_membership = True
+        u.save()
 
 # send message from user to admin and vice versa
 class Message(models.Model):
