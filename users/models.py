@@ -155,7 +155,7 @@ from payment.models import PiggyBank
 
 class Activity(models.Model):
     piggy           = models.ForeignKey(PiggyBank,  related_name='piggys', on_delete=models.CASCADE)
-    user            = models.OneToOneField(CustomeUserModel, related_name='activity',  on_delete=models.CASCADE)
+    user            = models.ForeignKey(CustomeUserModel, related_name='activity',  on_delete=models.CASCADE)
     number          = models.PositiveIntegerField(default=0)
     @property
     def piggy_owner(self):
@@ -190,7 +190,7 @@ def create_piggy(weeks, days, amount, user):
         start = finish + timedelta(microseconds=1)    
         piggy.save()  
     piggy = PiggyBank(amount=0.2*amount,finish_time = timezone.now() + timedelta(days),
-            started_time = timezone.now(), user=user)   
+            started_time = timezone.now(), user=user, long=True)   
     piggy.save()
 
 def add_to_admin_wallet(amount):

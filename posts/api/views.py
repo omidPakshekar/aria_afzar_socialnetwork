@@ -19,21 +19,33 @@ user_admin = CustomeUserModel.objects.get(id=1)
 
 def add_money(owner, user, amount, trade_off):
     piggy = owner.user_piggy.filter( Q(started_time__gte=timezone.now() )  )[0]
+    piggyLong = owner.user_piggy.filter(long=True)[0]
+    print('**'*10)
+    print(piggyLong)
+    print('**'*10)
     if piggy.amount > amount:
         w = Wallet.objects.get(id=user.id)
         w.amount += Decimal(amount)
         w.save()
         piggy.amount = piggy.amount - Decimal(amount)
         piggy.save()
+
         try:
-            activity = Activity.objects.get(piggy=piggy, user=user)
+            activity = Activity.objects.get(piggy=piggy)
             activity.number += 1
             activity.save()
+            activity2 = Activity.objects.get(piggy=piggyLong)
+            activity2.number += 1
+            activity2.save()
         except:
             activity = Activity.objects.create(piggy=piggy, user=user)
             activity.number += 1
             activity.save()
-
+            activity2 = Activity.objects.create(piggy=piggyLong, user=user)
+            activity2.number += 1
+            activity2.save()
+            
+        
 class ExprienceViewSet(viewsets.ModelViewSet):
     queryset = SuccessfullExperience.objects.all()
     permission_classes = [PostPermission]
@@ -58,6 +70,7 @@ class ExprienceViewSet(viewsets.ModelViewSet):
     @action(methods=["put"], detail=True, name="user liked", url_path='like')
     def add_like(self, request, pk):
         instance = self.get_object()
+        # add if 
         instance.user_liked.add(self.request.user)
         # user member ship --> add money
         # cost money and add to admin if user dosent have member ship
