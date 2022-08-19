@@ -62,12 +62,10 @@ class MyAccountManager(BaseUserManager):
 			raise ValueError('Users must have an email address')
 		if not username:
 			raise ValueError('Users must have a username')
-
 		user = self.model(
 			email=self.normalize_email(email),
 			username=username,
 		)
-
 		user.set_password(password)
 		user.save()
 		return user
@@ -104,7 +102,8 @@ class CustomeUserModel(AbstractBaseUser, PermissionsMixin):
     year_of_birth       = models.CharField(max_length=20, blank=True, null=True)
     month_of_birth      = models.CharField(max_length=20, blank=True, null=True)
     day_of_birth        = models.CharField(max_length=20, blank=True, null=True)
-     
+    have_membership     = models.BooleanField(default=False)
+
     objects = MyAccountManager()
 
     USERNAME_FIELD = 'email'
@@ -173,17 +172,17 @@ class MemberShip(models.Model):
 """
     signal -- create expire day and amount automaticly  
 """
-def create_piggy(weeks, days, amount):
+def create_piggy(weeks, days, amount, user):
     piggy_amount = 0.8 * amount * (1/weeks)
     start =  datetime.now()
     for i in range(weeks):
         finish = start + timedelta(weeks=1, hours=12)
         piggy = PiggyBank(amount=piggy_amount,finish_time = finish,
-            started_time = start)
+            started_time = start, user=user)
         start = finish + timedelta(microseconds=1)    
         piggy.save()  
     piggy = PiggyBank(amount=0.2*amount,finish_time = datetime.now() + timedelta(days),
-            started_time = datetime.now())   
+            started_time = datetime.now(), user=user)   
     piggy.save()
 
 def add_to_admin_wallet(amount):
@@ -201,27 +200,27 @@ def blog_post_pre_save(sender, instance, *args, **kwargs):
             instance.amount = 24.87
             instance.finish_date = now + timedelta(30)
             # 80 % amount --> piggy bank 
-            create_piggy(weeks=4, days = 30, amount = 24.87 * 0.8)
+            create_piggy(weeks=4, days = 30, amount = 24.87 * 0.8, user=instance.user)
             # 20% * amount --> admin wallet
             add_to_admin_wallet(0.2 * 24.87)
 
         elif instance.month == '3':
             instance.amount = 64.47
             instance.finish_date = now + timedelta(90)
-            create_piggy(weeks=12, days = 90, amount = 64.47 * 0.8)
+            create_piggy(weeks=12, days = 90, amount = 64.47 * 0.8, user=instance.user)
             # 20% * amount --> admin wallet
             add_to_admin_wallet(0.2 * 64.47)
 
         elif instance.month == '6':
             instance.amount = 117.47
             instance.finish_date = now + timedelta(180)
-            create_piggy(weeks=24, days = 180, amount = 117.47 * 0.8)    
+            create_piggy(weeks=24, days = 180, amount = 117.47 * 0.8, user=instance.user)    
             # 20% * amount --> admin wallet
             add_to_admin_wallet(0.2 * 117.47)
         else:
             instance.amount = 214.47
             instance.finish_date = now + timedelta(365)
-            create_piggy(weeks=48, days = 365, amount = 214.47 * 0.8)             
+            create_piggy(weeks=48, days = 365, amount = 214.47 * 0.8, user=instance.user)             
             # 20% * amount --> admin wallet
             add_to_admin_wallet(0.2 * 214.47)
         

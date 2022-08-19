@@ -33,10 +33,12 @@ class Payment(models.Model):
 
 class PiggyBank(models.Model):
     # verbose_name='date create',
+    user            = models.ForeignKey(CustomeUserModel, related_name='user_piggy', on_delete=models.CASCADE)
     amount          = models.DecimalField(blank=False, decimal_places=4, max_digits=12)
     started_time    = models.DateTimeField()
-    finish_time    = models.DateTimeField()
+    finish_time     = models.DateTimeField()
     expired_day     = models.IntegerField(default=0)
+    current         = models.BooleanField(default=False)
     
 
 

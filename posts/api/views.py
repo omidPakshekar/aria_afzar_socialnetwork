@@ -1,16 +1,23 @@
+from decimal import Decimal
+
 from rest_framework import generics, viewsets
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.decorators import api_view, action 
 from rest_framework.response import Response
 from rest_framework import status
 
-from posts.api.permissions import PostPermission
-
 from .serializers import ExprienceCreateSerializer, ExprienceSerializer
 from ..models import SuccessfullExperience
+from users.models import add_to_admin_wallet, Wallet
+from posts.api.permissions import PostPermission
 
 
-
+def add_money(owner, user, amount, trade_off):
+    owner.user_piggy
+    if owner.wallet.amount > trade_off:
+        w = Wallet.objects.get(id=user.id)
+        w.amount += Decimal(amount)
+        w.save()
 
 class ExprienceViewSet(viewsets.ModelViewSet):
     queryset = SuccessfullExperience.objects.all()
@@ -33,11 +40,16 @@ class ExprienceViewSet(viewsets.ModelViewSet):
     #     instance = self.get_object()
     #     serializer = ExprienceChangeSerializer(instance, data=request.data)
     #     serializer.is_valid(raise_exception=True)
-   
+
     @action(methods=["put"], detail=True, name="user liked", url_path='like')
     def add_like(self, request, pk):
         instance = self.get_object()
         instance.user_liked.add(self.request.user)
+        # user member ship --> add money
+        # cost money and add to admin if user dosent have member ship
+        # if request.user.have_permission:
+        # add_to_admin_wallet(0.01)
+
         return Response(status.HTTP_200_OK)
     
     @action(methods=["put"], detail=True, name="user saved", url_path='save')
