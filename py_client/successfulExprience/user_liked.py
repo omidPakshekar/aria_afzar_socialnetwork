@@ -3,8 +3,8 @@ import requests
 auth_endpoint = "http://127.0.0.1:8000/api/v1/token/"
 
 data ={
-    "email" : "omid@gmail.com",
-    "password" : "omid1234"
+    "email" : "mammad@gmail.com",
+    "password" : "mammad1234"
 }
 
 auth_response = requests.post(auth_endpoint, json=data)

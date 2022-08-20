@@ -85,7 +85,7 @@ class MemberShipAdmin(admin.ModelAdmin):
     list_display = ['id', 'user', 'month', 'amount', 'started_date', 'expired_day']
 
 class ActivityAdmin(admin.ModelAdmin):
-    list_display = ['id', 'user', 'number', 'piggy_owner', 'piggy_amount', ]
+    list_display = ['id', 'user', 'number', 'piggy_owner', 'piggy', 'piggy_amount', ]
 
 
 admin.site.register(CustomeUserModel, CustomUserAdmin)

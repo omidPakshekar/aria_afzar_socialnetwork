@@ -163,6 +163,9 @@ class Activity(models.Model):
     @property
     def piggy_amount(self):
         return self.piggy.amount
+    # @property
+    # def piggy_id(self):
+    #     return self.piggy
     
 
 class MemberShip(models.Model):
