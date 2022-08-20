@@ -3,15 +3,15 @@ import requests
 auth_endpoint = "http://127.0.0.1:8000/api/v1/token/"
 
 data ={
-    "email" : "amir@gmail.com",
-    "password" : "amir1234"
+    "email" : "omid@gmail.com",
+    "password" : "omid1234"
 }
 
 auth_response = requests.post(auth_endpoint, json=data)
 print('auth_response=', auth_response.json())
 
 
-endpoint = "http://localhost:8000/api/v1/exprience/2/"
+endpoint = "http://localhost:8000/api/v1/exprience/1/"
 
 if auth_response.status_code == 200:
     token = auth_response.json()['access']    

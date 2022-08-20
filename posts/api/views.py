@@ -17,39 +17,40 @@ from posts.api.permissions import PostPermission
 
 user_admin = CustomeUserModel.objects.get(id=1)
 
+def add_to_activity(piggy):
+    activity = Activity.objects.get(piggy=piggy)
+    activity.number += 1
+    activity.save()
+def create_activity(piggy, user):
+    activity = Activity.objects.create(piggy=piggy, user=user)
+    activity.number += 1
+    activity.save()
+            
 def add_money(owner, user, amount, trade_off):
-    piggy = owner.user_piggy.filter( Q(started_time__gte=timezone.now() )  )[0]
+    piggy = owner.user_piggy.filter( Q(started_time__lte=timezone.now() )  )[0]
     piggyLong = owner.user_piggy.filter(long=True)[0]
-    print('**'*10)
-    print(piggyLong)
-    print('**'*10)
     if piggy.amount > amount:
         w = Wallet.objects.get(id=user.id)
         w.amount += Decimal(amount)
         w.save()
         piggy.amount = piggy.amount - Decimal(amount)
         piggy.save()
-
         try:
-            activity = Activity.objects.get(piggy=piggy)
-            activity.number += 1
-            activity.save()
-            activity2 = Activity.objects.get(piggy=piggyLong)
-            activity2.number += 1
-            activity2.save()
+            add_to_activity(piggy)
+            add_to_activity(piggyLong)
         except:
-            activity = Activity.objects.create(piggy=piggy, user=user)
-            activity.number += 1
-            activity.save()
-            activity2 = Activity.objects.create(piggy=piggyLong, user=user)
-            activity2.number += 1
-            activity2.save()
+            create_activity(piggy, user)
+            create_activity(piggyLong, user)
             
         
 class ExprienceViewSet(viewsets.ModelViewSet):
-    queryset = SuccessfullExperience.objects.all()
     permission_classes = [PostPermission]
 
+    def get_queryset(self):
+        if  self.request.user.is_admin:
+            return SuccessfullExperience.objects.all()
+        return SuccessfullExperience.objects.filter(admin_check=True)
+        
     def get_serializer_class(self):
         if self.action == 'create':
             return ExprienceCreateSerializer
@@ -71,14 +72,18 @@ class ExprienceViewSet(viewsets.ModelViewSet):
     def add_like(self, request, pk):
         instance = self.get_object()
         # add if 
+        if self.request.user in instance.user_liked.all():
+            return Response(status.HTTP_200_OK)
         instance.user_liked.add(self.request.user)
+        # if user is admin dont do anything
+        if self.request.user.is_admin:
+            return Response(status.HTTP_200_OK)
         # user member ship --> add money
         # cost money and add to admin if user dosent have member ship
         if self.request.user.have_membership:
             add_money(self.request.user, instance.owner, 0.01, 0)
         else:
             add_money(self.request.user, user_admin, 0.01, 0)
-
         return Response(status.HTTP_200_OK)
     
     @action(methods=["put"], detail=True, name="user saved", url_path='save')
