@@ -3,6 +3,8 @@ from django.db import models
 from users.models import CustomeUserModel
 from datetime import datetime, timedelta
 
+from django.contrib.contenttypes.fields import ContentType, GenericForeignKey, GenericRelation
+
 
 TAG_CHOICE = {
     ('Programming', 'Programming'),
@@ -16,9 +18,28 @@ def get_default_post_image():
     return "default_image.jpg" 
 
 
-# class PostTag(models.Model):
-#     title        = models.CharField(max_length = 40, blank=True)
+class Comment(models.Model):
+    class Meta:
+        ordering = ['created_time']
 
+    content_type= models.ForeignKey(ContentType,
+                    limit_choices_to = {
+                        'model__in':('post', 'podcast', 'successfullexperience')
+                        }, on_delete=models.CASCADE)
+    object_id   = models.PositiveIntegerField()
+    item        = GenericForeignKey('content_type', 'object_id')
+    owner       = models.ForeignKey(CustomeUserModel, on_delete=models.RESTRICT, null=False, blank=False)
+    comment_text= models.TextField(max_length=100, blank=True, null=True)
+    user_liked  = models.ManyToManyField(CustomeUserModel, related_name="comment_liked", blank=True)
+    created_time= models.DateTimeField(auto_now_add = True)
+    updated_time= models.DateTimeField(auto_now = True)
+    admin_check = models.BooleanField(default=False)
+    
+    @property
+    def short_comment_text(self):
+        return f'{self.comment_text[0:15]}...'
+
+        
 class ItemBase(models.Model):
     owner        = models.ForeignKey(CustomeUserModel, related_name="%(class)s_related", on_delete=models.CASCADE)
     title        = models.CharField(max_length = 250)
@@ -43,23 +64,28 @@ class ItemBase(models.Model):
 
 class Post(ItemBase):
     image        = models.ImageField(max_length=255, upload_to=get_post_image_filepath, null=True, blank=True, default=get_default_post_image)
+    comment     = GenericRelation(Comment)
 
 class Podcast(ItemBase):
     file         = models.FileField( upload_to=get_post_image_filepath, null=True, blank=True, default=get_default_post_image)
+    comment     = GenericRelation(Comment)
 
 class SuccessfullExperience(ItemBase):
     user_liked   = models.ManyToManyField(CustomeUserModel, related_name="exprience_liked", blank=True)
     user_saved   = models.ManyToManyField(CustomeUserModel, related_name="exprience_saved", blank=True)
+    comment     = GenericRelation(Comment)
 
 
 
-# class Comment(models.Model):
+
+
+
 #     product         = models.ForeignKey(Product, related_name='products',
 #                         on_delete=models.CASCADE, blank=False)
 #     comment_parent  = models.ForeignKey('ProductComment', null=True, blank=True,
 #                         on_delete=models.CASCADE)
-#     user            = models.ForeignKey(CustomUser, on_delete=models.RESTRICT, null=False, blank=False)
-#     comment_text    = models.TextField(max_length=100, blank=True, null=True)
+#     
+#     
 #     like_count      = models.PositiveIntegerField(default=0, null=True, blank=True)
 #     dislike_count   = models.PositiveIntegerField(default=0, null=True, blank=True)
 

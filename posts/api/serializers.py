@@ -1,7 +1,16 @@
 from rest_framework import serializers
 
-from ..models import Podcast, Post, SuccessfullExperience
+from ..models import Comment, Podcast, Post, SuccessfullExperience
 from payment.api.serializers import UserInlineSerializer
+
+class CommentInlineSerializer(serializers.ModelSerializer):
+    comment_likes = serializers.SerializerMethodField(read_only=True)
+    class Meta:
+        model = Comment
+        fields = ['owner', 'comment_text', 'comment_likes']
+
+    def get_comment_likes(self, obj):
+        return obj.user_liked.count()
 
 class ExprienceCreateSerializer(serializers.ModelSerializer):
     class Meta:
@@ -21,9 +30,10 @@ class ExprienceSerializer(serializers.ModelSerializer):
     likes = serializers.SerializerMethodField(read_only=True)
     save_number = serializers.SerializerMethodField(read_only=True)
     owner = UserInlineSerializer(read_only=True)
+    comment = CommentInlineSerializer(many=True ,read_only = True)
     class Meta:
         model = SuccessfullExperience
-        fields = ['owner', 'title', 'description', 'likes', 'save_number']
+        fields = ['owner', 'title', 'description', 'likes', 'save_number', 'comment']
 
     def get_likes(self, obj):
         return obj.user_liked.count()
@@ -37,9 +47,6 @@ class ExprienceSerializer(serializers.ModelSerializer):
 #         fields = 
 
 
-
-
-
 class PostCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Post
@@ -49,6 +56,8 @@ class PostSerializer(serializers.ModelSerializer):
     likes = serializers.SerializerMethodField(read_only=True)
     save_number = serializers.SerializerMethodField(read_only=True)
     owner = UserInlineSerializer(read_only=True)
+    comment = CommentInlineSerializer(many=True ,read_only = True)
+
     class Meta:
         model = Post
         fields = ['owner', 'image', 'title', 'description', 'likes', 'save_number']
@@ -60,8 +69,6 @@ class PostSerializer(serializers.ModelSerializer):
         return obj.user_saved.count()
 
 
-
-
 class PodcastCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Podcast
@@ -71,6 +78,8 @@ class PodcastSerializer(serializers.ModelSerializer):
     likes = serializers.SerializerMethodField(read_only=True)
     save_number = serializers.SerializerMethodField(read_only=True)
     owner = UserInlineSerializer(read_only=True)
+    comment = CommentInlineSerializer(many=True ,read_only = True)
+
     class Meta:
         model = Podcast
         fields = ['owner', 'file', 'title', 'description', 'likes', 'save_number']
@@ -81,5 +90,9 @@ class PodcastSerializer(serializers.ModelSerializer):
     def get_save_number(self, obj):
         return obj.user_saved.count()
 
+class CommentCreateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Comment
+        fields = ['comment_text']
 
 

@@ -11,12 +11,11 @@ from rest_framework.response import Response
 from rest_framework import status
 
 from .serializers import *
-from ..models import Podcast, Post, SuccessfullExperience
+from ..models import Comment, Podcast, Post, SuccessfullExperience
 from users.models import Activity, CustomeUserModel, Wallet
 from posts.api.permissions import PostPermission
 
 user_admin = CustomeUserModel.objects.get(id=1)
-
 
 def add_activity(piggy, user):
     activity, _ = Activity.objects.get_or_create(piggy=piggy, user=user)
@@ -24,7 +23,7 @@ def add_activity(piggy, user):
     activity.save()
             
 def add_money(owner, user, amount, trade_off):
-    piggy = owner.user_piggy.filter( Q(started_time__lte=timezone.now() )  )[0]
+    piggy = owner.user_piggy.filter( Q(started_time__lte=timezone.now()) )[0]
     piggyLong = owner.user_piggy.filter(long=True)[0]
     if piggy.amount > amount:
         w = Wallet.objects.get(id=user.id)
@@ -61,7 +60,15 @@ class LikeSaveMixin:
         instance.user_saved.add(self.request.user)
         return Response(status.HTTP_200_OK)
 
-
+    @action(methods=["post"], detail=True, name="add comment", url_path='add_comment')
+    def add_comment(self, request, pk):
+        instance = self.get_object()
+        serializer = CommentCreateSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save(owner=request.user, item=instance)    
+            return Response(serializer.data, status.HTTP_200_OK)
+        return Response(status.HTTP_400_BAD_REQUEST)
+    
 
 # change status and admin 
 class ExprienceViewSet(LikeSaveMixin, viewsets.ModelViewSet):
@@ -83,11 +90,6 @@ class ExprienceViewSet(LikeSaveMixin, viewsets.ModelViewSet):
         else:
             serializer.save(owner=self.request.user)
 
-    # @action(methods=["put"], detail=True, name="change status", url_path='change-status')
-    # def change_status(self, request, pk):
-    #     instance = self.get_object()
-    #     serializer = ExprienceChangeSerializer(instance, data=request.data)
-    #     serializer.is_valid(raise_exception=True)
 
 
 class PostViewSet(LikeSaveMixin, viewsets.ModelViewSet):
@@ -109,13 +111,6 @@ class PostViewSet(LikeSaveMixin, viewsets.ModelViewSet):
         else:
             serializer.save(owner=self.request.user)
 
-    # @action(methods=["put"], detail=True, name="change status", url_path='change-status')
-    # def change_status(self, request, pk):
-    #     instance = self.get_object()
-    #     serializer = ExprienceChangeSerializer(instance, data=request.data)
-    #     serializer.is_valid(raise_exception=True)
-
-
 class PodcastViewSet(LikeSaveMixin, viewsets.ModelViewSet):
     permission_classes = [PostPermission]
 
@@ -135,12 +130,25 @@ class PodcastViewSet(LikeSaveMixin, viewsets.ModelViewSet):
         else:
             serializer.save(owner=self.request.user)
 
-    # @action(methods=["put"], detail=True, name="change status", url_path='change-status')
-    # def change_status(self, request, pk):
-    #     instance = self.get_object()
-    #     serializer = ExprienceChangeSerializer(instance, data=request.data)
-    #     serializer.is_valid(raise_exception=True)
 
 
+# class CommentViewSet(LikeSaveMixin, viewsets.ModelViewSet):
+#     permission_classes = [PostPermission]
+
+#     def get_queryset(self):
+#         if  self.request.user.have_membership:
+#             return Comment.objects.all()
+#         return Comment.objects.filter(admin_check=True)
+
+#     def get_serializer_class(self):
+#         if self.action == 'create':
+#             return CommentCreateSerializer
+#         return CommentSerializer
+
+#     def perform_create(self, serializer):
+#         if  self.request.user.is_admin:
+#             serializer.save(owner=self.request.user, admin_check=True)
+#         else:
+#             serializer.save(owner=self.request.user)
 
 
