@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from ..models import SuccessfullExperience
+from ..models import Post, SuccessfullExperience
 from payment.api.serializers import UserInlineSerializer
 
 class ExprienceCreateSerializer(serializers.ModelSerializer):
@@ -38,6 +38,26 @@ class ExprienceSerializer(serializers.ModelSerializer):
 
 
 
+
+
+class PostCreateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Post
+        fields = ['image', 'title', 'description']
+
+class PostSerializer(serializers.ModelSerializer):
+    likes = serializers.SerializerMethodField(read_only=True)
+    save_number = serializers.SerializerMethodField(read_only=True)
+    owner = UserInlineSerializer(read_only=True)
+    class Meta:
+        model = Post
+        fields = ['owner', 'image', 'title', 'description', 'likes', 'save_number']
+
+    def get_likes(self, obj):
+        return obj.user_liked.count()
+
+    def get_save_number(self, obj):
+        return obj.user_saved.count()
 
 
 

@@ -10,8 +10,9 @@ from rest_framework.decorators import api_view, action
 from rest_framework.response import Response
 from rest_framework import status
 
-from .serializers import ExprienceCreateSerializer, ExprienceSerializer
-from ..models import SuccessfullExperience
+from .serializers import (ExprienceCreateSerializer, ExprienceSerializer,
+                          PostCreateSerializer, PostSerializer)
+from ..models import Post, SuccessfullExperience
 from users.models import Activity, CustomeUserModel, add_to_admin_wallet, Wallet
 from posts.api.permissions import PostPermission
 
@@ -42,7 +43,8 @@ def add_money(owner, user, amount, trade_off):
             create_activity(piggy, user)
             create_activity(piggyLong, user)
             
-        
+
+# change status and admin 
 class ExprienceViewSet(viewsets.ModelViewSet):
     permission_classes = [PostPermission]
 
@@ -50,7 +52,7 @@ class ExprienceViewSet(viewsets.ModelViewSet):
         if  self.request.user.is_admin:
             return SuccessfullExperience.objects.all()
         return SuccessfullExperience.objects.filter(admin_check=True)
-        
+
     def get_serializer_class(self):
         if self.action == 'create':
             return ExprienceCreateSerializer
@@ -92,6 +94,55 @@ class ExprienceViewSet(viewsets.ModelViewSet):
         instance.user_saved.add(self.request.user)
         return Response(status.HTTP_200_OK)
 
+
+class PostViewSet(viewsets.ModelViewSet):
+    permission_classes = [PostPermission]
+
+    def get_queryset(self):
+        if  self.request.user.is_admin:
+            return Post.objects.all()
+        return Post.objects.filter(admin_check=True)
+
+    def get_serializer_class(self):
+        if self.action == 'create':
+            return PostCreateSerializer
+        return PostSerializer
+
+    def perform_create(self, serializer):
+        if  self.request.user.is_admin:
+            serializer.save(owner=self.request.user, admin_check=True)
+        else:
+            serializer.save(owner=self.request.user)
+
+    # @action(methods=["put"], detail=True, name="change status", url_path='change-status')
+    # def change_status(self, request, pk):
+    #     instance = self.get_object()
+    #     serializer = ExprienceChangeSerializer(instance, data=request.data)
+    #     serializer.is_valid(raise_exception=True)
+
+    @action(methods=["put"], detail=True, name="user liked", url_path='like')
+    def add_like(self, request, pk):
+        instance = self.get_object()
+        # add if 
+        if self.request.user in instance.user_liked.all():
+            return Response(status.HTTP_200_OK)
+        instance.user_liked.add(self.request.user)
+        # if user is admin dont do anything
+        if self.request.user.is_admin:
+            return Response(status.HTTP_200_OK)
+        # user member ship --> add money
+        # cost money and add to admin if user dosent have member ship
+        if self.request.user.have_membership:
+            add_money(self.request.user, instance.owner, 0.01, 0)
+        else:
+            add_money(self.request.user, user_admin, 0.01, 0)
+        return Response(status.HTTP_200_OK)
+    
+    @action(methods=["put"], detail=True, name="user saved", url_path='save')
+    def add_user_saved(self, request, pk):
+        instance = self.get_object()
+        instance.user_saved.add(self.request.user)
+        return Response(status.HTTP_200_OK)
 
 
 
