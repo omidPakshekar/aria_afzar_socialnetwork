@@ -2,33 +2,15 @@ from rest_framework import serializers
 
 from ..models import CustomeUserModel, MemberShip, Wallet
 
+from dj_rest_auth.registration.serializers import RegisterSerializer
 
-class RegistrationSerializer(serializers.ModelSerializer):
-    password2 = serializers.CharField(style={"input_type": "password"}, write_only=True)
 
-    class Meta:
-        model = CustomeUserModel
-        fields = ['username', 'email', 'year_of_birth',  'month_of_birth', 'day_of_birth', 'password', 'password2', 'country']
-        extra_kwargs = {
-            'password': {'write_only': True}
-        }
-
-    def save(self):
-        user = CustomeUserModel(
-                username = self.validated_data['username'],
-                email=self.validated_data['email'],
-                year_of_birth=self.validated_data['year_of_birth'],
-                month_of_birth=self.validated_data['month_of_birth'],
-                day_of_birth=self.validated_data['day_of_birth'],
-                country=self.validated_data['country']
-        )
-        password = self.validated_data['password']
-        password2 = self.validated_data['password2']
-        if password != password2:
-            raise serializers.ValidationError({'password': 'Passwords must match.'})
-        user.set_password(password)
-        user.save()
-        return user
+class CustomRegisterSerializer(RegisterSerializer):
+    country         = serializers.CharField(max_length=20)
+    gender          = serializers.CharField(max_length=4)
+    year_of_birth   = serializers.CharField(max_length=20)
+    month_of_birth  = serializers.CharField(max_length=20)
+    day_of_birth    = serializers.CharField(max_length=20)
 
 
 class PasswordChangeSerializer(serializers.Serializer):
@@ -54,36 +36,35 @@ class MembershipSerializer(serializers.ModelSerializer):
 
 
 
-
-
-
-
-
-
-
-
-
-
-
 # class RegistrationSerializer(serializers.ModelSerializer):
-
-#     password2 = serializers.CharField(style={'input_type': 'password'}, write_only=True)
+#     password2 = serializers.CharField(style={"input_type": "password"}, write_only=True)
 
 #     class Meta:
 #         model = CustomeUserModel
-#         fields = ['email', 'username', 'password', 'password2', 'country']
+#         fields = ['username', 'email', 'year_of_birth',  'month_of_birth', 'day_of_birth', 'password', 'password2', 'country']
 #         extra_kwargs = {
-#             'password': {'write_only': True},
-#         }	
+#             'password': {'write_only': True}
+#         }
+
+#     def save(self):
+#         user = CustomeUserModel(
+#                 username = self.validated_data['username'],
+#                 email=self.validated_data['email'],
+#                 year_of_birth=self.validated_data['year_of_birth'],
+#                 month_of_birth=self.validated_data['month_of_birth'],
+#                 day_of_birth=self.validated_data['day_of_birth'],
+#                 country=self.validated_data['country']
+#         )
+#         password = self.validated_data['password']
+#         password2 = self.validated_data['password2']
+#         if password != password2:
+#             raise serializers.ValidationError({'password': 'Passwords must match.'})
+#         user.set_password(password)
+#         user.save()
+#         return user
 
 
-#     def validate(self, attrs):
-#         if self.password == self.password2 and self.passsword != None and self.passowrd != '':
-#             raise serializers.ValidationError(f"passwords are none or not equal to each other")
-#         return super().validate(attrs)
-    
-#     def create(self, validated_data):
-#         password2 = validated_data.pop('password2')
-#         obj = super().create(validated_data)
-#         print(password2, obj)
-#         return obj
+
+
+
+

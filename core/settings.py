@@ -276,7 +276,15 @@ class Dev(Configuration):
     # enable rest_jwt
     REST_USE_JWT = True
     JWT_AUTH_COOKIE = 'my-app-auth'
+    # REST_AUTH_SERIALIZERS = {
+    #     'USER_DETAILS_SERIALIZER': 'accounts.serializers.CustomUserDetailsSerializer',
+    #     'PASSWORD_RESET_SERIALIZER': 'accounts.serializers.CustomPasswordResetSerializer',
+    # }
 
+    REST_AUTH_REGISTER_SERIALIZERS = {
+        'REGISTER_SERIALIZER': 'users.api.serializers.CustomRegisterSerializer',
+    }
+    ACCOUNT_ADAPTER = 'users.adapter.CustomAccountAdapter'
 
 class Prod(Dev):
     DEBUG = False
