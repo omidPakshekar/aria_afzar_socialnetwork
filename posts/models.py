@@ -1,15 +1,21 @@
 from django.db import models
+from django.contrib.contenttypes.fields import ContentType, GenericForeignKey, GenericRelation
+from django.utils.text import slugify
 
 from users.models import CustomeUserModel
 from datetime import datetime, timedelta
 
-from django.contrib.contenttypes.fields import ContentType, GenericForeignKey, GenericRelation
 
 
 TAG_CHOICE = {
     ('Programming', 'Programming'),
     ('Science', 'Scince')
 }
+
+def get_podcast_filepath(self, filename):
+    title = slugify(self.title)
+    return f'post/podcast/{title}.mp3'
+
 
 def get_post_image_filepath(self, filename):
     return f'post/image/{self.title[0:15] + ".png"}'
@@ -67,7 +73,7 @@ class Post(ItemBase):
     comment     = GenericRelation(Comment)
 
 class Podcast(ItemBase):
-    file         = models.FileField( upload_to=get_post_image_filepath, null=True, blank=True, default=get_default_post_image)
+    file         = models.FileField(upload_to=get_podcast_filepath)
     comment     = GenericRelation(Comment)
 
 class SuccessfullExperience(ItemBase):
