@@ -1,0 +1,5 @@
+Hello {{name|safe}}
+here is  your verification link:
+{{verify_link|safe}}
+
+Thank you!

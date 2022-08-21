@@ -120,7 +120,7 @@ class Dev(Configuration):
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.sqlite3',
-            'NAME': BASE_DIR / 'db.sqlite4',
+            'NAME': BASE_DIR / 'db.sqlite5',
         }
         # 'default': {
         #     'ENGINE': 'django.db.backends.postgresql_psycopg2',
@@ -254,7 +254,13 @@ class Dev(Configuration):
         'REFRESH_TOKEN_LIFETIME': datetime.timedelta(days=1),
     }
     # AUTH_PROFILE_MODULE = 'users.MyUser'
-
+    # EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+    EMAIL_HOST = 'smtp.gmail.com'
+    EMAIL_USE_TLS = True
+    EMAIL_PORT = 587
+    EMAIL_HOST_USER = "omid.pakshekar.est@gmail.com"
+    EMAIL_HOST_PASSWORD = "pyebmokthohxraze"
+    DEFAULT_FROM_EMAIL = 'omid.pakshekar.est@gmail.com'
 
 
 class Prod(Dev):
