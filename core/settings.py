@@ -46,6 +46,7 @@ class Dev(Configuration):
         'django.contrib.sessions',
         'django.contrib.messages',
         'django.contrib.staticfiles',
+        'django.contrib.sites',
 
         # my own app
         'users',
@@ -63,7 +64,14 @@ class Dev(Configuration):
         # 'versatileimagefield',
         'rest_framework_simplejwt',
         # 'django_nose',
+        'drf_yasg',
+        # 'rest_framework.authtoken',
+        'dj_rest_auth',
+        'dj_rest_auth.registration',
+        'rest_framework.authtoken',
+
     ]
+    SITE_ID = 1
     # debug tool bar
     INTERNAL_IPS = ["127.0.0.1",]
 
@@ -187,12 +195,13 @@ class Dev(Configuration):
 
     ACCOUNT_EMAIL_REQUIRED = True
     ACCOUNT_UNIQUE_EMAIL = True
-    ACCOUNT_AUTHENTICATION_METHOD = 'username_email'
+    ACCOUNT_AUTHENTICATION_METHOD = 'email'
     ACCOUNT_LOGIN_ON_PASSWORD_RESET = True
     ACCOUNT_EMAIL_VERIFICATION = 'mandatory'
     
     # add incaseSensetive authentication
     AUTHENTICATION_BACKENDS = (
+        'allauth.account.auth_backends.AuthenticationBackend',
         'django.contrib.auth.backends.ModelBackend',
         'users.backends.CaseInSensitiveModelBackend'
     )
@@ -200,6 +209,8 @@ class Dev(Configuration):
     from django.urls import reverse_lazy, reverse
     LOGIN_REDIRECT_URL = reverse_lazy('users:profile')
     # LOGIN_REDIRECT_URL = '/'
+    ACCOUNT_CONFIRM_EMAIL_ON_GET = True
+    LOGIN_URL = 'http://localhost:8000/api/v1/accounts/login'
 
 
     ACCOUNT_FORMS = {
@@ -237,6 +248,7 @@ class Dev(Configuration):
         "DEFAULT_AUTHENTICATION_CLASSES" : [
             "rest_framework.authentication.SessionAuthentication",
             'rest_framework_simplejwt.authentication.JWTAuthentication',
+            'dj_rest_auth.jwt_auth.JWTCookieAuthentication',
         ],
         # Use Django's standard `django.contrib.auth` permissions,
         # or allow read-only access for unauthenticated users.
@@ -261,6 +273,9 @@ class Dev(Configuration):
     EMAIL_HOST_USER = "omid.pakshekar.est@gmail.com"
     EMAIL_HOST_PASSWORD = "pyebmokthohxraze"
     DEFAULT_FROM_EMAIL = 'omid.pakshekar.est@gmail.com'
+    # enable rest_jwt
+    REST_USE_JWT = True
+    JWT_AUTH_COOKIE = 'my-app-auth'
 
 
 class Prod(Dev):
