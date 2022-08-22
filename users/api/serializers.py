@@ -1,16 +1,52 @@
-from rest_framework import serializers
+from rest_framework import exceptions, serializers
+from dj_rest_auth.registration.serializers import RegisterSerializer
 
 from ..models import CustomeUserModel, MemberShip, Wallet
 
-from dj_rest_auth.registration.serializers import RegisterSerializer
+from django.contrib.auth import authenticate, get_user_model
 
 
 class CustomRegisterSerializer(RegisterSerializer):
     country         = serializers.CharField(max_length=20)
-    gender          = serializers.CharField(max_length=4)
+    gender          = serializers.CharField(max_length=1)
     year_of_birth   = serializers.CharField(max_length=20)
     month_of_birth  = serializers.CharField(max_length=20)
     day_of_birth    = serializers.CharField(max_length=20)
+    def get_cleaned_data(self):
+        data_dict = super().get_cleaned_data()
+        data_dict['country'] = self.validated_data.get('country')
+        data_dict['gender'] = self.validated_data.get('gender')
+        data_dict['year_of_birth'] = self.validated_data.get('year_of_birth')
+        data_dict['month_of_birth'] = self.validated_data.get('month_of_birth')
+        data_dict['day_of_birth'] = self.validated_data.get('day_of_birth')
+        return data_dict
+
+
+class LoginSerializer(serializers.Serializer):
+    email = serializers.EmailField(required=False, allow_blank=True)
+    password = serializers.CharField(style={'input_type': 'password'})
+
+    def authenticate(self, **kwargs):
+        return authenticate(self.context['request'], **kwargs)
+
+    def _validate_email(self, email, password):
+        if email and password:
+            user = self.authenticate(email=email, password=password)
+        else:
+            msg = 'Must include "email" and "password".'
+            raise exceptions.ValidationError(msg)
+        return user
+    def validate(self, attrs):
+        email = attrs.get('email')
+        password = attrs.get('password')
+        print('eamil', email, 'password', password)
+        user = self.authenticate(username=email, password=password)
+        print(user)
+        if not user:
+            msg = 'Unable to log in with provided credentials.'
+            raise exceptions.ValidationError(msg)
+        attrs['user'] = user
+        return attrs
 
 
 class PasswordChangeSerializer(serializers.Serializer):

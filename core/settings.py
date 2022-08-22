@@ -128,7 +128,7 @@ class Dev(Configuration):
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.sqlite3',
-            'NAME': BASE_DIR / 'db.sqlite5',
+            'NAME': BASE_DIR / 'db.sqlite6',
         }
         # 'default': {
         #     'ENGINE': 'django.db.backends.postgresql_psycopg2',
@@ -285,6 +285,12 @@ class Dev(Configuration):
         'REGISTER_SERIALIZER': 'users.api.serializers.CustomRegisterSerializer',
     }
     ACCOUNT_ADAPTER = 'users.adapter.CustomAccountAdapter'
+    REST_AUTH_SERIALIZERS = {
+        'LOGIN_SERIALIZER': 'users.api.serializers.LoginSerializer',
+    }
 
 class Prod(Dev):
     DEBUG = False
+
+
+

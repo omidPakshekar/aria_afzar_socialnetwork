@@ -29,12 +29,6 @@ schema_view = get_schema_view(
 urlpatterns = [
     path('', index, name='home'),
     path('accounts/', include('allauth.urls')),
-    # path('auth/', include('dj_rest_auth.urls')),
-    # path('auth/registration/', include('dj_rest_auth.registration.urls')),
-    # path("auth/registration/account-confirm-email/<str:key>/",
-    #     confirm_email,
-    #     name="account_confirm_email",
-    # ),
     path('admin/', admin.site.urls),
     path('users/', include('users.urls')),
     path('payment/', include('payment.urls')),
