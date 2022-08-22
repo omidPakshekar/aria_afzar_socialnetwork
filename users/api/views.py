@@ -1,4 +1,6 @@
 import json, jwt, os
+
+from posts.api.serializers import UserSerializer
 from .serializers import *
 from ..email import send_verification_email  
 
@@ -14,7 +16,7 @@ from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import  Response
 from rest_framework.views import APIView
-from rest_framework import generics, status, views, permissions
+from rest_framework import generics, status, views, permissions, viewsets
 from rest_framework_simplejwt.tokens import RefreshToken
 
 # from .utils import get_tokens_for_user
@@ -58,8 +60,12 @@ class MembershipView(APIView):
         except:
             return Response(json.dumps({'detail' : 'user doesnt have membership'}), status=status.HTTP_404_NOT_FOUND)
 
-
-
+class UserViewSet(viewsets.ModelViewSet):
+    def get_serializer_class(self):
+        return UserSerializer
+    def get_queryset(self):
+        return CustomeUserModel.objects.filter(emailaddress__verified=True)
+    
 
 # class RegistrationView(generics.GenericAPIView):
 

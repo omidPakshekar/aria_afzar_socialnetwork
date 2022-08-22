@@ -1,5 +1,7 @@
 from rest_framework import serializers
 
+from users.models import CustomeUserModel
+
 from ..models import Comment, Podcast, Post, SuccessfullExperience
 from payment.api.serializers import UserInlineSerializer
 
@@ -99,4 +101,10 @@ class CommentCreateSerializer(serializers.ModelSerializer):
         model = Comment
         fields = ['comment_text']
 
-
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CustomeUserModel
+        fields = ['email', 'username', 'date_joined', 'last_login',
+                    'profile_image', 'gender', 'country', 'year_of_birth', 
+                    'month_of_birth', 'day_of_birth', 'have_membership']
+        
