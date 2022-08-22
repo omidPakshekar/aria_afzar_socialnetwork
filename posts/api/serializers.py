@@ -54,7 +54,9 @@ class ExprienceSerializer(serializers.ModelSerializer):
 #         model = SuccessfullExperience
 #         fields = 
 
-
+"""
+    post serializer
+"""
 class PostCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Post
@@ -76,6 +78,20 @@ class PostSerializer(serializers.ModelSerializer):
     def get_save_number(self, obj):
         return obj.user_saved.count()
 
+class PostUpdateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Post
+        fields = ['id','title', 'description', 'image']
+
+class PostAdminUpdateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Post
+        fields = ['id','title', 'description', 'image' ,'admin_check']
+
+
+"""
+    podcast serializer
+"""
 
 class PodcastCreateSerializer(serializers.ModelSerializer):
     class Meta:
@@ -86,6 +102,16 @@ class PodcastCreateSerializer(serializers.ModelSerializer):
         if 'mp3' not in value._name:
             raise serializers.ValidationError("file must be mp3.")
         return value
+
+class PodcastUpdateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Podcast
+        fields = ['id','title', 'description', 'file']
+
+class PodcastAdminUpdateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Podcast
+        fields = ['id','title', 'description','file', 'admin_check']
 
 class PodcastSerializer(serializers.ModelSerializer):
     likes = serializers.SerializerMethodField(read_only=True)

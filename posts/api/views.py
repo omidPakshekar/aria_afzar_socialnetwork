@@ -36,7 +36,9 @@ def add_money(owner, user, amount, trade_off):
         add_activity(piggyLong, user)
         
 
-class LikeSaveMixin:
+class ObjectMixin:
+    list_serializer = None
+    model_ = None
     @action(methods=["put"], detail=True, name="user liked", url_path='like')
     def add_like(self, request, pk):
         instance = self.get_object()
@@ -71,25 +73,32 @@ class LikeSaveMixin:
         return Response(status.HTTP_400_BAD_REQUEST)
     
 
-    @action(methods=["put"], detail=True, name="user saved", url_path='admin-accept')
+    @action(methods=["put"], detail=True, name="admin_accpet", url_path='admin-accept')
     def admin_accept(self, request, pk):
         """
             only admin can change admin_checked field
         """
-        if not request.user.is_admin:
-            return Response(
-                            json.dumps({'detail' : 'only admin can do'}),
-                            status=status.HTTP_403_FORBIDDEN
-                        )
         instance = self.get_object()
         instance.admin_check = True
         instance.save()
         return Response(status.HTTP_200_OK)
+    
+    @action(methods=["get"], detail=False, name="user Item created", url_path='mine')
+    def mine(self, request):
+        objects_ = self.model_.objects.filter(owner=request.user)
+        page = self.paginate_queryset(objects_)
+        if page is not None:
+            serializer = self.list_serializer(page, many=True, context={"request": request})
+        serializer = self.list_serializer(objects_, many=True, context={"request": request})
+        return Response(serializer.data)
 
-# change status and admin 
-class ExprienceViewSet(LikeSaveMixin, viewsets.ModelViewSet):
+
+    
+
+class ExprienceViewSet(ObjectMixin, viewsets.ModelViewSet):
     permission_classes = [PostPermission]
-
+    list_serializer = ExprienceSerializer
+    model_ = SuccessfullExperience
     def get_queryset(self):
         if  self.request.user.is_admin:
             return SuccessfullExperience.objects.all()
@@ -101,8 +110,7 @@ class ExprienceViewSet(LikeSaveMixin, viewsets.ModelViewSet):
         if self.action in [ 'partial_update', 'update']:
             if self.request.user.is_admin:
                 return ExprienceAdminUpdateSerializer
-            else:
-                return ExprienceUpdateSerializer
+            return ExprienceUpdateSerializer
         return ExprienceSerializer
 
     def perform_create(self, serializer):
@@ -113,8 +121,10 @@ class ExprienceViewSet(LikeSaveMixin, viewsets.ModelViewSet):
     
 
 
-class PostViewSet(LikeSaveMixin, viewsets.ModelViewSet):
+class PostViewSet(ObjectMixin, viewsets.ModelViewSet):
     permission_classes = [PostPermission]
+    list_serializer = PostSerializer
+    model_ = Post
 
     def get_queryset(self):
         if  self.request.user.is_admin:
@@ -124,6 +134,10 @@ class PostViewSet(LikeSaveMixin, viewsets.ModelViewSet):
     def get_serializer_class(self):
         if self.action == 'create':
             return PostCreateSerializer
+        if self.action in [ 'partial_update', 'update']:
+            if self.request.user.is_admin:
+                return PostAdminUpdateSerializer
+            return PostUpdateSerializer
         return PostSerializer
 
     def perform_create(self, serializer):
@@ -132,8 +146,10 @@ class PostViewSet(LikeSaveMixin, viewsets.ModelViewSet):
         else:
             serializer.save(owner=self.request.user)
 
-class PodcastViewSet(LikeSaveMixin, viewsets.ModelViewSet):
+class PodcastViewSet(ObjectMixin, viewsets.ModelViewSet):
     permission_classes = [PostPermission]
+    list_serializer = PodcastSerializer
+    model_ = Podcast
 
     def get_queryset(self):
         if  self.request.user.is_admin:
@@ -143,6 +159,10 @@ class PodcastViewSet(LikeSaveMixin, viewsets.ModelViewSet):
     def get_serializer_class(self):
         if self.action == 'create':
             return PodcastCreateSerializer
+        if self.action in [ 'partial_update', 'update']:
+            if self.request.user.is_admin:
+                return PodcastAdminUpdateSerializer
+            return PodcastUpdateSerializer
         return PodcastSerializer
 
     def perform_create(self, serializer):
