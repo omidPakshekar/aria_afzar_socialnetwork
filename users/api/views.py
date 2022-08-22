@@ -67,12 +67,12 @@ class UserViewSet(viewsets.ModelViewSet):
     lookup_field = 'username'
 
     def get_serializer_class(self):
-        if self.action == 'get':
+        if self.action == 'retrieve':
             return UserSeenInfoSerializer
         return UserAllInfoSerializer
     def get_queryset(self):
         return CustomeUserModel.objects.filter(emailaddress__verified=True)
-    
+  
 
 # class RegistrationView(generics.GenericAPIView):
 
