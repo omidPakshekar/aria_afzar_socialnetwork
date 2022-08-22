@@ -1,21 +1,16 @@
 from rest_framework import permissions
 
-
-class PostPermission(permissions.BasePermission):
+class UserViewSetPermission(permissions.BasePermission):
     """
-        every authenticate user can :create, 
-        only admin can destory
-        retreive, update : if you are admin or owner
-        
+        every authenticate user can : get 
+        only admin can destory, create,
     """ 
     def has_permission(self, request, view):
         print('view', view.action)
 
         if not request.user.is_authenticated:
             return False
-        if view.action in ['list', 'add_like', 'add_user_saved', 'add_comment']:
-            return True
-        elif view.action == 'mine':
+        if view.action in ['list', 'mine']:
             return True
         elif view.action in ['create', 'retrieve', 'update', 'partial_update', 'destroy']:
             return True
@@ -33,4 +28,9 @@ class PostPermission(permissions.BasePermission):
             return request.user.is_admin or request.user.is_staff
         else:
             return False
+
+
+
+
+
 

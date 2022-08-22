@@ -1,6 +1,7 @@
 import json, jwt, os
 
 from posts.api.serializers import UserSerializer
+from users.api.permissions import UserViewSetPermission
 from .serializers import *
 from ..email import send_verification_email  
 
@@ -60,7 +61,10 @@ class MembershipView(APIView):
         except:
             return Response(json.dumps({'detail' : 'user doesnt have membership'}), status=status.HTTP_404_NOT_FOUND)
 
+from rest_framework.permissions import AllowAny, IsAuthenticated
+
 class UserViewSet(viewsets.ModelViewSet):
+    permission_classes = [UserViewSetPermission]
     def get_serializer_class(self):
         return UserSerializer
     def get_queryset(self):
