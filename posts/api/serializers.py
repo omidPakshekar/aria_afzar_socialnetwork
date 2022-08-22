@@ -100,11 +100,3 @@ class CommentCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Comment
         fields = ['comment_text']
-
-class UserSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = CustomeUserModel
-        fields = ['email', 'username', 'date_joined', 'last_login',
-                    'profile_image', 'gender', 'country', 'year_of_birth', 
-                    'month_of_birth', 'day_of_birth', 'have_membership']
-        

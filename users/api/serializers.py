@@ -69,8 +69,17 @@ class MembershipSerializer(serializers.ModelSerializer):
         model = MemberShip
         exclude = ['user', 'id']
 
+class UserAllInfoSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CustomeUserModel
+        fields = ['username', 'email', 'date_joined', 'last_login',
+                    'profile_image',  'gender', 'country', 'have_membership',
+                    'year_of_birth', 'month_of_birth', 'day_of_birth']
 
-
+class UserSeenInfoSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CustomeUserModel
+        fields = ['username', 'date_joined', 'last_login', 'profile_image']
 
 # class RegistrationSerializer(serializers.ModelSerializer):
 #     password2 = serializers.CharField(style={"input_type": "password"}, write_only=True)
