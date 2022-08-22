@@ -6,21 +6,21 @@ class UserViewSetPermission(permissions.BasePermission):
         only admin can destory, create,
     """ 
     def has_permission(self, request, view):
-        print('view', view.action)
+        print('vie2w', view.action, request.user)
 
-        if not request.user.is_authenticated:
+        if not request.user.is_authenticated or view.action == 'create' :
             return False
-        if view.action in ['list', 'mine']:
+        if view.action in ['list', 'mine', 'admin_accept']:
             return True
-        elif view.action in ['create', 'retrieve', 'update', 'partial_update', 'destroy']:
+        elif view.action in [ 'retrieve', 'update', 'partial_update', 'destroy']:
             return True
         else:
             return False
                                                                                                 
     def has_object_permission(self, request, view, obj):
-        if not request.user.is_authenticated:
+        if not request.user.is_authenticated or view.action == 'create':
             return False
-        if view.action in ['retrieve', 'add_like', 'add_user_saved', 'add_comment']:
+        if view.action in ['retrieve', 'add_like', 'admin_accept']:
             return True
         elif view.action in [ 'update', 'partial_update']:
             return obj.owner == request.user or request.user.is_admin or request.user.is_staff

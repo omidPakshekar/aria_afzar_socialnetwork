@@ -13,6 +13,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.sites.shortcuts import get_current_site
 from django.contrib.auth import authenticate, login, logout
 
+from rest_framework.decorators import api_view, action 
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import  Response
@@ -73,6 +74,23 @@ class UserViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         return CustomeUserModel.objects.filter(emailaddress__verified=True)
   
+    # @action(methods=["put"], detail=True, name="user saved", url_path='admin-accept')
+    # def admin_accept(self, request, pk):
+
+ 
+    # @action(methods=["put"], detail=True, name="user saved", url_path='admin-accept')
+    # def admin_accept(self, request, pk):
+    #     if request.user.is_admin:
+    #         return Response(
+    #                         json.dumps({'detail' : 'only admin can do'}),
+    #                         status=status.HTTP_403_FORBIDDEN
+    #                     )
+    #     instance = self.get_object()
+
+
+
+
+
 
 # class RegistrationView(generics.GenericAPIView):
 

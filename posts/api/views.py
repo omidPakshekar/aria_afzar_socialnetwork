@@ -1,3 +1,4 @@
+import json
 from datetime import timedelta
 from decimal import Decimal
 
@@ -69,6 +70,21 @@ class LikeSaveMixin:
             return Response(serializer.data, status.HTTP_200_OK)
         return Response(status.HTTP_400_BAD_REQUEST)
     
+
+    @action(methods=["put"], detail=True, name="user saved", url_path='admin-accept')
+    def admin_accept(self, request, pk):
+        """
+            only admin can change admin_checked field
+        """
+        if not request.user.is_admin:
+            return Response(
+                            json.dumps({'detail' : 'only admin can do'}),
+                            status=status.HTTP_403_FORBIDDEN
+                        )
+        instance = self.get_object()
+        instance.admin_check = True
+        instance.save()
+        return Response(status.HTTP_200_OK)
 
 # change status and admin 
 class ExprienceViewSet(LikeSaveMixin, viewsets.ModelViewSet):
