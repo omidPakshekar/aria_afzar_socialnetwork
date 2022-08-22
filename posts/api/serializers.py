@@ -9,7 +9,7 @@ class CommentInlineSerializer(serializers.ModelSerializer):
     comment_likes = serializers.SerializerMethodField(read_only=True)
     class Meta:
         model = Comment
-        fields = ['owner', 'comment_text', 'comment_likes']
+        fields = ['id', 'owner', 'comment_text', 'comment_likes']
 
     def get_comment_likes(self, obj):
         return obj.user_liked.count()
@@ -21,10 +21,16 @@ class ExprienceCreateSerializer(serializers.ModelSerializer):
 
 
 
-class ExprienceAdminSerializer(serializers.ModelSerializer):
+class ExprienceUpdateSerializer(serializers.ModelSerializer):
     class Meta:
         model = SuccessfullExperience
-        fields = ['title', 'description', 'admin_check']
+        fields = ['id','title', 'description']
+
+class ExprienceAdminUpdateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = SuccessfullExperience
+        fields = ['id','title', 'description', 'admin_check']
+
 
 
 
@@ -35,7 +41,7 @@ class ExprienceSerializer(serializers.ModelSerializer):
     comment = CommentInlineSerializer(many=True ,read_only = True)
     class Meta:
         model = SuccessfullExperience
-        fields = ['owner', 'title', 'description', 'likes', 'save_number', 'comment']
+        fields = ['id','owner', 'title', 'description', 'likes', 'save_number', 'comment']
 
     def get_likes(self, obj):
         return obj.user_liked.count()
@@ -62,7 +68,7 @@ class PostSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Post
-        fields = ['owner', 'image', 'title', 'description', 'likes', 'save_number', 'comment']
+        fields = ['id','owner', 'image', 'title', 'description', 'likes', 'save_number', 'comment']
 
     def get_likes(self, obj):
         return obj.user_liked.count()
@@ -88,7 +94,7 @@ class PodcastSerializer(serializers.ModelSerializer):
     comment = CommentInlineSerializer(many=True ,read_only = True)
     class Meta:
         model = Podcast
-        fields = ['owner', 'file', 'title', 'description', 'likes', 'save_number', 'comment']
+        fields = ['id','owner', 'file', 'title', 'description', 'likes', 'save_number', 'comment']
 
     def get_likes(self, obj):
         return obj.user_liked.count()

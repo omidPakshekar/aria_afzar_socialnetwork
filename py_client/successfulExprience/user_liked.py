@@ -1,20 +1,20 @@
 import requests
 
-auth_endpoint = "http://127.0.0.1:8000/api/v1/token/"
 
-data ={
-    "email" : "mammad@gmail.com",
-    "password" : "mammad1234"
+endpoint = "http://127.0.0.1:8000/api/v1/accounts/login/"
+psw = "amir1234"
+data = {
+    "username" : "omid6",
+    "email" : "omid6@gmail.com",
+    "password" : psw,
 }
 
-auth_response = requests.post(auth_endpoint, json=data)
-print('auth_response=', auth_response.json())
+auth_response = requests.post( endpoint, data=data )
 
-
-endpoint = "http://localhost:8000/api/v1/exprience/1/like/"
+endpoint = "http://localhost:8000/api/v1/exprience/"
 
 if auth_response.status_code == 200:
-    token = auth_response.json()['access']    
+    token = auth_response.json()['access_token']      
     headers = {
         "Authorization" : f"Bearer {token}"
     }

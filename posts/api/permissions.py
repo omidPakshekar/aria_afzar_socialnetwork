@@ -13,11 +13,11 @@ class PostPermission(permissions.BasePermission):
 
         if not request.user.is_authenticated:
             return False
-        if view.action in ['list', 'add_like', 'add_user_saved', 'admin_accept' ,'add_comment']:
+        if view.action in ['list', 'add_like', 'add_user_saved', 'admin_accept' ,'add_comment', 'mine']:
             return True
-        elif view.action == 'mine':
+        elif view.action in ['create', 'retrieve']:
             return True
-        elif view.action in ['create', 'retrieve', 'update', 'partial_update', 'destroy']:
+        elif view.action in ['partial_update', 'destroy', 'update']:
             return True
         else:
             return False

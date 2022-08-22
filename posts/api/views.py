@@ -98,6 +98,11 @@ class ExprienceViewSet(LikeSaveMixin, viewsets.ModelViewSet):
     def get_serializer_class(self):
         if self.action == 'create':
             return ExprienceCreateSerializer
+        if self.action in [ 'partial_update', 'update']:
+            if self.request.user.is_admin:
+                return ExprienceAdminUpdateSerializer
+            else:
+                return ExprienceUpdateSerializer
         return ExprienceSerializer
 
     def perform_create(self, serializer):
@@ -105,7 +110,7 @@ class ExprienceViewSet(LikeSaveMixin, viewsets.ModelViewSet):
             serializer.save(owner=self.request.user, admin_check=True)
         else:
             serializer.save(owner=self.request.user)
-
+    
 
 
 class PostViewSet(LikeSaveMixin, viewsets.ModelViewSet):
