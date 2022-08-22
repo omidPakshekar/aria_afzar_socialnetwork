@@ -20,10 +20,10 @@ class UserViewSetPermission(permissions.BasePermission):
     def has_object_permission(self, request, view, obj):
         if not request.user.is_authenticated or view.action == 'create':
             return False
-        if view.action in ['retrieve', 'add_like', 'admin_accept']:
+        if view.action == 'retrieve':
             return True
         elif view.action in [ 'update', 'partial_update']:
-            return obj.owner == request.user or request.user.is_admin or request.user.is_staff
+            return obj == request.user or request.user.is_admin or request.user.is_staff
         elif view.action in ['destroy', 'change_status']:
             return request.user.is_admin or request.user.is_staff
         else:

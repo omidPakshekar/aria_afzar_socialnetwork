@@ -5,6 +5,9 @@ from users.models import CustomeUserModel
 from ..models import Comment, Podcast, Post, SuccessfullExperience
 from payment.api.serializers import UserInlineSerializer
 
+"""
+    comment serializer
+"""
 class CommentInlineSerializer(serializers.ModelSerializer):
     comment_likes = serializers.SerializerMethodField(read_only=True)
     class Meta:
@@ -14,12 +17,18 @@ class CommentInlineSerializer(serializers.ModelSerializer):
     def get_comment_likes(self, obj):
         return obj.user_liked.count()
 
+class CommentCreateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Comment
+        fields = ['comment_text']
+
+"""
+    succefullexprience serializer
+"""
 class ExprienceCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = SuccessfullExperience
         fields = ['title', 'description']
-
-
 
 class ExprienceUpdateSerializer(serializers.ModelSerializer):
     class Meta:
@@ -30,9 +39,6 @@ class ExprienceAdminUpdateSerializer(serializers.ModelSerializer):
     class Meta:
         model = SuccessfullExperience
         fields = ['id','title', 'description', 'admin_check']
-
-
-
 
 class ExprienceSerializer(serializers.ModelSerializer):
     likes = serializers.SerializerMethodField(read_only=True)
@@ -128,7 +134,3 @@ class PodcastSerializer(serializers.ModelSerializer):
     def get_save_number(self, obj):
         return obj.user_saved.count()
     
-class CommentCreateSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Comment
-        fields = ['comment_text']
