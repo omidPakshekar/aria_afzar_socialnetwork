@@ -79,7 +79,16 @@ class UserAllInfoSerializer(serializers.ModelSerializer):
 class UserSeenInfoSerializer(serializers.ModelSerializer):
     class Meta:
         model = CustomeUserModel
-        fields = ['username', 'date_joined', 'last_login', 'profile_image']
+        fields = ['username', 'gender', 'country', 'profile_image']
+
+
+class UserUpdateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CustomeUserModel
+        fields = ['gender', 'country', 'year_of_birth',
+                 'month_of_birth', 'day_of_birth', 'profile_image']
+
+
 
 # class RegistrationSerializer(serializers.ModelSerializer):
 #     password2 = serializers.CharField(style={"input_type": "password"}, write_only=True)

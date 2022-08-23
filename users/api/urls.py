@@ -8,10 +8,13 @@ from dj_rest_auth.registration.views import RegisterView, VerifyEmailView
 from dj_rest_auth.views import LoginView, LogoutView
 from dj_rest_auth.registration.views import RegisterView, VerifyEmailView, ConfirmEmailView
 from dj_rest_auth.views import LoginView, LogoutView
+from dj_rest_auth.views import PasswordResetView, PasswordResetConfirmView
 
 from . import views
 from payment.api.views import PaymentViewSet
 from .views import UserViewSet
+
+
 
 router = DefaultRouter()
 router.register('', UserViewSet, basename='')
@@ -21,7 +24,7 @@ urlpatterns = [
     # path('register/', views.RegistrationView.as_view(), name='register'),
     # path('email-verify/', views.VerifyEmail.as_view(), name="email-verify"),
     # path('change-password/', views.ChangePasswordView.as_view(), name='change-password'),
-    # path('wallet/', views.WalletView.as_view(), name='wallet'),
+    path('wallet/', views.WalletView.as_view(), name='wallet'),
     # path('membership/', views.MembershipView.as_view(), name='membership'),
     path('account-confirm-email/<str:key>/', ConfirmEmailView.as_view()),
     path('register/', RegisterView.as_view()),
@@ -34,6 +37,10 @@ urlpatterns = [
          VerifyEmailView.as_view(), name='account_email_verification_sent'),
     re_path(r'^account-confirm-email/(?P<key>[-:\w]+)/$',
             VerifyEmailView.as_view(), name='account_confirm_email'),
+     path('password-reset/', PasswordResetView.as_view()),
+     path('password-reset-confirm/<slug:uidb64>/<slug:token>/',
+         PasswordResetConfirmView.as_view(), name='password_reset_confirm'),
+
      path('', include(router.urls)),
 
 ]

@@ -35,7 +35,8 @@ class ChangePasswordView(APIView):
     
 class WalletView(APIView):
     def get(self, request, format=None):
-        print(request.user)
+        if not request.user.is_authenticated:
+            return Response(status.HTTP_403_FORBIDDEN)
         return Response(json.dumps({
                 'user' : request.user.username,
                 'amount' : str(request.user.wallet.amount)
@@ -68,24 +69,21 @@ class UserViewSet(viewsets.ModelViewSet):
     lookup_field = 'username'
 
     def get_serializer_class(self):
-        if self.action == 'retrieve':
-            return UserSeenInfoSerializer
-        return UserAllInfoSerializer
+        if self.request.user.is_admin:
+            return UserAllInfoSerializer
+        if self.action in ['update', 'partial_update']:
+            return UserUpdateSerializer
+        return UserSeenInfoSerializer
+
     def get_queryset(self):
         return CustomeUserModel.objects.filter(emailaddress__verified=True)
   
-    # @action(methods=["put"], detail=True, name="user saved", url_path='admin-accept')
-    # def admin_accept(self, request, pk):
-
- 
-    # @action(methods=["put"], detail=True, name="user saved", url_path='admin-accept')
-    # def admin_accept(self, request, pk):
-    #     if request.user.is_admin:
-    #         return Response(
-    #                         json.dumps({'detail' : 'only admin can do'}),
-    #                         status=status.HTTP_403_FORBIDDEN
-    #                     )
-    #     instance = self.get_object()
+    @action(methods=["put"], detail=True, name="block user", url_path='blockuser')
+    def blockuser(self, request, username):
+        instance = self.get_object()
+        instance.blacklist.add(self.request.user)
+        instance.save()
+        return Response(status.HTTP_200_OK)
 
 
 

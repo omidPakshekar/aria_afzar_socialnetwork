@@ -34,10 +34,6 @@ urlpatterns = [
     path('payment/', include('payment.urls')),
     path('api/v1/', include('core.api_urls')),
     path('api/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
-    path('password-reset/', PasswordResetView.as_view()),
-    path('password-reset-confirm/<slug:uidb64>/<slug:token>/',
-         PasswordResetConfirmView.as_view(), name='password_reset_confirm'),
-
     # path(
     #     "accounts-rest/registration/account-confirm-email/<str:key>/",
     #     confirm_email,
