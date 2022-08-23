@@ -16,7 +16,7 @@ if auth_response.status_code == 200:
         "Authorization" : f"Bearer {token}"
     }
     data = {
-        "amount" : 3.56,
+        "amount" : 3.536,
         "payment_system" : "Bitcoin",        
     }
     get_response = requests.post( endpoint, headers=headers, json=data)

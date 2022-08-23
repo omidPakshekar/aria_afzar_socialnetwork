@@ -9,7 +9,7 @@ class UserViewSetPermission(permissions.BasePermission):
         print('vie2w', view.action, request.user)
         if not request.user.is_authenticated or view.action == 'create' :
             return False
-        if view.action in ['blockuser', 'list', 'mine', 'admin_accept']:
+        if view.action in ['blockuser', 'unblockuser', 'list', 'mine', 'admin_accept']:
             return True
         elif view.action in [ 'retrieve', 'update', 'partial_update', 'destroy']:
             return True
@@ -19,7 +19,7 @@ class UserViewSetPermission(permissions.BasePermission):
     def has_object_permission(self, request, view, obj):
         if not request.user.is_authenticated or view.action == 'create':
             return False
-        if view.action in ['blockuser', 'retrieve']:
+        if view.action in ['unblockuser', 'blockuser', 'retrieve']:
             return True
         elif view.action in [ 'update', 'partial_update']:
             return obj == request.user or request.user.is_admin or request.user.is_staff

@@ -4,7 +4,6 @@ from decimal import Decimal
 
 from django.db.models import Q
 from django.utils import timezone
-
 from rest_framework import generics, viewsets
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.decorators import api_view, action 
@@ -92,24 +91,35 @@ class ObjectMixin:
         serializer = self.list_serializer(objects_, many=True, context={"request": request})
         return Response(serializer.data)
 
+    @action(methods=["get"], detail=True, name="get_comment", url_path='get_comment')
+    def get_comment(self, request, pk):
+        instance = self.get_object()
+        serializer = CommentInlineSerializer(instance = instance.comment.all(), many=True)
+        return Response(serializer.data)
+
 
     
 
 class ExprienceViewSet(ObjectMixin, viewsets.ModelViewSet):
+    
     permission_classes = [PostPermission]
     list_serializer = ExprienceSerializer
     model_ = SuccessfullExperience
     def get_queryset(self):
-        if  self.request.user.is_admin:
-            return SuccessfullExperience.objects.all()
+        try:
+            if  self.request.user.is_admin:
+                return SuccessfullExperience.objects.all()
+        except: pass
         return SuccessfullExperience.objects.filter(admin_check=True)
 
     def get_serializer_class(self):
         if self.action == 'create':
             return ExprienceCreateSerializer
         if self.action in [ 'partial_update', 'update']:
-            if self.request.user.is_admin:
-                return ExprienceAdminUpdateSerializer
+            try:
+                if self.request.user.is_admin:
+                    return ExprienceAdminUpdateSerializer
+            except: pass
             return ExprienceUpdateSerializer
         return ExprienceSerializer
 
@@ -127,16 +137,21 @@ class PostViewSet(ObjectMixin, viewsets.ModelViewSet):
     model_ = Post
 
     def get_queryset(self):
-        if  self.request.user.is_admin:
-            return Post.objects.all()
+        try:
+            if self.request.user.is_admin:
+                return Post.objects.all()
+        except: 
+            pass
         return Post.objects.filter(admin_check=True)
 
     def get_serializer_class(self):
         if self.action == 'create':
             return PostCreateSerializer
         if self.action in [ 'partial_update', 'update']:
-            if self.request.user.is_admin:
-                return PostAdminUpdateSerializer
+            try:
+                if self.request.user.is_admin:
+                    return PostAdminUpdateSerializer
+            except: pass
             return PostUpdateSerializer
         return PostSerializer
 
@@ -152,16 +167,21 @@ class PodcastViewSet(ObjectMixin, viewsets.ModelViewSet):
     model_ = Podcast
 
     def get_queryset(self):
-        if  self.request.user.is_admin:
-            return Podcast.objects.all()
+        try:
+            if self.request.user.is_admin:
+                return Podcast.objects.all()
+        except: 
+            pass
         return Podcast.objects.filter(admin_check=True)
 
     def get_serializer_class(self):
         if self.action == 'create':
             return PodcastCreateSerializer
         if self.action in [ 'partial_update', 'update']:
-            if self.request.user.is_admin:
-                return PodcastAdminUpdateSerializer
+            try:
+                if self.request.user.is_admin:
+                    return PodcastAdminUpdateSerializer
+            except: pass
             return PodcastUpdateSerializer
         return PodcastSerializer
 

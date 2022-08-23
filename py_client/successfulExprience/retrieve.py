@@ -25,7 +25,7 @@ if auth_response.status_code == 200:
     data = {
         "title" : "javaaaaaaaaaaaaa",
     }
-    get_response = requests.get( endpoint, headers=headers, data = data)
+    get_response = requests.get( endpoint, headers=headers)
 
     print('status_code=', get_response.status_code)
     print('json=', get_response.json())

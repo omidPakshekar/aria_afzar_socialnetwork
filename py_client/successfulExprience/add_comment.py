@@ -11,7 +11,7 @@ data = {
 
 auth_response = requests.post( endpoint, data=data )
 
-endpoint = "http://localhost:8000/api/v1/exprience/"
+endpoint = "http://localhost:8000/api/v1/exprience/1/add_comment/"
 
 if auth_response.status_code == 200:
     token = auth_response.json()['access_token']    

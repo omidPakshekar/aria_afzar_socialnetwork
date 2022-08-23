@@ -42,35 +42,47 @@ class WalletView(APIView):
                 'amount' : str(request.user.wallet.amount)
             }))
 
-class MembershipView(APIView):
+class MembershipView(generics.GenericAPIView):
+    """  membership
+    "http://localhost:8000/api/v1/accounts/membership/"  
+    "403" --> authentication problem
+    post --> create --> status_code = 302 already exist
+                    --> status_code = 201 created
+                    --> status_code = 400 bad input
+    get  ---> 302 found
+         ---> 404 not found --> output = user dosent have permission
+    """ 
     permission_classes = [IsAuthenticated, ]
-
+    serializer_class = MembershipCreateSerializer
     def post(self, request):
-        try:
-            if request.user.membership:
-                return Response(MembershipSerializer(instance=request.user.membership).data, status=status.HTTP_302_FOUND)
-        except:
+        if request.user.have_membership:
+            return Response(MembershipSerializer(instance=request.user.membership).data, status=status.HTTP_302_FOUND)
+        else:
             serializer = MembershipCreateSerializer(data=request.data)
             if serializer.is_valid():
                 serializer.save(user=request.user)
                 return Response(serializer.data, status=status.HTTP_201_CREATED)
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def get(self, request):
-        try:
-            if request.user.membership:
+        if request.user.have_membership:
                 return Response(MembershipSerializer(instance=request.user.membership).data, status=status.HTTP_302_FOUND)
-        except:
-            return Response(json.dumps({'detail' : 'user doesnt have membership'}), status=status.HTTP_404_NOT_FOUND)
+        return Response(json.dumps({'detail' : 'user doesnt have membership'}), status=status.HTTP_404_NOT_FOUND)
 
 
 class UserViewSet(viewsets.ModelViewSet):
+    """
+       for retrieve or list --> you must authenticated
+       for create user --->  \accounts\register 
+    """
     permission_classes = [UserViewSetPermission]
     lookup_field = 'username'
 
     def get_serializer_class(self):
-        if self.request.user.is_admin:
-            return UserAllInfoSerializer
+        try:
+            if self.request.user.is_admin:
+                return UserAllInfoSerializer
+        except: pass
         if self.action in ['update', 'partial_update']:
             return UserUpdateSerializer
         return UserSeenInfoSerializer
@@ -85,6 +97,12 @@ class UserViewSet(viewsets.ModelViewSet):
         instance.save()
         return Response(status.HTTP_200_OK)
 
+    @action(methods=["put"], detail=True, name="block user", url_path='unblockuser')
+    def unblockuser(self, request, username):
+        instance = self.get_object()
+        instance.blacklist.remove(self.request.user)
+        instance.save()
+        return Response(status.HTTP_200_OK)
 
 
 

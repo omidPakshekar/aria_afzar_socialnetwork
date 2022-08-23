@@ -44,10 +44,10 @@ class ExprienceSerializer(serializers.ModelSerializer):
     likes = serializers.SerializerMethodField(read_only=True)
     save_number = serializers.SerializerMethodField(read_only=True)
     owner = UserInlineSerializer(read_only=True)
-    comment = CommentInlineSerializer(many=True ,read_only = True)
+    # comment = CommentInlineSerializer(many=True ,read_only = True)
     class Meta:
         model = SuccessfullExperience
-        fields = ['id','owner', 'title', 'description', 'likes', 'save_number', 'comment']
+        fields = ['id','owner', 'title', 'description', 'likes', 'save_number',]
 
     def get_likes(self, obj):
         return obj.user_liked.count()
@@ -72,11 +72,11 @@ class PostSerializer(serializers.ModelSerializer):
     likes = serializers.SerializerMethodField(read_only=True)
     save_number = serializers.SerializerMethodField(read_only=True)
     owner = UserInlineSerializer(read_only=True)
-    comment = CommentInlineSerializer(many=True ,read_only = True)
+    # comment = CommentInlineSerializer(many=True ,read_only = True)
 
     class Meta:
         model = Post
-        fields = ['id','owner', 'image', 'title', 'description', 'likes', 'save_number', 'comment']
+        fields = ['id','owner', 'image', 'title', 'description', 'likes', 'save_number', ]
 
     def get_likes(self, obj):
         return obj.user_liked.count()
