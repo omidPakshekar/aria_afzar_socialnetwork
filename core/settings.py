@@ -70,6 +70,7 @@ class Dev(Configuration):
         'dj_rest_auth',
         'dj_rest_auth.registration',
         'rest_framework.authtoken',
+        'channels',
 
     ]
     SITE_ID = 1
@@ -121,7 +122,7 @@ class Dev(Configuration):
     ]
 
     # WSGI_APPLICATION = 'core.wsgi.application'
-    # WSGI_APPLICATION = 'core.wsgi.application'
+    WSGI_APPLICATION = 'core.wsgi.application'
     ASGI_APPLICATION = 'core.asgi.application'
     CHANNEL_LAYERS = {
         'default': {

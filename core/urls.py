@@ -33,7 +33,7 @@ urlpatterns = [
    path('users/', include('users.urls')),
    path('payment/', include('payment.urls')),
    path('api/v1/', include('core.api_urls')),
-   path('chat/', include('chat.urls')),
+   path('chat/', include('chat.urls', namespace='chat')),
    path('api/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
    re_path(r'^swagger(?P<format>\.json|\.yaml)$', schema_view.without_ui(cache_timeout=0), name='schema-json'),
    re_path(r'^redoc/$', schema_view.with_ui('redoc', cache_timeout=0), name='schema-redoc'),
