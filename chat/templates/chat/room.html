@@ -90,11 +90,11 @@
     }
 
     function createMessage(data) {
-      var author = data['author'];
+      var author = data['owner'];
       var msgListTag = document.createElement('li');
       //var imgTag = document.createElement('img');
       var pTag = document.createElement('p');
-      pTag.textContent = author +' = ' + data.content;
+      pTag.textContent = author +' = ' + data.message_text;
       console.log(pTag)
      // imgTag.src = 'http://emilcarlsson.se/assets/mikeross.png';
       

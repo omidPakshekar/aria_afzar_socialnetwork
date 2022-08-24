@@ -29,8 +29,8 @@ class Chat(models.Model):
     participants = models.ForeignKey(Contact, related_name='chats', blank=True, on_delete=models.CASCADE)
     messages     = models.ManyToManyField(Message, blank=True)
 
-    def last_10_messages(self):
-        return self.messages.objects.order_by('-timestamp')
+    def last_10_messages():
+        return Message.objects.all().order_by('-timestamp')[:10]
     def __str__(self):
         return "{}".format(self.pk)
 
