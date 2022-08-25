@@ -7,12 +7,13 @@ from rest_framework.routers import DefaultRouter
 
 from payment.api.views import PaymentViewSet
 from posts.api.views import ExprienceViewSet, PostViewSet, PodcastViewSet
-
+from chat.api.views import ChatViewSet
 router = DefaultRouter()
 router.register('payment', PaymentViewSet)
 router.register('exprience', ExprienceViewSet, basename='exprience')
 router.register('post', PostViewSet, basename='post')
 router.register('podcast', PodcastViewSet, basename='podcast')
+router.register('chat', ChatViewSet, basename='chat')
 
 
 urlpatterns = [
@@ -21,7 +22,6 @@ urlpatterns = [
     path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path('token/verify/', TokenVerifyView.as_view(), name='token_verify'),
     path('', include(router.urls)),
-    
 ]
 
 

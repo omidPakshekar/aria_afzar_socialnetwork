@@ -9,7 +9,7 @@ class MessageAdmin(admin.ModelAdmin):
     list_display = ['id', 'owner', 'message_text', 'parent_message', 'timestamp']
 
 class ChatAdmin(admin.ModelAdmin):
-    list_display = ['id',]
+    list_display = ['id', 'contact_owner']
 
 
 

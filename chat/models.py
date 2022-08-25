@@ -23,7 +23,7 @@ class Message(models.Model):
     timestamp      = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return self.contact.owner.username
+        return f'{self.owner.username} = {self.message_text[0:15]}'
 
 class Chat(models.Model):
     participants = models.ForeignKey(Contact, related_name='chats', blank=True, on_delete=models.CASCADE)
@@ -33,6 +33,10 @@ class Chat(models.Model):
         return Message.objects.all().order_by('-timestamp')[:10]
     def __str__(self):
         return "{}".format(self.pk)
+
+    @property
+    def contact_owner(self):
+        return self.participants
 
 
 
