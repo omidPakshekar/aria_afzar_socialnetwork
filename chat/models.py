@@ -1,7 +1,24 @@
-from cgitb import text
+import string, random
 from pyexpat import model
 from django.db import models
 from users.models import CustomeUserModel
+
+
+# def create_wallet_key():
+#     # lenght of key
+#     length = 28
+#     # chose what charecter we want 
+#     letters = string.ascii_uppercase
+#     lst = []
+#     for i in range(0, 13):
+#         lst.append(str(random.randint(0, 10)))
+#         lst.append(random.choice(letters))
+#     lst[10] = '-'; lst[15] = '-'; lst[25] = ''
+#     return ''.join(lst)
+
+def UniqueGenerator(length=35):
+    letters = string.ascii_letters
+    return ''.join([random.choice(letters) for i in range(length)])
 
 class Contact(models.Model):
     owner       = models.ForeignKey(CustomeUserModel, related_name='contacts', on_delete=models.CASCADE)
@@ -26,6 +43,7 @@ class Message(models.Model):
         return f'{self.owner.username} = {self.message_text[0:15]}'
 
 class Chat(models.Model):
+    unique_code  = models.CharField(max_length=35, default=UniqueGenerator)
     participants = models.ForeignKey(Contact, related_name='chats', blank=True, on_delete=models.CASCADE)
     messages     = models.ManyToManyField(Message, blank=True)
 
