@@ -16,6 +16,13 @@ class ContactSerializer(serializers.ModelSerializer):
 #     def to_internal_value(self, value):
 #         return value
 
+class ChatContactSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Chat
+        fields = ('id', 'contact', )
+        read_only = ('id')
+
 
 class ChatSerializer(serializers.ModelSerializer):
 

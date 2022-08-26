@@ -16,9 +16,7 @@ if auth_response.status_code == 200:
     }
     data = {
         'friends' : {
-                6,
-                7
-            
+            6
         }
     }
     get_response = requests.post(endpoint, headers=headers, data=data)

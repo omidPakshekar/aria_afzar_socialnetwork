@@ -59,7 +59,7 @@ class Dev(Configuration):
         'allauth',
         'allauth.account',
         'allauth.socialaccount',
-        "debug_toolbar",
+        # "debug_toolbar",
         'embed_video',
         'rest_framework',
         # 'versatileimagefield',
@@ -96,7 +96,7 @@ class Dev(Configuration):
         'django.contrib.messages.middleware.MessageMiddleware',
         'django.middleware.clickjacking.XFrameOptionsMiddleware',
         # add debug toolbar
-        "debug_toolbar.middleware.DebugToolbarMiddleware",
+        # "debug_toolbar.middleware.DebugToolbarMiddleware",
 
     ]
 
