@@ -55,6 +55,8 @@ class Chat(models.Model):
     @property
     def contact_owner(self):
         return self.participants
-
+    @property
+    def contact_id(self):
+        return self.participants.id
 
 

@@ -60,7 +60,6 @@ class ChatViewSet(viewsets.ModelViewSet):
             return Response(data = {'chat_id': chat_.unique_code}, status=status.HTTP_201_CREATED)
         return Response(data = {'chat_id': contact_[0].chats.all()[0].unique_code}, status=status.HTTP_200_OK)
         
-    #     
 
     
         # obj, created = Contact.objects.get(owner=self.request.user, )

@@ -124,13 +124,18 @@ class Dev(Configuration):
     # WSGI_APPLICATION = 'core.wsgi.application'
     WSGI_APPLICATION = 'core.wsgi.application'
     ASGI_APPLICATION = 'core.asgi.application'
+    # CHANNEL_LAYERS = {
+    #     'default': {
+    #         'BACKEND': 'channels_redis.core.RedisChannelLayer',
+    #         'CONFIG': {
+    #             "hosts": [('127.0.0.1', 6379)],
+    #         },
+    #     },
+    # }
     CHANNEL_LAYERS = {
-        'default': {
-            'BACKEND': 'channels_redis.core.RedisChannelLayer',
-            'CONFIG': {
-                "hosts": [('127.0.0.1', 6379)],
-            },
-        },
+    "default": {
+        "BACKEND": "channels.layers.InMemoryChannelLayer"
+        }
     }
 
     # Database
