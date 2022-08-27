@@ -154,7 +154,7 @@ def user_post_save_receiver(sender, instance, created, *args, **kwargs):
 from payment.models import PiggyBank
 
 class Activity(models.Model):
-    piggy           = models.ForeignKey(PiggyBank,  related_name='piggys', on_delete=models.CASCADE)
+    piggy           = models.ForeignKey(PiggyBank,  related_name='activity', on_delete=models.CASCADE)
     user            = models.ForeignKey(CustomeUserModel, related_name='activity',  on_delete=models.CASCADE)
     number          = models.PositiveIntegerField(default=0)
     @property

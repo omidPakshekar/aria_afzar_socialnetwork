@@ -19,7 +19,7 @@ def my_task():
 
 @app.task
 def check_piggy():
-    piggy_ = PiggyBank.objects.filter(finish_time__gte=timezone.now())
+    piggy_ = PiggyBank.objects.filter(finish_time__lte=timezone.now())
     activity = Activity.objects.filter(piggy=piggy_)
-    print('hiii')
+    print('piggy_', piggy_)
 

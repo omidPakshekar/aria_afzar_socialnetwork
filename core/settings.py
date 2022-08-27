@@ -308,13 +308,12 @@ class Dev(Configuration):
     }
     # django_celery_beat
         
-    # CELERY_BEAT_SCHEDULE = {
-    #     "scheduled_task" : {
-    #         "task" : "chat.tasks.check_piggy",
-    #         "schedule" : 10.0,
-    #         "args" : (10, 10)
-    #     },
-    # }
+    CELERY_BEAT_SCHEDULE = {
+        "scheduled_task" : {
+            "task" : "payment.tasks.check_piggy",
+            "schedule" : 10.0,
+        },
+    }
 
 class Prod(Dev):
     DEBUG = False

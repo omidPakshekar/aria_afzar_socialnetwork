@@ -7,7 +7,7 @@ class PaymentAdmin(admin.ModelAdmin):
     list_display = ['id', 'user', 'status', 'payment_system', 'amount', 'created_date']
 
 class PiggyBankAdmin(admin.ModelAdmin):
-    list_display = ['id', 'user', 'amount', 'started_time', 'finish_time', 'expired_day', 'long']
+    list_display = ['id', 'user', 'amount', 'started_time', 'finish_time', 'day_left', 'long']
 
 
 admin.site.register(Payment, PaymentAdmin)
