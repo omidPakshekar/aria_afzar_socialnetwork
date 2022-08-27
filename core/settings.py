@@ -7,6 +7,8 @@ from configurations import values
 import datetime
 
 class Dev(Configuration):
+    DEBUG = True
+
     """
     Django settings for core project.
 
@@ -32,7 +34,6 @@ class Dev(Configuration):
     SECRET_KEY = 'django-insecure-r_dhbumw7el)58j7w-l7)2=nvc2^^lwl8b+4grua--qg-3yohx'
 
     # SECURITY WARNING: don't run with debug turned on in production!
-    DEBUG = True
 
     ALLOWED_HOSTS = ['*']
 
@@ -71,6 +72,7 @@ class Dev(Configuration):
         'dj_rest_auth.registration',
         'rest_framework.authtoken',
         'channels',
+        'django_celery_beat',
 
     ]
     SITE_ID = 1
@@ -124,19 +126,19 @@ class Dev(Configuration):
     # WSGI_APPLICATION = 'core.wsgi.application'
     WSGI_APPLICATION = 'core.wsgi.application'
     ASGI_APPLICATION = 'core.asgi.application'
-    # CHANNEL_LAYERS = {
-    #     'default': {
-    #         'BACKEND': 'channels_redis.core.RedisChannelLayer',
-    #         'CONFIG': {
-    #             "hosts": [('127.0.0.1', 6379)],
-    #         },
-    #     },
-    # }
     CHANNEL_LAYERS = {
-    "default": {
-        "BACKEND": "channels.layers.InMemoryChannelLayer"
-        }
+        'default': {
+            'BACKEND': 'channels_redis.core.RedisChannelLayer',
+            'CONFIG': {
+                "hosts": [('127.0.0.1', 6379)],
+            },
+        },
     }
+    # CHANNEL_LAYERS = {
+    # "default": {
+    #     "BACKEND": "channels.layers.InMemoryChannelLayer"
+    #     }
+    # }
 
     # Database
     # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
@@ -304,6 +306,15 @@ class Dev(Configuration):
     REST_AUTH_SERIALIZERS = {
         'LOGIN_SERIALIZER': 'users.api.serializers.LoginSerializer',
     }
+    # django_celery_beat
+        
+    # CELERY_BEAT_SCHEDULE = {
+    #     "scheduled_task" : {
+    #         "task" : "chat.tasks.check_piggy",
+    #         "schedule" : 10.0,
+    #         "args" : (10, 10)
+    #     },
+    # }
 
 class Prod(Dev):
     DEBUG = False

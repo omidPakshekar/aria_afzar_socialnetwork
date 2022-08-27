@@ -132,17 +132,14 @@ class ChatConsumer(AsyncConsumer):
     def create_message(self, text):
         message_ = Message.objects.create( owner=self.user, message_text=text)
         self.chat.messages.add(message_)
-        print('&&&fff', message_)
         return message_
     
     @sync_to_async
     def check_auth(self):
-        print(self.user)
         return self.user in self.participants.friends.all() or self.user == self.participants.owner
     
     @sync_to_async
     def get_all_message(self):
-        print('%%%% ',self.chat.id, self.chat.messages.all(), ' %%%%%')
         return self.chat.messages.all()
 
 
