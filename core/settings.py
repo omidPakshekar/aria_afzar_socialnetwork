@@ -311,7 +311,7 @@ class Dev(Configuration):
     CELERY_BEAT_SCHEDULE = {
         "scheduled_task" : {
             "task" : "payment.tasks.check_piggy",
-            "schedule" : 10.0,
+            "schedule" : 30.0,
         },
     }
 

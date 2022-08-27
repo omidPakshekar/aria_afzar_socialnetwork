@@ -10,8 +10,9 @@ from celery.utils.log import get_task_logger
 from core.celery import app
 
 from .models import PiggyBank
-from users.models import Activity, CustomeUserModel
+from users.models import *
 
+logger = get_task_logger(__name__)
 
 @app.task
 def my_task():
@@ -28,9 +29,10 @@ def check_piggy():
         number =  piggy_activity.aggregate(Sum('number'))['number__sum']
         money_unit = Decimal(piggy.amount / number)
         for activity in piggy_activity:
-            activity.user.wallet.amount += Decimal(money_unit * activity.number)
+            w = Wallet.objects.get(id=activity.user.id)
+            w.amount += Decimal(money_unit * activity.number)
+            w.save()
             activity.delete()
         piggy.delete()
     activity = Activity.objects.filter(piggy=piggy_)
-    print('piggy_', piggy_)
 
