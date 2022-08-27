@@ -3,6 +3,8 @@ from asgiref.sync import async_to_sync
 from channels.generic.websocket import WebsocketConsumer
 from channels.db import database_sync_to_async
 from channels.consumer import SyncConsumer, AsyncConsumer
+from channels.exceptions import StopConsumer
+from asgiref.sync import sync_to_async
 
 import json
 from .models import *
@@ -10,31 +12,38 @@ from .models import *
 User = get_user_model()
 
 
-class ChatConsumer(WebsocketConsumer):
+class ChatConsumer(AsyncConsumer):
 
     async def fetch_messages(self, data):
-        messages = self.chat.messages.all()
+        messages = await self.get_all_message()
         content = {
             'command': 'messages',
-            'messages': self.messages_to_json(messages)
+            'messages': await self.messages_to_json(messages)
         }
-        self.send_message(content)
+        await self.send_message(content)
 
+    
     async def new_message(self, data):
-        await self.create_message(data['message'])
+        message_ = await self.create_message(data['message'])
         content = {
             'command': 'new_message',
-            'message': self.message_to_json(message)
+            'message':  await self.message_to_json(message_)
         }
         return await self.send_chat_message(content)
 
-    async def messages_to_json(self, messages):
+    @sync_to_async
+    def messages_to_json(self, messages):
         result = []
         for message in messages:
-            result.append(self.message_to_json(message))
+            result.append({'id': message.id,
+                'owner': message.owner.username,
+                'message_text': message.message_text,
+                'timestamp': str(message.timestamp)
+                })
         return result
 
-    async def message_to_json(self, message):
+    @sync_to_async
+    def message_to_json(self, message):
         return {
             'id': message.id,
             'owner': message.owner.username,
@@ -47,14 +56,14 @@ class ChatConsumer(WebsocketConsumer):
         'new_message': new_message
     }
 
-    async def connect(self):
+    async def websocket_connect(self, event):
         self.user = self.scope['user']
         self.chat_id = self.scope['url_route']['kwargs']['chat_id']
         self.chat = await self.get_chat()
         self.chat_room_id = f"chat_{self.chat_id}"
-        print('ffffffff')
         if self.chat:
-            if self.user in self.chat.participants.all():
+            
+            if await self.check_auth():
                 await self.channel_layer.group_add(
                     self.chat_room_id,
                     self.channel_name
@@ -63,13 +72,15 @@ class ChatConsumer(WebsocketConsumer):
                     'type': 'websocket.accept'
                 })
             else:
-                self.close(403)
+                await self.send({
+                'type': 'websocket.close'
+                })
         else:
             await self.send({
                 'type': 'websocket.close'
             })
 
-    async def disconnect(self, close_code):
+    async def websocket_disconnect(self, close_code):
         await (self.channel_layer.group_discard)(
             self.chat_room_id,
             self.channel_name
@@ -77,12 +88,18 @@ class ChatConsumer(WebsocketConsumer):
         raise StopConsumer()
 
 
-    async def receive(self, text_data):
+    async def websocket_receive(self, event):
+        text_data = event.get('text', None)
         data = json.loads(text_data)
-        await self.commands[data['command']](self, data)
+        if  data['command'] == 'new_message' :
+            if not data['message'] == '':
+                await self.new_message(data)
+        else:
+            await self.fetch_messages(data)
+        # await self.commands[data['command']](self, data)
 
     async def send_chat_message(self, message):
-        (self.channel_layer.group_send)(
+        await self.channel_layer.group_send(
             self.chat_room_id,
             {
                 'type': 'chat_message',
@@ -90,22 +107,43 @@ class ChatConsumer(WebsocketConsumer):
             }
         )
 
-    def send_message(self, message):
-        self.send(text_data=json.dumps(message))
+    async def send_message(self, message):
+        await self.send({
+            'type' : 'websocket.send',
+            'text' :json.dumps(message)
+            })
 
-    def chat_message(self, event):
+    async def chat_message(self, event):
         message = event['message']
-        self.send(text_data=json.dumps(message))
-
+        await self.send({
+            'type' : 'websocket.send',
+            'text' :json.dumps(message)
+            })
     @database_sync_to_async
     def get_chat(self):
         try:
-            chat = GroupChat.objects.get(unique_code=self.chat_id)
+            chat = Chat.objects.get(unique_code=self.chat_id)
+            self.participants = chat.participants
             return chat
-        except GroupChat.DoesNotExist:
+        except Chat.DoesNotExist:
             return None
 
     @database_sync_to_async
     def create_message(self, text):
-        message_ = Message.objects.create( owner=self.user.id, message_text=text)
+        message_ = Message.objects.create( owner=self.user, message_text=text)
         self.chat.messages.add(message_)
+        print('&&&fff', message_)
+        return message_
+    
+    @sync_to_async
+    def check_auth(self):
+        print(self.user)
+        return self.user in self.participants.friends.all() or self.user == self.participants.owner
+    
+    @sync_to_async
+    def get_all_message(self):
+        print('%%%% ',self.chat.id, self.chat.messages.all(), ' %%%%%')
+        return self.chat.messages.all()
+
+
+
