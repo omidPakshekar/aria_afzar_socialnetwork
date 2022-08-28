@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+from __future__ import absolute_import, unicode_literals
 """Django's command-line utility for administrative tasks."""
 import os
 import sys
@@ -6,8 +6,9 @@ import sys
 
 def main():
     """Run administrative tasks."""
-    os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'core.settings')
-    os.environ.setdefault("DJANGO_CONFIGURATION", "Dev")
+    
+    os.environ['DJANGO_SETTINGS_MODULE'] = 'core.settings'
+    os.environ['DJANGO_CONFIGURATION'] = 'Dev'
 
     try:
         from configurations.management import execute_from_command_line

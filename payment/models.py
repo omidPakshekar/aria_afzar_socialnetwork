@@ -2,6 +2,7 @@ from datetime import datetime
 from django.db import models
 from django.db.models.signals import (pre_save, post_save)
 from django.dispatch import receiver
+from django.utils import timezone
 
 from users.models import CustomeUserModel
 
@@ -41,7 +42,9 @@ class PiggyBank(models.Model):
     long            = models.BooleanField(default=False)
     class Meta:
         ordering  = ['started_time']
-
+    @property
+    def day_left(self):
+        return self.finish_time - timezone.now()
 
 
 

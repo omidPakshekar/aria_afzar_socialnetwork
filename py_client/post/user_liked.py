@@ -2,13 +2,13 @@ import requests
 endpoint = "http://127.0.0.1:8000/api/v1/accounts/login/"
 psw = "amir1234"
 data = {
-    "email" : "omid5@gmail.com",
+    "email" : "amir@gmail.com",
     "password" : psw,
 }
 
 auth_response = requests.post( endpoint, data=data ) # HTTP request
 
-endpoint = "http://localhost:8000/api/v1/post/1/like/"
+endpoint = "http://localhost:8000/api/v1/post/2/like/"
 if auth_response.status_code == 200:
     token = auth_response.json()['access_token']     
     headers = {

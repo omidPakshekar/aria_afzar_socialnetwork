@@ -12,28 +12,7 @@ from rest_framework.response import Response
 User = get_user_model()
 
 
-# group1 = Contact.objects.annotate(
-#     nusers=Count('friends'),
-#     nusers_match=Count('friends', filter=Q(friends__in=cs))
-# ).filter(
-#     nusers=len(cs),
-#     nusers_match=len(cs)
-# )
 
-# class ChatListView(ListAPIView):
-#     serializer_class = ChatSerializer
-#     permission_classes = (permissions.AllowAny, )
-
-#     def get_queryset(self):
-#         queryset = Chat.objects.all()
-#         username = self.request.query_params.get('username', None)
-#         if username is not None:
-#             contact = get_user_contact(username)
-#             queryset = contact.chats.all()
-#         return queryset
-
-
-#  g = Contact.objects.annotate(nusers=Count('friends'), nuser_match=Count('friends', filter=Q(friends__in=c['friends'])))
 # update and partial update and add delete for owner and admin
 class ChatViewSet(viewsets.ModelViewSet):
     queryset = Chat.objects.all()
@@ -62,18 +41,11 @@ class ChatViewSet(viewsets.ModelViewSet):
         
 
     
-        # obj, created = Contact.objects.get(owner=self.request.user, )
-    #     print('*&*&&*&=', obj)
-    #     print('created=', created)
-    #     if created:
-    #         return Response({"detail": "fff"})
-    #     self.contact = serializer.save(owner=self.request.user)
-        # return super().create(request, *args, **kwargs)
-
-    # def perform_create(self, serializer):
-    #     serializer.save(participants=self.contact)
-
-
+# class AddUserContact(views.APIView):
+#     queryset = Contact.objects.all()
+#     serializer_class = ContactSerializer
+#     # authentication_classes = 
+#     def post(self, request, format=None):
 
 
 
