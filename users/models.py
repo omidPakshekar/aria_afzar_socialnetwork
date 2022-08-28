@@ -145,7 +145,9 @@ class Wallet(models.Model):
          return self.owner.username + " wallet"
 
 """
-    signal -- we use signal to create wallet automaticly after user created
+    user signal  
+    post_save -> we use signal to create wallet automaticly after user created
+    pre_save  -> create userbio and profileImage
 """
 
 @receiver(pre_save, sender=CustomeUserModel)

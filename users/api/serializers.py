@@ -1,7 +1,7 @@
 from rest_framework import exceptions, serializers
 from dj_rest_auth.registration.serializers import RegisterSerializer
 
-from ..models import CustomeUserModel, MemberShip, UserBio, Wallet
+from ..models import CustomeUserModel, MemberShip, ProfileImage, UserBio, Wallet
 
 from django.contrib.auth import authenticate, get_user_model
 
@@ -81,20 +81,44 @@ class MembershipSerializer(serializers.ModelSerializer):
 class BioInlineSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserBio
+        fields = "__all__"
+
+class ImageInlineSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ProfileImage
+        fields = "__all__"
 
 class UserAllInfoSerializer(serializers.ModelSerializer):
-    user_bio = BioInlineSerializer(read_only=True)
+    user_bio = serializers.SerializerMethodField(source='user_bio', read_only=True)
+    profile_pic = serializers.SerializerMethodField(source='profile_pic', read_only=True)
     class Meta:
         model = CustomeUserModel
         fields = ['username', 'email', 'profile_pic', 'date_joined', 'last_login',
-                    'gender', 'country', 'have_membership', 'user_bio',
+                    'gender', 'country', 'have_membership', 'user_bio', 'profile_pic',
                     'year_of_birth', 'month_of_birth', 'day_of_birth']
-
+    def get_user_bio(self, obj):
+        if not (obj.user_bio.admin_check or self.context['request'].user.is_admin):
+            return None
+        return BioInlineSerializer(instance=obj.user_bio).data
+    def get_profile_pic(self, obj):
+        if not (obj.profile_pic.admin_check or self.context['request'].user.is_admin):
+            return None
+        return ImageInlineSerializer(instance=obj.profile_pic, context={'request' : self.context['request']}).data
+        
 class UserSeenInfoSerializer(serializers.ModelSerializer):
+    user_bio = serializers.SerializerMethodField(source='user_bio', read_only=True)
+    profile_pic = serializers.SerializerMethodField(source='profile_pic', read_only=True)
     class Meta:
         model = CustomeUserModel
-        fields = ['username', 'gender', 'country']
-
+        fields = ['username', 'profile_pic', 'user_bio', 'gender', 'country']
+    def get_user_bio(self, obj):
+        if not (obj.user_bio.admin_check or self.context['request'].user.is_admin):
+            return None
+        return BioInlineSerializer(instance=obj.user_bio).data
+    def get_profile_pic(self, obj):
+        if not (obj.profile_pic.admin_check or self.context['request'].user.is_admin):
+            return None
+        return ImageInlineSerializer(instance=obj.profile_pic, context={'request' : self.context['request']}).data
 
 class UserUpdateSerializer(serializers.ModelSerializer):
     class Meta:
