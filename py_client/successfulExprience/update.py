@@ -4,7 +4,7 @@ import requests
 endpoint = "http://127.0.0.1:8000/api/v1/accounts/login/"
 psw = "amir1234"
 data = {
-    "email" : "omid6@gmail.com",
+    "email" : "amir@gmail.com",
     "password" : psw,
 }
 
@@ -18,7 +18,7 @@ if auth_response.status_code == 200:
         "Authorization" : f"Bearer {token}"
     }
     data = {
-        'admin_check': False
+        'title': 'its title 1'
     }
     get_response = requests.patch(endpoint, headers=headers, data=data)
 

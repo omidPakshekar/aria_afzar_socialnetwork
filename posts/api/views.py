@@ -1,6 +1,7 @@
 import json
 from datetime import timedelta
 from decimal import Decimal
+from urllib import request
 
 from django.db.models import Q
 from django.utils import timezone
@@ -38,6 +39,20 @@ def add_money(owner, user, amount, trade_off=0):
 class ObjectMixin:
     list_serializer = None
     model_ = None
+    def get_queryset(self):
+        try:
+            if  self.request.user.is_admin:
+                return self.model_.objects.all()
+        except: pass
+        return self.model_.objects.filter(admin_check=True) | self.model_.objects.filter(owner=self.request.user)
+
+    # every time user update the model admin_check = False
+    def perform_update(self, serializer):
+        if self.request.user.is_admin:
+            serializer.save(admin_check=True)
+        else:
+            serializer.save(admin_check=False)
+
     @action(methods=["put"], detail=True, name="user liked", url_path='like')
     def add_like(self, request, pk):
         instance = self.get_object()
@@ -105,12 +120,6 @@ class ExprienceViewSet(ObjectMixin, viewsets.ModelViewSet):
     permission_classes = [PostPermission]
     list_serializer = ExprienceSerializer
     model_ = SuccessfullExperience
-    def get_queryset(self):
-        try:
-            if  self.request.user.is_admin:
-                return SuccessfullExperience.objects.all()
-        except: pass
-        return SuccessfullExperience.objects.filter(admin_check=True)
 
     def get_serializer_class(self):
         if self.action == 'create':
@@ -136,13 +145,6 @@ class PostViewSet(ObjectMixin, viewsets.ModelViewSet):
     list_serializer = PostSerializer
     model_ = Post
 
-    def get_queryset(self):
-        try:
-            if self.request.user.is_admin:
-                return Post.objects.all()
-        except: 
-            pass
-        return Post.objects.filter(admin_check=True)
 
     def get_serializer_class(self):
         if self.action == 'create':
@@ -165,14 +167,6 @@ class PodcastViewSet(ObjectMixin, viewsets.ModelViewSet):
     permission_classes = [PostPermission]
     list_serializer = PodcastSerializer
     model_ = Podcast
-
-    def get_queryset(self):
-        try:
-            if self.request.user.is_admin:
-                return Podcast.objects.all()
-        except: 
-            pass
-        return Podcast.objects.filter(admin_check=True)
 
     def get_serializer_class(self):
         if self.action == 'create':
