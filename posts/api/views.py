@@ -22,7 +22,7 @@ def add_activity(piggy, user):
     activity.number += 1
     activity.save()
             
-def add_money(owner, user, amount, trade_off):
+def add_money(owner, user, amount, trade_off=0):
     piggy = owner.user_piggy.filter( Q(started_time__lte=timezone.now()) )[0]
     piggyLong = owner.user_piggy.filter(long=True)[0]
     if piggy.amount > amount:
@@ -190,6 +190,14 @@ class PodcastViewSet(ObjectMixin, viewsets.ModelViewSet):
             serializer.save(owner=self.request.user, admin_check=True)
         else:
             serializer.save(owner=self.request.user)
+            
+    @action(methods=["post"], detail=True, name="listen", url_path='listen')
+    def add_listen(self, request, pk):
+        instance = self.get_object()
+        if self.request.user == instance.owner or self.request.user.is_admin or not self.request.user.have_membership:
+            return Response(status.HTTP_200_OK)
+        add_money(request.user, instance.owner, 0.1)
+        return Response(status.HTTP_200_OK)
 
 
 
