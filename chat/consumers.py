@@ -62,23 +62,16 @@ class ChatConsumer(AsyncConsumer):
         self.chat = await self.get_chat()
         self.chat_room_id = f"chat_{self.chat_id}"
         if self.chat:
-            
             if await self.check_auth():
                 await self.channel_layer.group_add(
                     self.chat_room_id,
                     self.channel_name
                 )
-                await self.send({
-                    'type': 'websocket.accept'
-                })
+                await self.send({'type': 'websocket.accept'})
             else:
-                await self.send({
-                'type': 'websocket.close'
-                })
+                await self.send({'type': 'websocket.close'})
         else:
-            await self.send({
-                'type': 'websocket.close'
-            })
+            await self.send({'type': 'websocket.close'})
 
     async def websocket_disconnect(self, close_code):
         await (self.channel_layer.group_discard)(
