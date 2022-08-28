@@ -42,7 +42,7 @@ class ObjectMixin:
     def add_like(self, request, pk):
         instance = self.get_object()
         # add if 
-        if self.request.user in instance.user_liked.all():
+        if self.request.user in instance.user_liked.all() or self.request.user == instance.owner:
             return Response(status.HTTP_200_OK)
         instance.user_liked.add(self.request.user)
         # if user is admin dont do anything

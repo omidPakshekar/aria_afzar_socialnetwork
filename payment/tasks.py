@@ -14,13 +14,6 @@ from users.models import *
 
 logger = get_task_logger(__name__)
 
-@app.task
-def my_task():
-    time.sleep(10)
-    f = open("demofile3.txt", "w")
-    f.write("Woops! I have deleted the content!")
-    f.close()
-
 def add_money_wallet(id, amount):
     w = Wallet.objects.get(id=id)
     w.amount += Decimal(amount)

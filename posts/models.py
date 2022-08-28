@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.contenttypes.fields import ContentType, GenericForeignKey, GenericRelation
 from django.utils.text import slugify
+from django.dispatch import Signal
 
 from users.models import CustomeUserModel
 from datetime import datetime, timedelta
@@ -23,6 +24,21 @@ def get_post_image_filepath(self, filename):
 def get_default_post_image():
     return "default_image.jpg" 
 
+"""
+    create custom update singal
+    whenever objects updated if user is not admin the admin-check = False
+
+"""
+post_update = Signal()
+
+class MyCustomQuerySet(models.query.QuerySet):
+    def update(self, kwargs):
+        super(MyCustomQuerySet, self).update(kwargs)
+        post_update.send(sender=self.model)
+
+class MyCustomManager(models.Manager):
+    def getqueryset(self):
+        return MyCustomQuerySet(self.model, using=self._db)
 
 class Comment(models.Model):
     class Meta:
@@ -55,7 +71,7 @@ class ItemBase(models.Model):
     admin_check  = models.BooleanField(default=False)
     user_liked   = models.ManyToManyField(CustomeUserModel, related_name="%(class)s_liked", blank=True)
     user_saved   = models.ManyToManyField(CustomeUserModel, related_name="%(class)s_saved", blank=True)
-
+    # objects     = MyCustomManager()
     class Meta:
         abstract = True
 
