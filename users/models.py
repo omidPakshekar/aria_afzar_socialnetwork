@@ -148,14 +148,13 @@ class Wallet(models.Model):
     signal -- we use signal to create wallet automaticly after user created
 """
 
-# @receiver(pre_save, sender=CustomeUserModel)
-# def user_pre_save_receiver(sender, instance, *args, **kwargs):
-#     # create profile_pic and bio_bio
-#     if instance.user_bio == None:
-#         print('hj')
-#         instance.user_bio    = UserBio()
-#     if instance.profile_pic == None:
-#         instance.profile_pic = ProfileImage()
+@receiver(pre_save, sender=CustomeUserModel)
+def user_pre_save_receiver(sender, instance, *args, **kwargs):
+    # create profile_pic and bio_bio
+    if instance.user_bio == None:
+        instance.user_bio    = UserBio.objects.create()
+    if instance.profile_pic == None:
+        instance.profile_pic = ProfileImage.objects.create()
 
 @receiver(post_save, sender=CustomeUserModel)
 def user_post_save_receiver(sender, instance, created, *args, **kwargs):
