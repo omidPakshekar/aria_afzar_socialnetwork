@@ -1,7 +1,7 @@
 from rest_framework import exceptions, serializers
 from dj_rest_auth.registration.serializers import RegisterSerializer
 
-from ..models import CustomeUserModel, MemberShip, Wallet
+from ..models import CustomeUserModel, MemberShip, UserBio, Wallet
 
 from django.contrib.auth import authenticate, get_user_model
 
@@ -53,12 +53,18 @@ class PasswordChangeSerializer(serializers.Serializer):
     current_password = serializers.CharField(style={"input_type": "password"}, required=True)
     new_password = serializers.CharField(style={"input_type": "password"}, required=True)
 
+"""
+    wallet serializer
+"""
+
 class WalletSerializer(serializers.ModelSerializer):
     class Meta:
         model = Wallet
         fields = ['amount', 'user']
 
-
+""""
+    membership serializer
+"""
 class MembershipCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = MemberShip
@@ -69,24 +75,32 @@ class MembershipSerializer(serializers.ModelSerializer):
         model = MemberShip
         exclude = ['user', 'id']
 
+"""
+    CustomeUserModel serializer
+"""
+class BioInlineSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UserBio
+
 class UserAllInfoSerializer(serializers.ModelSerializer):
+    user_bio = BioInlineSerializer(read_only=True)
     class Meta:
         model = CustomeUserModel
-        fields = ['username', 'email', 'date_joined', 'last_login',
-                    'profile_image',  'gender', 'country', 'have_membership',
+        fields = ['username', 'email', 'profile_pic', 'date_joined', 'last_login',
+                    'gender', 'country', 'have_membership', 'user_bio',
                     'year_of_birth', 'month_of_birth', 'day_of_birth']
 
 class UserSeenInfoSerializer(serializers.ModelSerializer):
     class Meta:
         model = CustomeUserModel
-        fields = ['username', 'gender', 'country', 'profile_image']
+        fields = ['username', 'gender', 'country']
 
 
 class UserUpdateSerializer(serializers.ModelSerializer):
     class Meta:
         model = CustomeUserModel
         fields = ['gender', 'country', 'year_of_birth',
-                 'month_of_birth', 'day_of_birth', 'profile_image']
+                 'month_of_birth', 'day_of_birth']
 
 
 

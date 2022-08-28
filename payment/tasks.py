@@ -42,5 +42,3 @@ def check_piggy():
                 add_money_wallet(activity.user.id, money_unit * activity.number)
                 activity.delete()
         piggy.delete()
-    activity = Activity.objects.filter(piggy=piggy_)
-
