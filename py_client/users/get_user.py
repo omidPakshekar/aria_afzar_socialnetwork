@@ -2,14 +2,13 @@ import requests
 endpoint = "http://127.0.0.1:8000/api/v1/accounts/login/"
 psw = "amir1234"
 data = {
-    "username" : "omid6",
-    "email" : "omid6@gmail.com",
-    "password" : psw,
+    "email" : "omid@gmail.com",
+    "password" : "omid1234",
 }
 
 auth_response = requests.post( endpoint, data=data ) # HTTP request
 # for get user inforamtion use username
-endpoint = "http://127.0.0.1:8000/api/v1/accounts/omid5/"
+endpoint = "http://127.0.0.1:8000/api/v1/accounts/"
 
 if auth_response.status_code == 200:
     token = auth_response.json()['access_token']    

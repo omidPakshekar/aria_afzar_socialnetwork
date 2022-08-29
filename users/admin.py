@@ -89,6 +89,8 @@ class ActivityAdmin(admin.ModelAdmin):
 
 
 admin.site.register(CustomeUserModel, CustomUserAdmin)
+admin.site.register(UserBio)
+admin.site.register(ProfileImage)
 admin.site.register(Wallet, WalletAdmin)
 admin.site.register(MemberShip, MemberShipAdmin)
 admin.site.register(Activity, ActivityAdmin)

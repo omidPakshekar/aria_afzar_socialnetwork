@@ -1,3 +1,4 @@
+from ast import BinOp
 import string 
 import random
 from datetime import datetime, timedelta
@@ -42,7 +43,7 @@ def get_profile_image_filepath(self, filename):
     return f'profile_images/{self.username + ".png"}'
 
 def get_default_profile_image():
-    return "students/default_profile_image.png"
+    return "default_image.jpg"
 
 def create_wallet_key():
     # lenght of key
@@ -83,27 +84,35 @@ class MyAccountManager(BaseUserManager):
 		user.save()
 		return user
 
+class ProfileImage(models.Model):
+    image   = models.ImageField(upload_to=get_profile_image_filepath, null=True, blank=True, default=get_default_profile_image)
+    admin_check     = models.BooleanField(default=False)
+
+class UserBio(models.Model):
+    bio             = models.TextField(default='')
+    admin_check     = models.BooleanField(default=False, blank=True, null=True)
+
 class CustomeUserModel(AbstractBaseUser, PermissionsMixin):
     class Meta:
         verbose_name_plural = 'users'
     
-    email 				= models.EmailField(verbose_name="email", max_length=60, unique=True)
-    username 			= models.CharField(max_length=30, unique=True)
-    date_joined			= models.DateTimeField(verbose_name='date joined', auto_now_add=True)
-    last_login			= models.DateTimeField(verbose_name='last login', auto_now=True)
-    is_admin			= models.BooleanField(default=False)
-    is_active			= models.BooleanField(default=True)
-    is_staff			= models.BooleanField(default=False)
-    is_superuser		= models.BooleanField(default=False)
-    profile_image       = models.ImageField(max_length=255, upload_to=get_profile_image_filepath, null=True, blank=True, default=get_default_profile_image)
-    is_verified         = models.BooleanField(default=False, blank=True, null=True)
-    gender              = models.CharField(max_length=1, choices=GENDER_CHOICES, blank=True, null=True)
-    country             = models.CharField(max_length=20, blank=True, null=True)
-    black_list          = models.ManyToManyField('CustomeUserModel', related_name="blacklist")
-    year_of_birth       = models.CharField(max_length=20, blank=True, null=True)
-    month_of_birth      = models.CharField(max_length=20, blank=True, null=True)
-    day_of_birth        = models.CharField(max_length=20, blank=True, null=True)
-    have_membership     = models.BooleanField(default=False)
+    email 			= models.EmailField(verbose_name="email", max_length=60, unique=True)
+    username 		= models.CharField(max_length=30, unique=True)
+    date_joined		= models.DateTimeField(verbose_name='date joined', auto_now_add=True)
+    last_login		= models.DateTimeField(verbose_name='last login', auto_now=True)
+    is_admin		= models.BooleanField(default=False)
+    is_active		= models.BooleanField(default=True)
+    is_staff		= models.BooleanField(default=False)
+    is_superuser	= models.BooleanField(default=False)
+    gender          = models.CharField(max_length=1, choices=GENDER_CHOICES, blank=True, null=True)
+    country         = models.CharField(max_length=20, blank=True, null=True)
+    profile_pic     = models.OneToOneField(ProfileImage, blank=True, null=True, on_delete=models.CASCADE)
+    user_bio        = models.OneToOneField(UserBio, null=True, blank=True, on_delete=models.CASCADE)
+    black_list      = models.ManyToManyField('CustomeUserModel', related_name="blacklist")
+    year_of_birth   = models.CharField(max_length=20, blank=True, null=True)
+    month_of_birth  = models.CharField(max_length=20, blank=True, null=True)
+    day_of_birth    = models.CharField(max_length=20, blank=True, null=True)
+    have_membership = models.BooleanField(default=False)
 
     objects = MyAccountManager()
 
@@ -138,6 +147,16 @@ class Wallet(models.Model):
 """
     signal -- we use signal to create wallet automaticly after user created
 """
+
+# @receiver(pre_save, sender=CustomeUserModel)
+# def user_pre_save_receiver(sender, instance, *args, **kwargs):
+#     # create profile_pic and bio_bio
+#     if instance.user_bio == None:
+#         print('hj')
+#         instance.user_bio    = UserBio()
+#     if instance.profile_pic == None:
+#         instance.profile_pic = ProfileImage()
+
 @receiver(post_save, sender=CustomeUserModel)
 def user_post_save_receiver(sender, instance, created, *args, **kwargs):
     """
@@ -149,7 +168,7 @@ def user_post_save_receiver(sender, instance, created, *args, **kwargs):
         # create wallet 
         wallet = Wallet(owner=instance)
         wallet.save()
-
+       
 
 from payment.models import PiggyBank
 

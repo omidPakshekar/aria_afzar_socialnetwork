@@ -2,8 +2,8 @@ import requests
 endpoint = "http://127.0.0.1:8000/api/v1/accounts/register/"
 psw = "amir1234"
 data = {
-    "username" : "omid6",
-    "email" : "omid6@gmail.com",
+    "username" : "omid3",
+    "email" : "omid3@gmail.com",
     "password1" : psw,
     "password2" : psw,
     "country" : "Iran",
