@@ -309,9 +309,13 @@ class Dev(Configuration):
     # django_celery_beat
         
     CELERY_BEAT_SCHEDULE = {
-        "scheduled_task" : {
+        "scheduled_task_check_piggy" : {
             "task" : "payment.tasks.check_piggy",
-            "schedule" : 10.0,
+            "schedule" : 30.0,
+        },
+        "scheduled_task_check_membership" : {
+            "task" : "users.tasks.check_membership",
+            "schedule" : 50.0,
         },
     }
 

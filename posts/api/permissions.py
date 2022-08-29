@@ -14,7 +14,7 @@ class PostPermission(permissions.BasePermission):
             return True
         if not request.user.is_authenticated:
             return False
-        if view.action in ['get_comment', 'add_like', 'add_user_saved', 'admin_accept' ,'add_comment', 'mine']:
+        if view.action in ['get_comment', 'add_like', 'add_user_saved', 'admin_accept' ,'add_comment', 'mine', 'add_listen']:
             return True
         elif view.action in ['create', 'retrieve', 'partial_update', 'destroy', 'update']:
             return True
@@ -26,7 +26,7 @@ class PostPermission(permissions.BasePermission):
             return True
         if not request.user.is_authenticated:
             return False
-        if view.action in ['get_comment', 'add_like', 'add_user_saved' ,'add_comment']:
+        if view.action in ['get_comment', 'add_like', 'add_user_saved' ,'add_comment', 'add_listen']:
             return True
         elif view.action in [ 'update', 'partial_update']:
             return obj.owner == request.user or request.user.is_admin or request.user.is_staff

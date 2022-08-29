@@ -1,6 +1,7 @@
 import json
 from datetime import timedelta
 from decimal import Decimal
+from urllib import request
 
 from django.db.models import Q
 from django.utils import timezone
@@ -22,7 +23,7 @@ def add_activity(piggy, user):
     activity.number += 1
     activity.save()
             
-def add_money(owner, user, amount, trade_off):
+def add_money(owner, user, amount, trade_off=0):
     piggy = owner.user_piggy.filter( Q(started_time__lte=timezone.now()) )[0]
     piggyLong = owner.user_piggy.filter(long=True)[0]
     if piggy.amount > amount:
@@ -38,11 +39,25 @@ def add_money(owner, user, amount, trade_off):
 class ObjectMixin:
     list_serializer = None
     model_ = None
+    def get_queryset(self):
+        try:
+            if  self.request.user.is_admin:
+                return self.model_.objects.all()
+        except: pass
+        return self.model_.objects.filter(admin_check=True) | self.model_.objects.filter(owner=self.request.user)
+
+    # every time user update the model admin_check = False
+    def perform_update(self, serializer):
+        if self.request.user.is_admin:
+            serializer.save(admin_check=True)
+        else:
+            serializer.save(admin_check=False)
+
     @action(methods=["put"], detail=True, name="user liked", url_path='like')
     def add_like(self, request, pk):
         instance = self.get_object()
         # add if 
-        if self.request.user in instance.user_liked.all():
+        if self.request.user in instance.user_liked.all() or self.request.user == instance.owner:
             return Response(status.HTTP_200_OK)
         instance.user_liked.add(self.request.user)
         # if user is admin dont do anything
@@ -105,12 +120,6 @@ class ExprienceViewSet(ObjectMixin, viewsets.ModelViewSet):
     permission_classes = [PostPermission]
     list_serializer = ExprienceSerializer
     model_ = SuccessfullExperience
-    def get_queryset(self):
-        try:
-            if  self.request.user.is_admin:
-                return SuccessfullExperience.objects.all()
-        except: pass
-        return SuccessfullExperience.objects.filter(admin_check=True)
 
     def get_serializer_class(self):
         if self.action == 'create':
@@ -136,13 +145,6 @@ class PostViewSet(ObjectMixin, viewsets.ModelViewSet):
     list_serializer = PostSerializer
     model_ = Post
 
-    def get_queryset(self):
-        try:
-            if self.request.user.is_admin:
-                return Post.objects.all()
-        except: 
-            pass
-        return Post.objects.filter(admin_check=True)
 
     def get_serializer_class(self):
         if self.action == 'create':
@@ -166,14 +168,6 @@ class PodcastViewSet(ObjectMixin, viewsets.ModelViewSet):
     list_serializer = PodcastSerializer
     model_ = Podcast
 
-    def get_queryset(self):
-        try:
-            if self.request.user.is_admin:
-                return Podcast.objects.all()
-        except: 
-            pass
-        return Podcast.objects.filter(admin_check=True)
-
     def get_serializer_class(self):
         if self.action == 'create':
             return PodcastCreateSerializer
@@ -190,6 +184,14 @@ class PodcastViewSet(ObjectMixin, viewsets.ModelViewSet):
             serializer.save(owner=self.request.user, admin_check=True)
         else:
             serializer.save(owner=self.request.user)
+            
+    @action(methods=["post"], detail=True, name="listen", url_path='listen')
+    def add_listen(self, request, pk):
+        instance = self.get_object()
+        if self.request.user == instance.owner or self.request.user.is_admin or not self.request.user.have_membership:
+            return Response(status.HTTP_200_OK)
+        add_money(request.user, instance.owner, 0.1)
+        return Response(status.HTTP_200_OK)
 
 
 
