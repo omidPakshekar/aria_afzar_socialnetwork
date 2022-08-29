@@ -31,6 +31,4 @@ def check_piggy():
             activity.user.wallet.amount += Decimal(money_unit * activity.number)
             activity.delete()
         piggy.delete()
-    activity = Activity.objects.filter(piggy=piggy_)
-    print('piggy_', piggy_)
-
+    
