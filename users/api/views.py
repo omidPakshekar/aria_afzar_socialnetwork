@@ -23,6 +23,12 @@ from rest_framework_simplejwt.tokens import RefreshToken
 
 # from .utils import get_tokens_for_user
 
+from dj_rest_auth.views import LoginView as dj_Login
+
+class CustomUserLogin(dj_Login):
+    def get_response_serializer(self):
+        return CustomJWTSerializer
+
 class ChangePasswordView(APIView):
     permission_classes = [IsAuthenticated, ]
 
@@ -104,7 +110,7 @@ class UserViewSet(viewsets.ModelViewSet):
         instance.save()
         return Response(status.HTTP_200_OK)
     
-    @action(methods=["get"], detail=False, name="user profile", url_path='user_profile_pic')
+    @action(methods=["get"], detail=False, name="user profile pic", url_path='user-profile-pic')
     def user_profile_pic(self, request):
         objects_ = self.get_queryset()
         page = self.paginate_queryset(objects_)
@@ -112,13 +118,23 @@ class UserViewSet(viewsets.ModelViewSet):
             serializer = UserProfileSerializer(page, many=True, context={"request": request})
         serializer = UserProfileSerializer(objects_, many=True, context={"request": request})
         return Response(serializer.data)
+    
+    @action(methods=["get"], detail=False, name="user profile bio", url_path='user-profile-bio')
+    def user_profile_bio(self, request):
+        objects_ = self.get_queryset()
+        page = self.paginate_queryset(objects_)
+        if page is not None:
+            serializer = UserProfileSerializer(page, many=True, context={"request": request})
+        serializer = UserProfileSerializer(objects_, many=True, context={"request": request})
+        return Response(serializer.data)
 
-    @action(methods=["post"], detail=True, name="block user", url_path='accept_profile_pic')
-    def accept_profile(self, request):
-        instance = self.get_object()
-        pic = instance.profile_pic
-        pic.admin_check = True
-        pic.save()
+    @action(methods=["post"], detail=True, name="accpet profile pic", url_path='accept-profile-pic')
+    def accept_profile_pic(self, request):
+        print(self.request.data)
+        # instance = self.get_object()
+        # pic = instance.profile_pic
+        # pic.admin_check = True
+        # pic.save()
         return Response(status.HTTP_200_OK)
 
 

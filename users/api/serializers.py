@@ -4,6 +4,7 @@ from dj_rest_auth.registration.serializers import RegisterSerializer
 from ..models import CustomeUserModel, MemberShip, ProfileImage, UserBio, Wallet
 
 from django.contrib.auth import authenticate, get_user_model
+from dj_rest_auth.serializers import JWTSerializerWithExpiration
 
 
 class CustomRegisterSerializer(RegisterSerializer):
@@ -90,6 +91,16 @@ class ImageInlineSerializer(serializers.ModelSerializer):
         model = ProfileImage
         fields = "__all__"
 
+class UserBioSerializer(serializers.ModelSerializer):
+    user_bio = serializers.SerializerMethodField(source='user_bio', read_only=True)
+    class Meta:
+        model = CustomeUserModel
+        fields = ['username', 'email', 'profile_pic']
+    def get_user_bio(self, obj):
+        if not (obj.user_bio.admin_check or self.context['request'].user.is_admin):
+            return None
+        return BioInlineSerializer(instance=obj.user_bio).data
+
 class UserProfileSerializer(serializers.ModelSerializer):
     profile_pic = serializers.SerializerMethodField(source='profile_pic', read_only=True)
     class Meta:
@@ -138,6 +149,14 @@ class UserUpdateSerializer(serializers.ModelSerializer):
         model = CustomeUserModel
         fields = ['gender', 'country', 'year_of_birth',
                  'month_of_birth', 'day_of_birth']
+
+class CustomJWTSerializer(JWTSerializerWithExpiration):
+    user = serializers.SerializerMethodField()
+    # access_token_expiration = serializers.DateTimeField()
+    # refresh_token_expiration = serializers.DateTimeField()
+    def get_user(self, obj):
+        print('****', obj)
+        return UserAllInfoSerializer(instance=obj['user'], context={'request' : self.context['request']}).data
 
 
 

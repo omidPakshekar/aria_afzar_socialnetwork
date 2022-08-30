@@ -12,7 +12,7 @@ from dj_rest_auth.views import PasswordResetView, PasswordResetConfirmView
 
 from . import views
 from payment.api.views import PaymentViewSet
-from .views import UserViewSet
+from .views import UserViewSet, CustomUserLogin
 
 
 
@@ -28,7 +28,7 @@ urlpatterns = [
     path('membership/', views.MembershipView.as_view(), name='membership'),
     path('account-confirm-email/<str:key>/', ConfirmEmailView.as_view()),
     path('register/', RegisterView.as_view()),
-    path('login/', LoginView.as_view()),
+    path('login/', CustomUserLogin.as_view()),
     path('logout/', LogoutView.as_view()),
     path('change-password/', PasswordChangeView.as_view(), name='password_change'),
     path('verify-email/',

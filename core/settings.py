@@ -332,6 +332,8 @@ class Dev(Configuration):
     # REDIS_HOSTNAME = "redis-18063.c282.east-us-mz.azure.cloud.redislabs.com"
     # REDIS_PORT= "18063"
     # REDIS_PASSWORD = "WWajSJ3RKfPqJ1KwaJAM7wvsfZkjFvpv"
+
+    JWT_AUTH_RETURN_EXPIRATION = True
 class Prod(Dev):
     DEBUG = False
 
