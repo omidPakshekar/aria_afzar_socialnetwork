@@ -150,12 +150,11 @@ class UserUpdateSerializer(serializers.ModelSerializer):
         fields = ['gender', 'country', 'year_of_birth',
                  'month_of_birth', 'day_of_birth']
 
+
+# for UserCustomLogin
 class CustomJWTSerializer(JWTSerializerWithExpiration):
     user = serializers.SerializerMethodField()
-    # access_token_expiration = serializers.DateTimeField()
-    # refresh_token_expiration = serializers.DateTimeField()
     def get_user(self, obj):
-        print('****', obj)
         return UserAllInfoSerializer(instance=obj['user'], context={'request' : self.context['request']}).data
 
 

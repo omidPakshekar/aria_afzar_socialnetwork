@@ -129,14 +129,20 @@ class UserViewSet(viewsets.ModelViewSet):
         return Response(serializer.data)
 
     @action(methods=["post"], detail=True, name="accpet profile pic", url_path='accept-profile-pic')
-    def accept_profile_pic(self, request):
-        print(self.request.data)
-        # instance = self.get_object()
-        # pic = instance.profile_pic
-        # pic.admin_check = True
-        # pic.save()
+    def accept_profile_pic(self, request, username):
+        instance = self.get_object()
+        pic = instance.profile_pic
+        pic.admin_check = True
+        pic.save()
         return Response(status.HTTP_200_OK)
 
+    @action(methods=["post"], detail=True, name="accpet profile pic", url_path='accept-user-bio')
+    def accept_profile_pic(self, request, username):
+        instance = self.get_object()
+        bio = instance.user_bio
+        bio.admin_check = True
+        bio.save()
+        return Response(status.HTTP_200_OK)
 
 
 
