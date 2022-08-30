@@ -157,7 +157,17 @@ class CustomJWTSerializer(JWTSerializerWithExpiration):
     def get_user(self, obj):
         return UserAllInfoSerializer(instance=obj['user'], context={'request' : self.context['request']}).data
 
+class UpdateBioSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UserBio
+        fields = ['bio']
 
+
+class UpdateProfilePicSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ProfileImage
+        fields = ['image']
+        
 
 # class RegistrationSerializer(serializers.ModelSerializer):
 #     password2 = serializers.CharField(style={"input_type": "password"}, write_only=True)

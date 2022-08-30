@@ -87,10 +87,14 @@ class MyAccountManager(BaseUserManager):
 class ProfileImage(models.Model):
     image   = models.ImageField(upload_to=get_profile_image_filepath, null=True, blank=True, default=get_default_profile_image)
     admin_check     = models.BooleanField(default=False)
-
+    def __str__(self):
+        return f"{self.owner} image"
+    
 class UserBio(models.Model):
     bio             = models.TextField(default='', blank=True)
     admin_check     = models.BooleanField(default=False, blank=True, null=True)
+    def __str__(self):
+        return f"{self.owner} bio"
 
 class CustomeUserModel(AbstractBaseUser, PermissionsMixin):
     class Meta:
@@ -107,8 +111,8 @@ class CustomeUserModel(AbstractBaseUser, PermissionsMixin):
     is_superuser	= models.BooleanField(default=False)
     gender          = models.CharField(max_length=1, choices=GENDER_CHOICES, blank=True, null=True)
     country         = models.CharField(max_length=20, blank=True, null=True)
-    profile_pic     = models.OneToOneField(ProfileImage, blank=True, null=True, on_delete=models.CASCADE)
-    user_bio        = models.OneToOneField(UserBio, null=True, blank=True, on_delete=models.CASCADE)
+    profile_pic     = models.OneToOneField(ProfileImage, related_name='owner', blank=True, null=True, on_delete=models.CASCADE)
+    user_bio        = models.OneToOneField(UserBio, related_name='owner', null=True, blank=True, on_delete=models.CASCADE)
     black_list      = models.ManyToManyField('CustomeUserModel', blank=True, related_name="blacklist")
     year_of_birth   = models.CharField(max_length=20, blank=True, null=True)
     month_of_birth  = models.CharField(max_length=20, blank=True, null=True)

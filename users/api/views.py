@@ -1,4 +1,5 @@
 import json, jwt, os
+from urllib import request
 
 from .serializers import UserAllInfoSerializer, UserSeenInfoSerializer
 from users.api.permissions import UserViewSetPermission
@@ -14,7 +15,7 @@ from django.contrib.sites.shortcuts import get_current_site
 from django.contrib.auth import authenticate, login, logout
 
 from rest_framework.decorators import api_view, action 
-from rest_framework import status
+from rest_framework import status, generics
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import  Response
 from rest_framework.views import APIView
@@ -109,23 +110,23 @@ class UserViewSet(viewsets.ModelViewSet):
         instance.blacklist.remove(self.request.user)
         instance.save()
         return Response(status.HTTP_200_OK)
-    
+    # show all user profile pic that dosent accept by admin
     @action(methods=["get"], detail=False, name="user profile pic", url_path='user-profile-pic')
     def user_profile_pic(self, request):
-        objects_ = self.get_queryset()
+        objects_ = self.get_queryset().filter(profile_pic__admin_check=False)
         page = self.paginate_queryset(objects_)
         if page is not None:
             serializer = UserProfileSerializer(page, many=True, context={"request": request})
         serializer = UserProfileSerializer(objects_, many=True, context={"request": request})
         return Response(serializer.data)
-    
+    # show all user bio  that dosent accept by admin
     @action(methods=["get"], detail=False, name="user profile bio", url_path='user-profile-bio')
     def user_profile_bio(self, request):
-        objects_ = self.get_queryset()
+        objects_ = self.get_queryset().filter(profile_pic__admin_check=False)
         page = self.paginate_queryset(objects_)
         if page is not None:
-            serializer = UserProfileSerializer(page, many=True, context={"request": request})
-        serializer = UserProfileSerializer(objects_, many=True, context={"request": request})
+            serializer = UserBioSerializer(page, many=True, context={"request": request})
+        serializer = UserBioSerializer(objects_, many=True, context={"request": request})
         return Response(serializer.data)
 
     @action(methods=["post"], detail=True, name="accpet profile pic", url_path='accept-profile-pic')
@@ -144,7 +145,12 @@ class UserViewSet(viewsets.ModelViewSet):
         bio.save()
         return Response(status.HTTP_200_OK)
 
-
+class UserBioView(generics.UpdateAPIView):
+    queryset = UserBio.objects.all()
+    serializer_class = UpdateBioSerializer
+    def get_object(self):
+        return UserBio.objects.get(owner=self.request.user)
+    
 
 # class RegistrationView(generics.GenericAPIView):
 
