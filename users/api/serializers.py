@@ -7,6 +7,7 @@ from django.contrib.auth import authenticate, get_user_model
 
 
 class CustomRegisterSerializer(RegisterSerializer):
+    name            = serializers.CharField(max_length=30)
     country         = serializers.CharField(max_length=20)
     gender          = serializers.CharField(max_length=1)
     year_of_birth   = serializers.CharField(max_length=20)
@@ -14,6 +15,7 @@ class CustomRegisterSerializer(RegisterSerializer):
     day_of_birth    = serializers.CharField(max_length=20)
     def get_cleaned_data(self):
         data_dict = super().get_cleaned_data()
+        data_dict['name'] = self.validated_data.get('name')
         data_dict['country'] = self.validated_data.get('country')
         data_dict['gender'] = self.validated_data.get('gender')
         data_dict['year_of_birth'] = self.validated_data.get('year_of_birth')
@@ -88,6 +90,17 @@ class ImageInlineSerializer(serializers.ModelSerializer):
         model = ProfileImage
         fields = "__all__"
 
+class UserProfileSerializer(serializers.ModelSerializer):
+    profile_pic = serializers.SerializerMethodField(source='profile_pic', read_only=True)
+    class Meta:
+        model = CustomeUserModel
+        fields = ['username', 'email', 'profile_pic']
+    
+    def get_profile_pic(self, obj):
+        if not (obj.profile_pic.admin_check or self.context['request'].user.is_admin):
+            return None
+        return ImageInlineSerializer(instance=obj.profile_pic, context={'request' : self.context['request']}).data
+        
 class UserAllInfoSerializer(serializers.ModelSerializer):
     user_bio = serializers.SerializerMethodField(source='user_bio', read_only=True)
     profile_pic = serializers.SerializerMethodField(source='profile_pic', read_only=True)

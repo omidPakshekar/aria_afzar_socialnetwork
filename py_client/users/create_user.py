@@ -1,9 +1,9 @@
 import requests
-endpoint = "http://127.0.0.1:8000/api/v1/accounts/register/"
-psw = "amir1234"
+endpoint = "http://omidpak.pythonanywhere.com/api/v1/accounts/register/"
+psw = "amir12304"
 data = {
-    "username" : "omid3",
-    "email" : "omid3@gmail.com",
+    "username" : "omidpafdk2",
+    "email" : "omid.pakshekar1378@gmail.com",
     "password1" : psw,
     "password2" : psw,
     "country" : "Iran",

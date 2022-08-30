@@ -137,15 +137,15 @@ class Dev(Configuration):
     #     'default': {
     #         'BACKEND': 'channels_redis.core.RedisChannelLayer',
     #         'CONFIG': {
-    #             "hosts": [('127.0.0.1', 6379)],
+    #             "hosts": [("redis://:WWajSJ3RKfPqJ1KwaJAM7wvsfZkjFvpv@redis-18063.c282.east-us-mz.azure.cloud.redislabs.com:18063/")],
     #         },
     #     },
     # }
-    CHANNEL_LAYERS = {
-    "default": {
-        "BACKEND": "channels.layers.InMemoryChannelLayer"
-        }
-    }
+    # CHANNEL_LAYERS = {
+    # "default": {
+    #     "BACKEND": "channels.layers.InMemoryChannelLayer"
+    #     }
+    # }
 
     # Database
     # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
@@ -325,7 +325,13 @@ class Dev(Configuration):
             "schedule" : 50.0,
         },
     }
-
+    CELERY_BROKER_URL = "redis://default:I975B8xRZqKuwChLgpAstgyitOESUKcr@redis-10353.c90.us-east-1-3.ec2.cloud.redislabs.com:10353/0"
+    # CELERY_BROKER_URL = "redis://redis-18063.c282.east-us-mz.azure.cloud.redislabs.com:18063"
+    # CELERY_ACCEPT_CONTENT = ['json']
+    # CELERY_TASK_SERIALIZER = 'json'
+    # REDIS_HOSTNAME = "redis-18063.c282.east-us-mz.azure.cloud.redislabs.com"
+    # REDIS_PORT= "18063"
+    # REDIS_PASSWORD = "WWajSJ3RKfPqJ1KwaJAM7wvsfZkjFvpv"
 class Prod(Dev):
     DEBUG = False
 

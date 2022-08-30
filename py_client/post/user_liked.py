@@ -8,12 +8,12 @@ data = {
 
 auth_response = requests.post( endpoint, data=data ) # HTTP request
 
-endpoint = "http://localhost:8000/api/v1/post/2/like/"
 if auth_response.status_code == 200:
     token = auth_response.json()['access_token']     
     headers = {
         "Authorization" : f"Bearer {token}"
     }
+    endpoint = "http://localhost:8000/api/v1/post/2/like/"
 
     get_response = requests.put( endpoint, headers=headers)
 

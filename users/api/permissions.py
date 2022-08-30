@@ -13,6 +13,8 @@ class UserViewSetPermission(permissions.BasePermission):
             return True
         elif view.action in [ 'retrieve', 'update', 'partial_update', 'destroy']:
             return True
+        elif view.action in ['user_profile_pic']:
+            return request.user.is_admin or request.user.is_staff
         else:
             return False
                                                                                                 
@@ -23,7 +25,7 @@ class UserViewSetPermission(permissions.BasePermission):
             return True
         elif view.action in [ 'update', 'partial_update']:
             return obj == request.user or request.user.is_admin or request.user.is_staff
-        elif view.action in ['destroy', 'change_status']:
+        elif view.action in ['destroy', 'change_status', 'accept_profile', 'user_profile_pic']:
             return request.user.is_admin or request.user.is_staff
         else:
             return False

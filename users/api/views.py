@@ -103,7 +103,23 @@ class UserViewSet(viewsets.ModelViewSet):
         instance.blacklist.remove(self.request.user)
         instance.save()
         return Response(status.HTTP_200_OK)
+    
+    @action(methods=["get"], detail=False, name="user profile", url_path='user_profile_pic')
+    def user_profile_pic(self, request):
+        objects_ = self.get_queryset()
+        page = self.paginate_queryset(objects_)
+        if page is not None:
+            serializer = UserProfileSerializer(page, many=True, context={"request": request})
+        serializer = UserProfileSerializer(objects_, many=True, context={"request": request})
+        return Response(serializer.data)
 
+    @action(methods=["post"], detail=True, name="block user", url_path='accept_profile_pic')
+    def accept_profile(self, request):
+        instance = self.get_object()
+        pic = instance.profile_pic
+        pic.admin_check = True
+        pic.save()
+        return Response(status.HTTP_200_OK)
 
 
 

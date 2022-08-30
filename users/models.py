@@ -89,7 +89,7 @@ class ProfileImage(models.Model):
     admin_check     = models.BooleanField(default=False)
 
 class UserBio(models.Model):
-    bio             = models.TextField(default='')
+    bio             = models.TextField(default='', blank=True)
     admin_check     = models.BooleanField(default=False, blank=True, null=True)
 
 class CustomeUserModel(AbstractBaseUser, PermissionsMixin):
@@ -98,6 +98,7 @@ class CustomeUserModel(AbstractBaseUser, PermissionsMixin):
     
     email 			= models.EmailField(verbose_name="email", max_length=60, unique=True)
     username 		= models.CharField(max_length=30, unique=True)
+    name            = models.CharField(max_length=30, default='', blank=True, null=True)
     date_joined		= models.DateTimeField(verbose_name='date joined', auto_now_add=True)
     last_login		= models.DateTimeField(verbose_name='last login', auto_now=True)
     is_admin		= models.BooleanField(default=False)
@@ -108,7 +109,7 @@ class CustomeUserModel(AbstractBaseUser, PermissionsMixin):
     country         = models.CharField(max_length=20, blank=True, null=True)
     profile_pic     = models.OneToOneField(ProfileImage, blank=True, null=True, on_delete=models.CASCADE)
     user_bio        = models.OneToOneField(UserBio, null=True, blank=True, on_delete=models.CASCADE)
-    black_list      = models.ManyToManyField('CustomeUserModel', related_name="blacklist")
+    black_list      = models.ManyToManyField('CustomeUserModel', blank=True, related_name="blacklist")
     year_of_birth   = models.CharField(max_length=20, blank=True, null=True)
     month_of_birth  = models.CharField(max_length=20, blank=True, null=True)
     day_of_birth    = models.CharField(max_length=20, blank=True, null=True)
