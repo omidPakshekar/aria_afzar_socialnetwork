@@ -1,3 +1,4 @@
+from django.utils import timezone
 from django.db import models
 from django.contrib.contenttypes.fields import ContentType, GenericForeignKey, GenericRelation
 from django.utils.text import slugify
@@ -96,6 +97,9 @@ class SuccessfullExperience(ItemBase):
     user_liked   = models.ManyToManyField(CustomeUserModel, related_name="exprience_liked", blank=True)
     user_saved   = models.ManyToManyField(CustomeUserModel, related_name="exprience_saved", blank=True)
     comment     = GenericRelation(Comment)
+    @property
+    def day_pass(self):
+        return timezone.now() - self.created_time
 
 
 

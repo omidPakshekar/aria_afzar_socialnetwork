@@ -6,7 +6,7 @@ class PostAdmin(admin.ModelAdmin):
     list_display = ['id', 'owner', 'short_title', 'created_time']
 
 class ExprienceAdmin(admin.ModelAdmin):
-    list_display = ['id', 'owner', 'title', 'created_time', 'admin_check']
+    list_display = ['id', 'owner', 'title', 'created_time', 'day_pass', 'admin_check']
 
 class CommentAdmin(admin.ModelAdmin):
     list_display = ['id', 'owner', 'short_comment_text',

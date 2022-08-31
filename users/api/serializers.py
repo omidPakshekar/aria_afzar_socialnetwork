@@ -96,7 +96,7 @@ class UserBioSerializer(serializers.ModelSerializer):
     user_bio = serializers.SerializerMethodField(source='user_bio', read_only=True)
     class Meta:
         model = CustomeUserModel
-        fields = ['username', 'email', 'profile_pic']
+        fields = ['name', 'username', 'email', 'profile_pic']
     def get_user_bio(self, obj):
         if not (obj.user_bio.admin_check or self.context['request'].user.is_admin):
             return None

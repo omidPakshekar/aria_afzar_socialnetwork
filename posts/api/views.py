@@ -111,12 +111,23 @@ class ObjectMixin:
         instance = self.get_object()
         serializer = CommentInlineSerializer(instance = instance.comment.all(), many=True)
         return Response(serializer.data)
-    # @action(methods=["get"], detail=False, name="user Item created", url_path='count')
-    # def get_count(self, request):
-    #     data = {
-    #         'all' : self.get_queryset.
-    #     }
-    
+    @action(methods=["get"], detail=False, name="count", url_path='count')
+    def get_count(self, request):
+        queryset = self.get_queryset()
+        weekly = queryset.filter(created_time__gte=timezone.now() - timedelta(days=7))
+        monthly = queryset.filter(created_time__gte=timezone.now() - timedelta(days=30))
+        yearly = queryset.filter(created_time__gte=timezone.now() - timedelta(days=365))
+        
+        data = {
+            'count' : queryset.count(),
+            'number_in_week': weekly.count(),
+            'post_in_week' :  ExprienceSerializer(instance=weekly,many=True).data,
+            'number_in_month': monthly.count(),
+            'post_in_month' : ExprienceSerializer(instance=monthly, many=True).data,
+            'number_in_year': yearly.count(),
+            'post_in_year': ExprienceSerializer(instance=yearly, many=True).data,
+        }
+        return Response((data))    
 
     
 
