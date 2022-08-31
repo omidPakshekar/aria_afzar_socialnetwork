@@ -3,7 +3,11 @@ from django.urls import path, re_path, include
 
 from rest_framework_simplejwt import views as jwt_views
 from rest_framework.routers import DefaultRouter
-
+from rest_framework_simplejwt.views import (
+     TokenObtainPairView,
+     TokenRefreshView,
+     TokenVerifyView
+)
 from dj_rest_auth.registration.views import RegisterView, VerifyEmailView
 from dj_rest_auth.views import LoginView, LogoutView
 from dj_rest_auth.registration.views import RegisterView, VerifyEmailView, ConfirmEmailView
@@ -23,6 +27,7 @@ urlpatterns = [
     # path('register/', views.RegistrationView.as_view(), name='register'),
     # path('email-verify/', views.VerifyEmail.as_view(), name="email-verify"),
     # path('change-password/', views.ChangePasswordView.as_view(), name='change-password'),
+    path('refresh-token/', TokenRefreshView.as_view(), name='token_refresh'),
     path('wallet/', WalletView.as_view(), name='wallet'),
     path('membership/', MembershipView.as_view(), name='membership'),
     path('account-confirm-email/<str:key>/', ConfirmEmailView.as_view()),

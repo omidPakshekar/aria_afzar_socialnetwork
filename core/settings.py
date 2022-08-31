@@ -288,7 +288,7 @@ class Dev(Configuration):
     }
     SIMPLE_JWT = {
         'ACCESS_TOKEN_LIFETIME': datetime.timedelta(days=1),
-        'REFRESH_TOKEN_LIFETIME': datetime.timedelta(days=1),
+        'REFRESH_TOKEN_LIFETIME': datetime.timedelta(days=7),
     }
     # AUTH_PROFILE_MODULE = 'users.MyUser'
     # EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
