@@ -44,8 +44,9 @@ urlpatterns = [
      path('password-reset/', PasswordResetView.as_view()),
      path('password-reset-confirm/<slug:uidb64>/<slug:token>/',
          PasswordResetConfirmView.as_view(), name='password_reset_confirm'),
-
-     path('change-bio/', UserBioView.as_view(), name='change-bio'),
+     path('change-bio/', UpdateBioView.as_view(), name='change-bio'),
+     path('change-profile-image/', UpdateProfilePicView.as_view(), name='change-profile-image'),
+     
      path('', include(router.urls)),
      
 

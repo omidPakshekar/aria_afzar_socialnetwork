@@ -1,3 +1,4 @@
+from urllib import request
 from rest_framework import exceptions, serializers
 from dj_rest_auth.registration.serializers import RegisterSerializer
 
@@ -121,11 +122,13 @@ class UserAllInfoSerializer(serializers.ModelSerializer):
                     'gender', 'country', 'have_membership', 'user_bio', 'profile_pic',
                     'year_of_birth', 'month_of_birth', 'day_of_birth']
     def get_user_bio(self, obj):
-        if not (obj.user_bio.admin_check or self.context['request'].user.is_admin):
+        request =  self.context['request']
+        if not (obj == request.user or obj.user_bio.admin_check or request.user.is_admin):
             return None
         return BioInlineSerializer(instance=obj.user_bio).data
     def get_profile_pic(self, obj):
-        if not (obj.profile_pic.admin_check or self.context['request'].user.is_admin):
+        request =  self.context['request']
+        if not (obj == request.user or obj.profile_pic.admin_check or request.user.is_admin):
             return None
         return ImageInlineSerializer(instance=obj.profile_pic, context={'request' : self.context['request']}).data
         

@@ -11,7 +11,7 @@ class UserViewSetPermission(permissions.BasePermission):
             return False
         if view.action in ['blockuser', 'unblockuser', 'list', 'mine', 'admin_accept']:
             return True
-        elif view.action in [ 'retrieve', 'update', 'partial_update', 'destroy']:
+        elif view.action in [ 'retrieve', 'update', 'partial_update', 'destroy', 'profile']:
             return True
         elif view.action in ['user_profile_pic', 'user_profile_bio', 'accept_profile_pic']:
             return request.user.is_admin or request.user.is_staff
@@ -23,6 +23,9 @@ class UserViewSetPermission(permissions.BasePermission):
             return False
         if view.action in ['unblockuser', 'blockuser', 'retrieve']:
             return True
+        elif view.action == 'profile':
+            print('jjjjj')
+            return obj == request.user
         elif view.action in [ 'update', 'partial_update']:
             return obj == request.user or request.user.is_admin or request.user.is_staff
         elif view.action in ['destroy', 'change_status', 'accept_profile_pic', 'user_profile_pic', 'user_profile_bio']:

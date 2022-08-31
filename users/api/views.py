@@ -97,6 +97,11 @@ class UserViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         return CustomeUserModel.objects.filter(emailaddress__verified=True)
   
+    @action(methods=["get"], detail=False, name="user Profile", url_path='profile')
+    def profile(self, request):
+        return Response(UserAllInfoSerializer(instance=request.user, context={"request": request}).data)
+
+
     @action(methods=["put"], detail=True, name="block user", url_path='blockuser')
     def blockuser(self, request, username):
         instance = self.get_object()
@@ -145,13 +150,18 @@ class UserViewSet(viewsets.ModelViewSet):
         bio.save()
         return Response(status.HTTP_200_OK)
 
-class UserBioView(generics.UpdateAPIView):
+class UpdateBioView(generics.UpdateAPIView):
     queryset = UserBio.objects.all()
     serializer_class = UpdateBioSerializer
     def get_object(self):
         return UserBio.objects.get(owner=self.request.user)
     
-
+class UpdateProfilePicView(generics.UpdateAPIView):
+    queryset = ProfileImage.objects.all()
+    serializer_class = UpdateProfilePicSerializer
+    def get_object(self):
+        return UserBio.objects.get(owner=self.request.user)
+    
 # class RegistrationView(generics.GenericAPIView):
 
 #     serializer_class = RegistrationSerializer
