@@ -9,7 +9,10 @@ class PaymentAdmin(admin.ModelAdmin):
 class PiggyBankAdmin(admin.ModelAdmin):
     list_display = ['id', 'user', 'amount', 'started_time', 'finish_time', 'day_left', 'long']
 
+class TransactionHistoryAdmin(admin.ModelAdmin):
+    list_display = ['owner', 'id', 'amount', 'kind', 'plus', 'created_time']
+
 
 admin.site.register(Payment, PaymentAdmin)
 admin.site.register(PiggyBank, PiggyBankAdmin)
-
+admin.site.register(TransactionHistory, TransactionHistoryAdmin)

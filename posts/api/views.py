@@ -15,6 +15,7 @@ from .serializers import *
 from ..models import Comment, Podcast, Post, SuccessfullExperience
 from users.models import Activity, CustomeUserModel, Wallet
 from posts.api.permissions import PostPermission
+from payment.models import TransactionHistory
 
 user_admin = CustomeUserModel.objects.get(id=1)
 
@@ -23,17 +24,20 @@ def add_activity(piggy, user):
     activity.number += 1
     activity.save()
             
-def add_money(owner, user, amount, trade_off=0):
+def add_money(owner, user, amount, kind):
     piggy = owner.user_piggy.filter( Q(started_time__lte=timezone.now()) )[0]
     piggyLong = owner.user_piggy.filter(long=True)[0]
     if piggy.amount > amount:
         w = Wallet.objects.get(id=user.id)
         w.amount += Decimal(amount)
-        w.save()
+        w.save()    
+        TransactionHistory.objects.create(owner=user, amount=amount, kind=kind, plus=True)
+        TransactionHistory.objects.create(owner=owner, amount=amount, kind='piggy', plus=False)
         piggy.amount = piggy.amount - Decimal(amount)
         piggy.save()
         add_activity(piggy, user)
         add_activity(piggyLong, user)
+        
         
 
 class ObjectMixin:
@@ -66,9 +70,9 @@ class ObjectMixin:
         # user member ship --> add money
         # cost money and add to admin if user dosent have member ship
         if self.request.user.have_membership:
-            add_money(self.request.user, instance.owner, 0.01, 0)
+            add_money(self.request.user, instance.owner, 0.01, kind='like')
         else:
-            add_money(self.request.user, user_admin, 0.01, 0)
+            add_money(self.request.user, user_admin, 0.01, kind='like')
         return Response(status.HTTP_200_OK)
     
     @action(methods=["put"], detail=True, name="user saved", url_path='save')
@@ -114,18 +118,21 @@ class ObjectMixin:
     @action(methods=["get"], detail=False, name="count", url_path='count')
     def get_count(self, request):
         queryset = self.get_queryset()
+        daily =  queryset.filter(created_time__gte=timezone.now() - timedelta(hours=24))
         weekly = queryset.filter(created_time__gte=timezone.now() - timedelta(days=7))
         monthly = queryset.filter(created_time__gte=timezone.now() - timedelta(days=30))
         yearly = queryset.filter(created_time__gte=timezone.now() - timedelta(days=365))
         
         data = {
             'count' : queryset.count(),
+            'number_in_day': daily.count(),
+            'post_in_day' : self.list_serializer(instance=daily,many=True).data,
             'number_in_week': weekly.count(),
-            'post_in_week' :  ExprienceSerializer(instance=weekly,many=True).data,
+            'post_in_week' : self.list_serializer(instance=weekly,many=True).data,
             'number_in_month': monthly.count(),
-            'post_in_month' : ExprienceSerializer(instance=monthly, many=True).data,
+            'post_in_month' : self.list_serializer(instance=monthly, many=True).data,
             'number_in_year': yearly.count(),
-            'post_in_year': ExprienceSerializer(instance=yearly, many=True).data,
+            'post_in_year': self.list_serializer(instance=yearly, many=True).data,
         }
         return Response((data))    
 
@@ -243,7 +250,7 @@ class PodcastViewSet(ObjectMixin, viewsets.ModelViewSet):
         instance = self.get_object()
         if self.request.user == instance.owner or self.request.user.is_admin or not self.request.user.have_membership:
             return Response(status.HTTP_200_OK)
-        add_money(request.user, instance.owner, 0.1)
+        add_money(request.user, instance.owner, 0.1, kind='listen')
         return Response(status.HTTP_200_OK)
 
 

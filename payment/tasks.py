@@ -9,15 +9,17 @@ from celery import shared_task
 from celery.utils.log import get_task_logger
 from core.celery import app
 
-from .models import PiggyBank
+from .models import PiggyBank, TransactionHistory
 from users.models import *
 
 logger = get_task_logger(__name__)
 
-def add_money_wallet(id, amount):
-    w = Wallet.objects.get(id=id)
+def add_money_wallet(user_add_money, user_cost_money, amount):
+    w =  user_add_money.wallet
     w.amount += Decimal(amount)
     w.save()
+    TransactionHistory(kind='piggy', amount=amount, owner=user_add_money, plus=True)
+    TransactionHistory(kind='piggy', amount=amount, owner=user_cost_money, plus=False)
 
 @app.task
 def check_piggy():
@@ -27,18 +29,19 @@ def check_piggy():
         activity number > 5  ---> all of money to user
     """
     piggy_ = PiggyBank.objects.filter(finish_time__lte=timezone.now())
+    admin = CustomeUserModel.objects.get(id=1)
     for piggy in piggy_:
         piggy_activity = piggy.activity.all()
         number =  piggy_activity.aggregate(Sum('number'))['number__sum']
         if number == 0:
-            add_money_wallet(1, piggy.amount)
+            add_money_wallet(user_add_money=admin, user_cost_money=piggy.user, amount=piggy.amount)
         else:
             pigg_amount = piggy.amount
             if number <= 5:
                 pigg_amount /= 2
-                add_money_wallet(1, pigg_amount)
+                add_money_wallet(user_add_money=admin, user_cost_money=piggy.user, amount=pigg_amount)
             money_unit = Decimal(pigg_amount / number)
             for activity in piggy_activity:
-                add_money_wallet(activity.user.id, money_unit * activity.number)
+                add_money_wallet(user_add_money=activity.user, user_cost_money=piggy.user, amount = money_unit * activity.number)
                 activity.delete()
         piggy.delete()
