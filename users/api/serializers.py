@@ -106,7 +106,7 @@ class UserProfileSerializer(serializers.ModelSerializer):
     profile_pic = serializers.SerializerMethodField(source='profile_pic', read_only=True)
     class Meta:
         model = CustomeUserModel
-        fields = ['username', 'email', 'profile_pic']
+        fields = ['name', 'username', 'email', 'profile_pic']
     
     def get_profile_pic(self, obj):
         if not (obj.profile_pic.admin_check or self.context['request'].user.is_admin):
@@ -118,7 +118,7 @@ class UserAllInfoSerializer(serializers.ModelSerializer):
     profile_pic = serializers.SerializerMethodField(source='profile_pic', read_only=True)
     class Meta:
         model = CustomeUserModel
-        fields = ['username', 'email', 'profile_pic', 'date_joined', 'last_login',
+        fields = ['name', 'username', 'email', 'profile_pic', 'date_joined', 'last_login',
                     'gender', 'country', 'have_membership', 'user_bio', 'profile_pic',
                     'year_of_birth', 'month_of_birth', 'day_of_birth']
     def get_user_bio(self, obj):
@@ -137,7 +137,7 @@ class UserSeenInfoSerializer(serializers.ModelSerializer):
     profile_pic = serializers.SerializerMethodField(source='profile_pic', read_only=True)
     class Meta:
         model = CustomeUserModel
-        fields = ['username', 'profile_pic', 'user_bio', 'gender', 'country']
+        fields = ['name', 'username', 'profile_pic', 'user_bio', 'gender', 'country']
     def get_user_bio(self, obj):
         if not (obj.user_bio.admin_check or self.context['request'].user.is_admin):
             return None
@@ -150,7 +150,7 @@ class UserSeenInfoSerializer(serializers.ModelSerializer):
 class UserUpdateSerializer(serializers.ModelSerializer):
     class Meta:
         model = CustomeUserModel
-        fields = ['gender', 'country', 'year_of_birth',
+        fields = ['name', 'gender', 'country', 'year_of_birth',
                  'month_of_birth', 'day_of_birth']
 
 

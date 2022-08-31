@@ -111,7 +111,12 @@ class ObjectMixin:
         instance = self.get_object()
         serializer = CommentInlineSerializer(instance = instance.comment.all(), many=True)
         return Response(serializer.data)
-
+    # @action(methods=["get"], detail=False, name="user Item created", url_path='count')
+    # def get_count(self, request):
+    #     data = {
+    #         'all' : self.get_queryset.
+    #     }
+    
 
     
 
