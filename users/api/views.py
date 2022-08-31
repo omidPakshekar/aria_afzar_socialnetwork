@@ -79,8 +79,18 @@ class MembershipView(generics.GenericAPIView):
 
 class UserViewSet(viewsets.ModelViewSet):
     """
-       for retrieve or list --> you must authenticated
-       for create user --->  \accounts\register 
+        for get your information ---> /accounts/profile/
+        for see profile another user --> /accounts/<str:username>/
+        for retrieve or list --> you must authenticated
+        for create user --->  /accounts/register/
+        get all user --> /accounts/
+        block user --> /accounts/<username that you want block>/blockuser/
+        unblock user --> /accounts/<username that you want block>/unblockuser/
+        get all user-profile-image ---> it's create for admin to retreive all profile image to accept them --> /accounts/user-profile-pic/
+        accept profile image --> put : /accounts/<username>/accept-profile-pic/
+        get all user bio ---> it's create for admin to retreive all user bio to accept them -->get /accounts/user-profile-bio/
+        accpet user bio --> put : /accounts/<username>/accept-profile-bio/
+
     """
     permission_classes = [UserViewSetPermission]
     lookup_field = 'username'
@@ -151,16 +161,25 @@ class UserViewSet(viewsets.ModelViewSet):
         return Response(status.HTTP_200_OK)
 
 class UpdateBioView(generics.UpdateAPIView):
+    """
+        change profile bio --> /accounts/change-bio/
+    """
     queryset = UserBio.objects.all()
     serializer_class = UpdateBioSerializer
+    permission_classes = [IsAuthenticated]
     def get_object(self):
         return UserBio.objects.get(owner=self.request.user)
     
 class UpdateProfilePicView(generics.UpdateAPIView):
+    """
+        change profile Pic --> /accounts/change-profile-image/
+    """
     queryset = ProfileImage.objects.all()
     serializer_class = UpdateProfilePicSerializer
+    permission_classes = [IsAuthenticated]
     def get_object(self):
         return UserBio.objects.get(owner=self.request.user)
+
     
 # class RegistrationView(generics.GenericAPIView):
 
