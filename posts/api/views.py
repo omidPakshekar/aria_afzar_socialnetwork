@@ -77,7 +77,7 @@ class ObjectMixin:
         instance.user_saved.add(self.request.user)
         return Response(status.HTTP_200_OK)
 
-    @action(methods=["post"], detail=True, name="add comment", url_path='add_comment')
+    @action(methods=["post"], detail=True, name="add comment", url_path='add-comment')
     def add_comment(self, request, pk):
         instance = self.get_object()
         serializer = CommentCreateSerializer(data=request.data)
@@ -106,7 +106,7 @@ class ObjectMixin:
         serializer = self.list_serializer(objects_, many=True, context={"request": request})
         return Response(serializer.data)
 
-    @action(methods=["get"], detail=True, name="get_comment", url_path='get_comment')
+    @action(methods=["get"], detail=True, name="get_comment", url_path='get-comment')
     def get_comment(self, request, pk):
         instance = self.get_object()
         serializer = CommentInlineSerializer(instance = instance.comment.all(), many=True)
@@ -132,7 +132,18 @@ class ObjectMixin:
     
 
 class ExprienceViewSet(ObjectMixin, viewsets.ModelViewSet):
-    
+    """
+        get all item --> /exprinece/
+        get one item --> /exprinece/<id>/
+        get all item that user create --> /exprience/mine/
+        create item --> /exprince/
+        destory --> /exprince/<id>/
+        get all comment for item --> /exprience/id/get-comment/
+        add comment for item --> /exprience/id/add-comment/
+        like item ---> /exprience/<id>/like/
+        save item ---> /exprince/<id>/save/
+        accept a item --> only admin can do /exprience/<id>/admin-accept/
+    """
     permission_classes = [PostPermission]
     list_serializer = ExprienceSerializer
     model_ = SuccessfullExperience
@@ -157,6 +168,19 @@ class ExprienceViewSet(ObjectMixin, viewsets.ModelViewSet):
 
 
 class PostViewSet(ObjectMixin, viewsets.ModelViewSet):
+    """
+        get all item --> /post/
+        get one item --> /post/<id>/
+        get all item that user create --> /post/mine/
+        create item --> /post/
+        destory --> /post/<id>/
+        get all comment for item --> /post/id/get-comment/
+        add comment for item --> /post/id/add-comment/
+        like item ---> /post/<id>/like/
+        save item ---> /post/<id>/save/
+        accept a item --> only admin can do /post/<id>/admin-accept/
+    """
+
     permission_classes = [PostPermission]
     list_serializer = PostSerializer
     model_ = Post
@@ -180,6 +204,19 @@ class PostViewSet(ObjectMixin, viewsets.ModelViewSet):
             serializer.save(owner=self.request.user)
 
 class PodcastViewSet(ObjectMixin, viewsets.ModelViewSet):
+    """
+        get all item --> /podcast/
+        get one item --> /podcast/<id>/
+        get all item that user create --> /podcast/mine/
+        create item --> /podcast/
+        destory --> /podcast/<id>/
+        get all comment for item --> /podcast/id/get-comment/
+        add comment for item --> /podcast/id/add-comment/
+        like item ---> /podcast/<id>/like/
+        save item ---> /podcast/<id>/save/
+        accept a item --> only admin can do /podcast/<id>/admin-accept/
+    """
+
     permission_classes = [PostPermission]
     list_serializer = PodcastSerializer
     model_ = Podcast
