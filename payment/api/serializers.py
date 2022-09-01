@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from ..models import Payment
+from ..models import Payment, TransactionHistory
 from users.models import CustomeUserModel, Wallet
 
 class PaymentCreateSerializer(serializers.ModelSerializer):
@@ -34,6 +34,14 @@ class PaymentChangeStatus(serializers.ModelSerializer):
             wallet_.amount = wallet_.amount + instance.amount
             wallet_.save()  
         return super().update(instance, validated_data)
+
+
+class TransactionHistorySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = TransactionHistory
+        fields = ['amount', 'created_time', 'kind', 'plus']
+
+
 
 
 

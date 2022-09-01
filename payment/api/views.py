@@ -5,7 +5,7 @@ from rest_framework.response import Response
 
 from . import serializers
 from . import permissions
-from ..models import Payment
+from ..models import Payment, TransactionHistory
 
 class PaymentViewSet(viewsets.ModelViewSet):
     queryset = Payment.objects.all()
@@ -43,33 +43,27 @@ class PaymentViewSet(viewsets.ModelViewSet):
         serializer = serializers.PaymentListSerializer(objects, many=True, context={"request": request})
         return Response(serializer.data)
 
-    # @action(methods=["post"], detail=False, name="Posts by the logged in user")
-    # def donate(self, request):
+    
 
-        
+class TransactionViewSet(viewsets.ModelViewSet):
+    queryset = TransactionHistory.objects.all()
+    # permission_classes = [permissions.TransactionPermission]
+    serializer_class = serializers.TransactionHistorySerializer
+
+
+
+
+
+
+
+
+
+
+    
+    # @action(methods=["post"], detail=False, name="Posts by the logged in user")
+    # def donate(self, request):    
     
 
 # partial = kwargs.pop('partial', False)
 #         instance = self.get_object()
 #         serializer = self.get_serializer(instance, data=request.data, partial=partial)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

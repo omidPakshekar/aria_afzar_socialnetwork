@@ -87,10 +87,9 @@ class UserViewSet(viewsets.ModelViewSet):
         block user --> /accounts/<username that you want block>/blockuser/
         unblock user --> /accounts/<username that you want block>/unblockuser/
         get all user-profile-image ---> it's create for admin to retreive all profile image to accept them --> /accounts/user-profile-pic/
-        accept profile image --> put : /accounts/<username>/accept-profile-pic/
+        accept profile image -->only admin- put : /accounts/<username>/accept-profile-pic/
         get all user bio ---> it's create for admin to retreive all user bio to accept them -->get /accounts/user-profile-bio/
-        accpet user bio --> put : /accounts/<username>/accept-profile-bio/
-
+        accpet user bio -->only admin - put : /accounts/<username>/accept-profile-bio/
     """
     permission_classes = [UserViewSetPermission]
     lookup_field = 'username'
@@ -159,6 +158,7 @@ class UserViewSet(viewsets.ModelViewSet):
         bio.admin_check = True
         bio.save()
         return Response(status.HTTP_200_OK)
+
 
 class UpdateBioView(generics.UpdateAPIView):
     """

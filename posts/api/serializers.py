@@ -55,6 +55,13 @@ class ExprienceSerializer(serializers.ModelSerializer):
     def get_save_number(self, obj):
         return obj.user_saved.count()
 
+class ExprienceAdminCheckSerializer(serializers.ModelSerializer):
+    owner = UserInlineSerializer(read_only=True)
+    class Meta:
+        model = SuccessfullExperience
+        fields = ['id','owner', 'title', 'description', 'admin_check']
+
+
 # class ExprienceChangeSerializer(serializers.ModelSerializer):
 #     class Meta:
 #         model = SuccessfullExperience
@@ -90,6 +97,11 @@ class PostUpdateSerializer(serializers.ModelSerializer):
         fields = ['id','title', 'description', 'image']
 
 class PostAdminUpdateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Post
+        fields = ['id','title', 'description', 'image' ,'admin_check']
+
+class PostAdminCheckSerializer(serializers.ModelSerializer):
     class Meta:
         model = Post
         fields = ['id','title', 'description', 'image' ,'admin_check']
@@ -134,3 +146,10 @@ class PodcastSerializer(serializers.ModelSerializer):
     def get_save_number(self, obj):
         return obj.user_saved.count()
     
+class PodcastAdminCheckSerializer(serializers.ModelSerializer):
+    owner = UserInlineSerializer(read_only=True)
+    class Meta:
+        model = Podcast
+        fields = ['id','owner', 'file', 'title', 'description']
+
+

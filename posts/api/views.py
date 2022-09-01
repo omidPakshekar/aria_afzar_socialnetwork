@@ -42,6 +42,7 @@ def add_money(owner, user, amount, kind):
 
 class ObjectMixin:
     list_serializer = None
+    admin_check_serializer = None
     model_ = None
     def get_queryset(self):
         try:
@@ -90,7 +91,15 @@ class ObjectMixin:
             return Response(serializer.data, status.HTTP_200_OK)
         return Response(status.HTTP_400_BAD_REQUEST)
     
-
+    @action(methods=["get"], detail=False, name="admin_check", url_path='admin-check')
+    def admin_check(self, request):
+        objects_ = self.model_.objects.filter(admin_check=False)
+        page = self.paginate_queryset(objects_)
+        if page is not None:
+            serializer = self.admin_check_serializer(page, many=True, context={"request": request})
+        serializer = self.admin_check_serializer(objects_, many=True, context={"request": request})
+        return Response(serializer.data)
+    
     @action(methods=["put"], detail=True, name="admin_accpet", url_path='admin-accept')
     def admin_accept(self, request, pk):
         """
@@ -115,6 +124,7 @@ class ObjectMixin:
         instance = self.get_object()
         serializer = CommentInlineSerializer(instance = instance.comment.all(), many=True)
         return Response(serializer.data)
+
     @action(methods=["get"], detail=False, name="count", url_path='count')
     def get_count(self, request):
         queryset = self.get_queryset()
@@ -122,7 +132,6 @@ class ObjectMixin:
         weekly = queryset.filter(created_time__gte=timezone.now() - timedelta(days=7))
         monthly = queryset.filter(created_time__gte=timezone.now() - timedelta(days=30))
         yearly = queryset.filter(created_time__gte=timezone.now() - timedelta(days=365))
-        
         data = {
             'count' : queryset.count(),
             'number_in_day': daily.count(),
@@ -153,6 +162,7 @@ class ExprienceViewSet(ObjectMixin, viewsets.ModelViewSet):
     """
     permission_classes = [PostPermission]
     list_serializer = ExprienceSerializer
+    admin_check_serializer = ExprienceAdminCheckSerializer
     model_ = SuccessfullExperience
 
     def get_serializer_class(self):
@@ -187,9 +197,9 @@ class PostViewSet(ObjectMixin, viewsets.ModelViewSet):
         save item ---> /post/<id>/save/
         accept a item --> only admin can do /post/<id>/admin-accept/
     """
-
     permission_classes = [PostPermission]
     list_serializer = PostSerializer
+    admin_check_serializer = PostAdminCheckSerializer
     model_ = Post
 
 
@@ -226,6 +236,7 @@ class PodcastViewSet(ObjectMixin, viewsets.ModelViewSet):
 
     permission_classes = [PostPermission]
     list_serializer = PodcastSerializer
+    admin_check_serializer = PodcastAdminCheckSerializer
     model_ = Podcast
 
     def get_serializer_class(self):

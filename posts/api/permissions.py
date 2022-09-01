@@ -18,6 +18,8 @@ class PostPermission(permissions.BasePermission):
             return True
         elif view.action in ['create', 'retrieve', 'partial_update', 'destroy', 'update', 'get_count']:
             return True
+        elif view.action == 'admin_check':
+            return request.user.is_admin or request.user.is_staff
         else:
             return False
                                                                                                 
@@ -30,7 +32,7 @@ class PostPermission(permissions.BasePermission):
             return True
         elif view.action in [ 'update', 'partial_update']:
             return obj.owner == request.user or request.user.is_admin or request.user.is_staff
-        elif view.action in ['destroy', 'change_status', 'admin_accept', 'get_count']:
+        elif view.action in ['destroy', 'change_status', 'admin_accept', 'get_count', 'admin-check']:
             return request.user.is_admin or request.user.is_staff
         else:
             return False
