@@ -18,8 +18,8 @@ def add_money_wallet(user_add_money, user_cost_money, amount):
     w =  user_add_money.wallet
     w.amount += Decimal(amount)
     w.save()
-    TransactionHistory(kind='piggy', amount=amount, owner=user_add_money, plus=True)
-    TransactionHistory(kind='piggy', amount=amount, owner=user_cost_money, plus=False)
+    TransactionHistory(kind='piggy', amount=amount, owner=user_add_money)
+    TransactionHistory(kind='piggy', amount=-1*amount, owner=user_cost_money)
 
 @app.task
 def check_piggy():

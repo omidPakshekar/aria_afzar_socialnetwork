@@ -20,10 +20,11 @@ PAYMENT_MESSAGE = (
 )
 
 KIND_CHOICES = (
-    ('harvest', 'harvest'),
+    ('withdraw', 'withdraw'),
     ('deposit', 'deposit'),
     ('listen', 'listen'),
     ('like', 'like'),
+    ('membership', 'membership'),
     ('piggy', 'piggy')
 )
 
@@ -61,6 +62,5 @@ class TransactionHistory(models.Model):
     amount       = models.DecimalField(decimal_places=4, max_digits=12)
     created_time = models.TimeField(blank=False,  auto_now_add=True)
     kind         = models.CharField(max_length=20, choices=KIND_CHOICES)
-    plus         = models.BooleanField(default=True)
 
     
