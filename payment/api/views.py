@@ -39,7 +39,7 @@ class PaymentViewSet(viewsets.ModelViewSet):
         objects = self.get_queryset().filter(user=request.user)
         page = self.paginate_queryset(objects)
         if page is not None:
-            serializer = serializers.PaymentListSerializer(page, many=True, context={"request": request})
+            return self.get_paginated_response(serializer = serializers.PaymentListSerializer(page, many=True, context={"request": request}).data)
         serializer = serializers.PaymentListSerializer(objects, many=True, context={"request": request})
         return Response(serializer.data)
 

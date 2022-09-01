@@ -96,7 +96,7 @@ class ObjectMixin:
         objects_ = self.model_.objects.filter(admin_check=False)
         page = self.paginate_queryset(objects_)
         if page is not None:
-            serializer = self.admin_check_serializer(page, many=True, context={"request": request})
+            return self.get_paginated_response(self.admin_check_serializer(page, many=True, context={"request": request}).data) 
         serializer = self.admin_check_serializer(objects_, many=True, context={"request": request})
         return Response(serializer.data)
     
@@ -115,7 +115,7 @@ class ObjectMixin:
         objects_ = self.model_.objects.filter(owner=request.user)
         page = self.paginate_queryset(objects_)
         if page is not None:
-            serializer = self.list_serializer(page, many=True, context={"request": request})
+            return self.get_paginated_response( self.list_serializer(page, many=True, context={"request": request}).data )
         serializer = self.list_serializer(objects_, many=True, context={"request": request})
         return Response(serializer.data)
 

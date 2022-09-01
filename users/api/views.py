@@ -86,9 +86,9 @@ class UserViewSet(viewsets.ModelViewSet):
         get all user --> /accounts/
         block user --> /accounts/<username that you want block>/blockuser/
         unblock user --> /accounts/<username that you want block>/unblockuser/
-        get all user-profile-image ---> it's create for admin to retreive all profile image to accept them --> /accounts/user-profile-pic/
+        get all user-profile-image ---> it's create for admin to retreive all profile image to accept them --> /accounts/admin-all-profile-pic/
         accept profile image -->only admin- put : /accounts/<username>/accept-profile-pic/
-        get all user bio ---> it's create for admin to retreive all user bio to accept them -->get /accounts/user-profile-bio/
+        get all user bio ---> it's create for admin to retreive all user bio to accept them -->get /accounts/admin-all-profile-bio/
         accpet user bio -->only admin - put : /accounts/<username>/accept-profile-bio/
     """
     permission_classes = [UserViewSetPermission]
@@ -125,21 +125,21 @@ class UserViewSet(viewsets.ModelViewSet):
         instance.save()
         return Response(status.HTTP_200_OK)
     # show all user profile pic that dosent accept by admin
-    @action(methods=["get"], detail=False, name="user profile pic", url_path='user-profile-pic')
+    @action(methods=["get"], detail=False, name="user profile pic", url_path='admin-all-profile-pic')
     def user_profile_pic(self, request):
         objects_ = self.get_queryset().filter(profile_pic__admin_check=False)
         page = self.paginate_queryset(objects_)
         if page is not None:
-            serializer = UserProfileSerializer(page, many=True, context={"request": request})
+            return self.get_paginated_response( UserProfileSerializer(page, many=True, context={"request": request}).data)
         serializer = UserProfileSerializer(objects_, many=True, context={"request": request})
         return Response(serializer.data)
     # show all user bio  that dosent accept by admin
-    @action(methods=["get"], detail=False, name="user profile bio", url_path='user-profile-bio')
+    @action(methods=["get"], detail=False, name="user profile bio", url_path='admin-all-profile-bio')
     def user_profile_bio(self, request):
         objects_ = self.get_queryset().filter(profile_pic__admin_check=False)
         page = self.paginate_queryset(objects_)
         if page is not None:
-            serializer = UserBioSerializer(page, many=True, context={"request": request})
+            return self.get_paginated_response( UserBioSerializer(page, many=True, context={"request": request}).data)
         serializer = UserBioSerializer(objects_, many=True, context={"request": request})
         return Response(serializer.data)
 
