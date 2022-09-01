@@ -37,9 +37,11 @@ class PaymentChangeStatus(serializers.ModelSerializer):
 
 
 class TransactionHistorySerializer(serializers.ModelSerializer):
+    owner = UserInlineSerializer()
     class Meta:
         model = TransactionHistory
-        fields = ['amount', 'created_time', 'kind', 'plus']
+        fields = ['id', 'owner', 'amount', 'created_time', 'kind']
+
 
 
 

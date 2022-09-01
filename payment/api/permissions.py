@@ -41,7 +41,7 @@ class TransactionPermission(permissions.BasePermission):
     def has_permission(self, request, view):
         if not request.user.is_authenticated:
             return False
-        if view.action in ['list', "change_status"]:
+        if view.action in ['list', "change_status", 'withdraw']:
             return request.user.is_admin or request.user.is_staff
         elif view.action == 'mine':
             return True

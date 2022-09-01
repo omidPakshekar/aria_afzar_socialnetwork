@@ -5,7 +5,7 @@ from rest_framework_simplejwt.views import (
 
 from rest_framework.routers import DefaultRouter
 
-from payment.api.views import PaymentViewSet
+from payment.api.views import *
 from posts.api.views import ExprienceViewSet, PostViewSet, PodcastViewSet
 from chat.api.views import ChatViewSet
 router = DefaultRouter()
@@ -14,6 +14,7 @@ router.register('exprience', ExprienceViewSet, basename='exprience')
 router.register('post', PostViewSet, basename='post')
 router.register('podcast', PodcastViewSet, basename='podcast')
 router.register('chat', ChatViewSet, basename='chat')
+router.register('transaction', TransactionViewSet, basename='transaction')
 
 
 urlpatterns = [

@@ -60,7 +60,7 @@ class PiggyBank(models.Model):
 class TransactionHistory(models.Model):
     owner        = models.ForeignKey(CustomeUserModel, related_name='transaction', on_delete=models.CASCADE)
     amount       = models.DecimalField(decimal_places=4, max_digits=12)
-    created_time = models.TimeField(blank=False,  auto_now_add=True)
+    created_time = models.DateTimeField(blank=False,  auto_now_add=True)
     kind         = models.CharField(max_length=20, choices=KIND_CHOICES)
 
     
