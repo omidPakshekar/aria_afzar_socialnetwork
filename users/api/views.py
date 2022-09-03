@@ -178,7 +178,7 @@ class UpdateProfilePicView(generics.UpdateAPIView):
     serializer_class = UpdateProfilePicSerializer
     permission_classes = [IsAuthenticated]
     def get_object(self):
-        return UserBio.objects.get(owner=self.request.user)
+        return ProfileImage.objects.get(owner=self.request.user)
 
     
 # class RegistrationView(generics.GenericAPIView):

@@ -40,7 +40,7 @@ MESSAGE_TYPE = (
 )
 
 def get_profile_image_filepath(self, filename):
-    return f'profile_images/{self.username + ".png"}'
+    return f'profile_images/{self.owner.username}.png'
 
 def get_default_profile_image():
     return "default_image.jpg"
