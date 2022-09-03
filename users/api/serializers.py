@@ -97,29 +97,34 @@ class ImageInlineSerializer(serializers.ModelSerializer):
 
 class UserBioSerializer(serializers.ModelSerializer):
     user_bio = serializers.SerializerMethodField(source='user_bio', read_only=True)
+    profile_pic = serializers.SerializerMethodField(source='profile_pic', read_only=True)
     class Meta:
         model = CustomeUserModel
         fields = ['name', 'username', 'email', 'profile_pic']
     def get_user_bio(self, obj):
         if not (obj.user_bio.admin_check or self.context['request'].user.is_admin):
-            return None
+            return ''
         return BioInlineSerializer(instance=obj.user_bio).data
-
+    def get_profile_pic(self, obj):
+        if not (obj.profile_pic.admin_check or self.context['request'].user.is_admin):
+            return self.context['request'].build_absolute_uri('/media/default_image.jpg')
+        return ImageInlineSerializer(instance=obj.profile_pic, context={'request' : self.context['request']}).data
+        
 class UserProfileSerializer(serializers.ModelSerializer):
     profile_pic = serializers.SerializerMethodField(source='profile_pic', read_only=True)
     country     = CountryField(name_only=True)
     flag        = serializers.SerializerMethodField(source='country')
-    def get_flag(self, obj):
-        return self.context['request'].build_absolute_uri(obj.country.flag)
     class Meta:
         model = CustomeUserModel
         fields = ['name', 'username', 'email', 'profile_pic', 'country', 'flag']
     
     def get_profile_pic(self, obj):
+        request = self.context['request']
         if not (obj.profile_pic.admin_check or self.context['request'].user.is_admin):
-            return None
-        return ImageInlineSerializer(instance=obj.profile_pic, context={'request' : self.context['request']}).data
-        
+            return request.build_absolute_uri('/media/default_image.jpg')
+        return ImageInlineSerializer(instance=obj.profile_pic, context={'request' : request}).data
+    def get_flag(self, obj):
+        return self.context['request'].build_absolute_uri(obj.country.flag)        
 
 
 class UserAllInfoSerializer( serializers.ModelSerializer):
@@ -135,19 +140,19 @@ class UserAllInfoSerializer( serializers.ModelSerializer):
     def get_user_bio(self, obj):
         request =  self.context['request']
         if not (obj == request.user or obj.user_bio.admin_check or request.user.is_admin):
-            return None
+            return ''
         return BioInlineSerializer(instance=obj.user_bio).data
     def get_profile_pic(self, obj):
         request =  self.context['request']
         if not (obj == request.user or obj.profile_pic.admin_check or request.user.is_admin):
-            return None
+            return request.build_absolute_uri('/media/default_image.jpg')
         return ImageInlineSerializer(instance=obj.profile_pic, context={'request' : self.context['request']}).data
     
     def get_flag(self, obj):
         return self.context['request'].build_absolute_uri(obj.country.flag)
 
 class UserSeenInfoSerializer(serializers.ModelSerializer):
-    user_bio = serializers.SerializerMethodField(source='user_bio', read_only=True)
+    user_bio    = serializers.SerializerMethodField(source='user_bio', read_only=True)
     profile_pic = serializers.SerializerMethodField(source='profile_pic', read_only=True)
     country     = CountryField(name_only=True)
     flag        = serializers.SerializerMethodField(source='country')
@@ -157,11 +162,11 @@ class UserSeenInfoSerializer(serializers.ModelSerializer):
         fields = ['name', 'username', 'profile_pic', 'user_bio', 'gender', 'country', 'flag']
     def get_user_bio(self, obj):
         if not (obj.user_bio.admin_check or self.context['request'].user.is_admin):
-            return None
+            return ''
         return BioInlineSerializer(instance=obj.user_bio).data
     def get_profile_pic(self, obj):
         if not (obj.profile_pic.admin_check or self.context['request'].user.is_admin):
-            return None
+            return self.context['request'].build_absolute_uri('/media/default_image.jpg')
         return ImageInlineSerializer(instance=obj.profile_pic, context={'request' : self.context['request']}).data
     def get_flag(self, obj):
         return self.context['request'].build_absolute_uri(obj.country.flag)

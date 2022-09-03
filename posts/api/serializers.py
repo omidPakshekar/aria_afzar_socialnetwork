@@ -80,10 +80,9 @@ class PostSerializer(serializers.ModelSerializer):
     save_number = serializers.SerializerMethodField(read_only=True)
     owner = UserInlineSerializer(read_only=True)
     # comment = CommentInlineSerializer(many=True ,read_only = True)
-
     class Meta:
         model = Post
-        fields = ['id','owner', 'image', 'title', 'description', 'likes', 'save_number', ]
+        fields = ['id','owner', 'image', 'title', 'description', 'likes', 'save_number', 'created_time']
 
     def get_likes(self, obj):
         return obj.user_liked.count()
