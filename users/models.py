@@ -85,14 +85,14 @@ class MyAccountManager(BaseUserManager):
 		return user
 
 class ProfileImage(models.Model):
-    image   = models.ImageField(upload_to=get_profile_image_filepath, null=True, blank=True, default=get_default_profile_image)
-    admin_check     = models.BooleanField(default=False)
+    image           = models.ImageField(upload_to=get_profile_image_filepath, null=True, blank=True, default=get_default_profile_image)
+    admin_check     = models.BooleanField(default=True)
     def __str__(self):
         return f"{self.owner} image"
     
 class UserBio(models.Model):
     bio             = models.TextField(default='', blank=True)
-    admin_check     = models.BooleanField(default=False, blank=True, null=True)
+    admin_check     = models.BooleanField(default=True, blank=True, null=True)
     def __str__(self):
         return f"{self.owner} bio"
 

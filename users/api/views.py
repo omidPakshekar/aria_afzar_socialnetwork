@@ -5,6 +5,7 @@ from .serializers import UserAllInfoSerializer, UserSeenInfoSerializer
 from users.api.permissions import UserViewSetPermission
 from .serializers import *
 from ..email import send_verification_email  
+from ..models import *
 
 from django.urls import reverse
 from django.http import HttpResponse
@@ -169,6 +170,16 @@ class UpdateBioView(generics.UpdateAPIView):
     permission_classes = [IsAuthenticated]
     def get_object(self):
         return UserBio.objects.get(owner=self.request.user)
+    def put(self, request, *args, **kwargs):
+        instance = self.get_object()
+        instance.admin_check = False
+        instance.save()
+        return super().put(request, *args, **kwargs)
+    def patch(self, request, *args, **kwargs):
+        instance = self.get_object()
+        instance.admin_check = False
+        instance.save()
+        return super().patch(request, *args, **kwargs)    
     
 class UpdateProfilePicView(generics.UpdateAPIView):
     """
@@ -179,8 +190,17 @@ class UpdateProfilePicView(generics.UpdateAPIView):
     permission_classes = [IsAuthenticated]
     def get_object(self):
         return ProfileImage.objects.get(owner=self.request.user)
+    def put(self, request, *args, **kwargs):
+        instance = self.get_object()
+        instance.admin_check = False
+        instance.save()
+        return super().put(request, *args, **kwargs)
+    def patch(self, request, *args, **kwargs):
+        instance = self.get_object()
+        instance.admin_check = False
+        instance.save()
+        return super().patch(request, *args, **kwargs)    
 
-    
 # class RegistrationView(generics.GenericAPIView):
 
 #     serializer_class = RegistrationSerializer
