@@ -10,6 +10,7 @@ from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
 from django.contrib.auth.models import PermissionsMixin
 from django.db.models.signals import (pre_save, post_save)
 from django.dispatch import receiver
+from django_countries.fields import CountryField
 
 COUNTRY_CHOICES = (
     ('IR', 'Iran'),
@@ -110,7 +111,7 @@ class CustomeUserModel(AbstractBaseUser, PermissionsMixin):
     is_staff		= models.BooleanField(default=False)
     is_superuser	= models.BooleanField(default=False)
     gender          = models.CharField(max_length=1, choices=GENDER_CHOICES, blank=True, null=True)
-    country         = models.CharField(max_length=20, blank=True, null=True)
+    country         = CountryField(blank_label='(select country)')
     profile_pic     = models.OneToOneField(ProfileImage, related_name='owner', blank=True, null=True, on_delete=models.CASCADE)
     user_bio        = models.OneToOneField(UserBio, related_name='owner', null=True, blank=True, on_delete=models.CASCADE)
     black_list      = models.ManyToManyField('CustomeUserModel', blank=True, related_name="blacklist")

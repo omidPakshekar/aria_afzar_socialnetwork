@@ -74,6 +74,7 @@ class Dev(Configuration):
         'channels',
         'django_celery_beat',
         "corsheaders",
+        'django_countries',
 
 
     ]

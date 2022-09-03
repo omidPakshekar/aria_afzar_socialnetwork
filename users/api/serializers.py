@@ -6,15 +6,18 @@ from ..models import CustomeUserModel, MemberShip, ProfileImage, UserBio, Wallet
 
 from django.contrib.auth import authenticate, get_user_model
 from dj_rest_auth.serializers import JWTSerializerWithExpiration
+from django_countries.serializers import CountryFieldMixin
+from django_countries.serializer_fields import CountryField
 
 
+    
 class CustomRegisterSerializer(RegisterSerializer):
     name            = serializers.CharField(max_length=30)
-    country         = serializers.CharField(max_length=20)
     gender          = serializers.CharField(max_length=1)
     year_of_birth   = serializers.CharField(max_length=20)
     month_of_birth  = serializers.CharField(max_length=20)
     day_of_birth    = serializers.CharField(max_length=20)
+    country         = CountryField()
     def get_cleaned_data(self):
         data_dict = super().get_cleaned_data()
         data_dict['name'] = self.validated_data.get('name')
@@ -104,22 +107,30 @@ class UserBioSerializer(serializers.ModelSerializer):
 
 class UserProfileSerializer(serializers.ModelSerializer):
     profile_pic = serializers.SerializerMethodField(source='profile_pic', read_only=True)
+    country     = CountryField(name_only=True)
+    flag        = serializers.SerializerMethodField(source='country')
+    def get_flag(self, obj):
+        return self.context['request'].build_absolute_uri(obj.country.flag)
     class Meta:
         model = CustomeUserModel
-        fields = ['name', 'username', 'email', 'profile_pic']
+        fields = ['name', 'username', 'email', 'profile_pic', 'country', 'flag']
     
     def get_profile_pic(self, obj):
         if not (obj.profile_pic.admin_check or self.context['request'].user.is_admin):
             return None
         return ImageInlineSerializer(instance=obj.profile_pic, context={'request' : self.context['request']}).data
         
-class UserAllInfoSerializer(serializers.ModelSerializer):
-    user_bio = serializers.SerializerMethodField(source='user_bio', read_only=True)
+
+
+class UserAllInfoSerializer( serializers.ModelSerializer):
+    user_bio    = serializers.SerializerMethodField(source='user_bio', read_only=True)
     profile_pic = serializers.SerializerMethodField(source='profile_pic', read_only=True)
+    country     = CountryField(name_only=True)
+    flag        = serializers.SerializerMethodField(source='country')
     class Meta:
         model = CustomeUserModel
         fields = ['name', 'username', 'email', 'profile_pic', 'date_joined', 'last_login',
-                    'gender', 'country', 'have_membership', 'user_bio', 'profile_pic',
+                    'gender', 'country', 'flag', 'have_membership', 'user_bio', 'profile_pic',
                     'year_of_birth', 'month_of_birth', 'day_of_birth']
     def get_user_bio(self, obj):
         request =  self.context['request']
@@ -131,13 +142,19 @@ class UserAllInfoSerializer(serializers.ModelSerializer):
         if not (obj == request.user or obj.profile_pic.admin_check or request.user.is_admin):
             return None
         return ImageInlineSerializer(instance=obj.profile_pic, context={'request' : self.context['request']}).data
-        
+    
+    def get_flag(self, obj):
+        return self.context['request'].build_absolute_uri(obj.country.flag)
+
 class UserSeenInfoSerializer(serializers.ModelSerializer):
     user_bio = serializers.SerializerMethodField(source='user_bio', read_only=True)
     profile_pic = serializers.SerializerMethodField(source='profile_pic', read_only=True)
+    country     = CountryField(name_only=True)
+    flag        = serializers.SerializerMethodField(source='country')
+
     class Meta:
         model = CustomeUserModel
-        fields = ['name', 'username', 'profile_pic', 'user_bio', 'gender', 'country']
+        fields = ['name', 'username', 'profile_pic', 'user_bio', 'gender', 'country', 'flag']
     def get_user_bio(self, obj):
         if not (obj.user_bio.admin_check or self.context['request'].user.is_admin):
             return None
@@ -146,8 +163,10 @@ class UserSeenInfoSerializer(serializers.ModelSerializer):
         if not (obj.profile_pic.admin_check or self.context['request'].user.is_admin):
             return None
         return ImageInlineSerializer(instance=obj.profile_pic, context={'request' : self.context['request']}).data
-
+    def get_flag(self, obj):
+        return self.context['request'].build_absolute_uri(obj.country.flag)
 class UserUpdateSerializer(serializers.ModelSerializer):
+    country     = CountryField(name_only=True)
     class Meta:
         model = CustomeUserModel
         fields = ['name', 'gender', 'country', 'year_of_birth',

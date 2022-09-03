@@ -15,6 +15,7 @@ from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib.sites.shortcuts import get_current_site
 from django.contrib.auth import authenticate, login, logout
+from django_countries.serializers import CountryFieldMixin
 
 from rest_framework.decorators import api_view, action 
 from rest_framework import status, generics
