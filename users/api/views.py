@@ -6,6 +6,7 @@ from users.api.permissions import UserViewSetPermission
 from .serializers import *
 from ..email import send_verification_email  
 from ..models import *
+from posts.api.views import calculte_period
 
 from django.urls import reverse
 from django.http import HttpResponse
@@ -159,6 +160,38 @@ class UserViewSet(viewsets.ModelViewSet):
         bio.admin_check = True
         bio.save()
         return Response(status.HTTP_200_OK)
+
+    @action(methods=["get"], detail=False, name="number register", url_path='number-register')
+    def number_register(self, request):
+        queryset = self.get_queryset()
+        daily =  queryset.filter(date_joined__gte=timezone.now() - timedelta(hours=24))
+        weekly = queryset.filter(date_joined__gte=timezone.now() - timedelta(days=7))
+        monthly = queryset.filter(date_joined__gte=timezone.now() - timedelta(days=30))
+        yearly = queryset.filter(date_joined__gte=timezone.now() - timedelta(days=365))
+        data = {
+            'count' : queryset.count(),
+            'number_in_day': daily.count(),
+            'number_in_week': weekly.count(),
+            'number_in_month': monthly.count(),
+            'number_in_year': yearly.count(),
+        }
+        return Response((data))  
+    @action(methods=["get"], detail=False, name="number activate user", url_path='number-active')
+    def number_active(self, request):
+        queryset = self.get_queryset()
+        daily =  queryset.filter(last_login__gte=timezone.now() - timedelta(hours=24))
+        weekly = queryset.filter(last_login__gte=timezone.now() - timedelta(days=7))
+        monthly = queryset.filter(last_login__gte=timezone.now() - timedelta(days=30))
+        yearly = queryset.filter(last_login__gte=timezone.now() - timedelta(days=365))
+        data = {
+            'count' : queryset.count(),
+            'number_in_day': daily.count(),
+            'number_in_week': weekly.count(),
+            'number_in_month': monthly.count(),
+            'number_in_year': yearly.count(),
+        }
+        return Response((data))
+
 
 
 class UpdateBioView(generics.UpdateAPIView):
