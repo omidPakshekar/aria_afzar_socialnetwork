@@ -17,6 +17,7 @@ from users.models import Activity, CustomeUserModel, Wallet
 from posts.api.permissions import PostPermission
 from payment.models import TransactionHistory
 
+
 user_admin = CustomeUserModel.objects.get(id=1)
 
 def add_activity(piggy, user):
@@ -38,7 +39,15 @@ def add_money(owner, user, amount, kind):
         add_activity(piggy, user)
         add_activity(piggyLong, user)
         
-        
+
+def calculte_period(period, objects):
+    if period =='daily':
+        return objects.filter(created_time__gte=timezone.now() - timedelta(hours=24))
+    elif period =='weekly':
+        return objects.filter(created_time__gte=timezone.now() - timedelta(days=7))
+    elif period == 'monthly':
+        return objects.filter(created_time__gte=timezone.now() - timedelta(days=30))        
+    return objects.filter(created_time__gte=timezone.now() - timedelta(days=365))
 
 class ObjectMixin:
     list_serializer = None
@@ -135,15 +144,30 @@ class ObjectMixin:
         data = {
             'count' : queryset.count(),
             'number_in_day': daily.count(),
-            'post_in_day' : self.list_serializer(instance=daily,many=True).data,
             'number_in_week': weekly.count(),
-            'post_in_week' : self.list_serializer(instance=weekly,many=True).data,
             'number_in_month': monthly.count(),
-            'post_in_month' : self.list_serializer(instance=monthly, many=True).data,
             'number_in_year': yearly.count(),
-            'post_in_year': self.list_serializer(instance=yearly, many=True).data,
         }
-        return Response((data))    
+        return Response((data))   
+
+    @action(methods=["get"], detail=False, name="history", url_path='history')
+    def history(self, request):
+        if request.user.is_admin:
+            objects = self.get_queryset()
+        else:
+            objects = self.get_queryset().filter(owner=request.user)
+        period = request.query_params.get('period', None)
+        print(objects)
+        if period != None:
+            objects = calculte_period(objects=objects, period=period)
+        print(objects)
+        page = self.paginate_queryset(objects)
+        if page is not None:
+            return self.get_paginated_response(self.list_serializer(page, many=True, context={"request": request}).data)
+        serializer = self.list_serializer(objects, many=True, context={"request": request})
+        return Response(serializer.data)
+    
+         
 
     
 

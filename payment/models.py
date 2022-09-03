@@ -25,7 +25,8 @@ KIND_CHOICES = (
     ('listen', 'listen'),
     ('like', 'like'),
     ('membership', 'membership'),
-    ('piggy', 'piggy')
+    ('piggy', 'piggy'),
+    ('donate', 'donate')
 )
 
 

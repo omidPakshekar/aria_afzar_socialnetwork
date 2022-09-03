@@ -1,4 +1,5 @@
 from django.utils import timezone
+from django.db.models import Sum
 from datetime import timedelta
 
 from rest_framework import generics, viewsets
@@ -77,7 +78,7 @@ class TransactionViewSet(viewsets.ModelViewSet):
         if request.user.is_admin:
             objects = self.get_queryset().filter(kind='withdraw')
         else:
-            objects = self.get_queryset().filter(user=request.user).filter(kind='withdraw')
+            objects = self.get_queryset().filter(owner=request.user).filter(kind='withdraw')
         period = request.query_params.get('period', None)
         if period != None:
             objects = self.get_objects(objects=objects, period=period)
@@ -87,6 +88,29 @@ class TransactionViewSet(viewsets.ModelViewSet):
         serializer = self.serializer_class(objects, many=True, context={"request": request})
         return Response(serializer.data)
     
+    @action(methods=["get"], detail=False, name="withdraw", url_path='deposit')
+    def deposit(self, request):
+        if request.user.is_admin:
+            objects = self.get_queryset().filter(kind='deposit')
+        else:
+            objects = self.get_queryset().filter(owner=request.user).filter(kind='deposit')
+        period = request.query_params.get('period', None)
+        if period != None:
+            objects = self.get_objects(objects=objects, period=period)
+        page = self.paginate_queryset(objects)
+        if page is not None:
+            return self.get_paginated_response(self.serializer_class(page, many=True, context={"request": request}).data)
+        serializer = self.serializer_class(objects, many=True, context={"request": request})
+        return Response(serializer.data)
+    @action(methods=["get"], detail=False, name="withdraw", url_path='income')
+    def income(self, request):
+        objects = self.get_queryset().filter(owner=request.user)
+        period = request.query_params.get('period', None)
+        if period != None:
+            objects = self.get_objects(objects=objects, period=period)
+            print(objects)
+        return Response(objects.aggregate(Sum('amount')))
+
     # @action(methods=["get"], detail=False, name="withdraw", url_path='withdraw')
     # def withdraw(self, request):
     #     if request.user.is_admin:
