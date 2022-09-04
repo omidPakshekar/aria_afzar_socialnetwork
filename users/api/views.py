@@ -17,6 +17,7 @@ from django.contrib.sites.shortcuts import get_current_site
 from django.contrib.auth import authenticate, login, logout
 from django_countries.serializers import CountryFieldMixin
 
+from rest_framework.exceptions import MethodNotAllowed, NotFound, ValidationError
 from rest_framework.decorators import api_view, action 
 from rest_framework import status, generics
 from rest_framework.permissions import IsAuthenticated
@@ -234,6 +235,27 @@ class UpdateProfilePicView(generics.UpdateAPIView):
         instance.admin_check = False
         instance.save()
         return super().patch(request, *args, **kwargs)    
+
+class CustomVerifyEmail(generics.GenericAPIView):
+    permission_classes = ()
+    allowed_methods = ('POST', 'OPTIONS', 'HEAD')
+    serializer_class = CustomVerifyEmailSerializer
+
+    def get(self, *args, **kwargs):
+        raise MethodNotAllowed('GET')
+    def post(self, *args, **kwargs):
+        activation = ActivationKey.objects.get(key=self.request.data['key'])
+        user_ = activation.user 
+        try:
+            emailaddress = user_.emailaddress_set.all()[0]
+            if not emailaddress.verified:
+                emailaddress.verified = True 
+                emailaddress.save()
+                activation.delete()
+                return Response({'email': 'Successfully activated'}, status=status.HTTP_200_OK)
+        except:
+            activation.delete()
+            return Response({'error': 'Invalid token'}, status=status.HTTP_400_BAD_REQUEST)
 
 # class RegistrationView(generics.GenericAPIView):
 

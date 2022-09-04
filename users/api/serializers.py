@@ -10,6 +10,11 @@ from django_countries.serializers import CountryFieldMixin
 from django_countries.serializer_fields import CountryField
 
 
+"""
+    customAuthentication
+"""
+class CustomVerifyEmailSerializer(serializers.Serializer):
+    key             = serializers.CharField()
     
 class CustomRegisterSerializer(RegisterSerializer):
     name            = serializers.CharField(max_length=30)

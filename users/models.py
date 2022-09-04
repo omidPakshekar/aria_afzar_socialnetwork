@@ -283,7 +283,8 @@ class Message(models.Model):
 
 class ActivationKey(models.Model):
     user = models.ForeignKey(CustomeUserModel, related_name='custom_activation_key' ,on_delete=models.CASCADE)
-    key = models.PositiveSmallIntegerField()
+    key = models.IntegerField()
+    email = models.EmailField()
     created_at = models.DateTimeField(auto_now_add=True)
     
     def __str__(self) -> str:
