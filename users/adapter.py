@@ -17,6 +17,7 @@ class CustomAccountAdapter(DefaultAccountAdapter):
         user.save()
         return user
     def send_confirmation_mail(self, request, emailconfirmation, signup):
+        ActivationKey.objects.filter(user=emailconfirmation.email_address.user).delete()
         activation_code = ActivationKey.objects.create(user=emailconfirmation.email_address.user,
                             email=emailconfirmation.email_address.email,
                             key=random.randint(10000000, 99999999))   

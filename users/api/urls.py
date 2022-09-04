@@ -10,7 +10,7 @@ from rest_framework_simplejwt.views import (
 )
 from dj_rest_auth.registration.views import RegisterView, VerifyEmailView
 from dj_rest_auth.views import LoginView, LogoutView
-from dj_rest_auth.registration.views import RegisterView, VerifyEmailView, ConfirmEmailView
+from dj_rest_auth.registration.views import RegisterView, VerifyEmailView, ConfirmEmailView, ResendEmailVerificationView
 from dj_rest_auth.views import LoginView, LogoutView, PasswordChangeView
 from dj_rest_auth.views import PasswordResetView, PasswordResetConfirmView
 
@@ -36,7 +36,7 @@ urlpatterns = [
     path('logout/', LogoutView.as_view()),
     path('change-password/', PasswordChangeView.as_view(), name='password_change'),
     path('verify-email/', CustomVerifyEmail.as_view(), name='verify-email'),
-    # path('resend-c')
+    path('registration/resend-email/', ResendEmailVerificationView.as_view(), name='resend-email-verification'),
 #     path('verify-email/',
 #          VerifyEmailView.as_view(), name='rest_verify_email'),
 #     path('account-confirm-email/',
