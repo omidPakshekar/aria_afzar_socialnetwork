@@ -127,7 +127,13 @@ class ObjectMixin:
             return self.get_paginated_response( self.list_serializer(page, many=True, context={"request": request}).data )
         serializer = self.list_serializer(objects_, many=True, context={"request": request})
         return Response(serializer.data)
-
+    @action(methods=["get"], detail=False, name="user Item created", url_path='mine/count')
+    def mine_count(self, request):
+        count = self.model_.objects.filter(owner=request.user).count()
+        return Response({
+                'number' : count
+            })
+        
 
     @action(methods=["get"], detail=True, name="get_comment", url_path='get-comment')
     def get_comment(self, request, pk):

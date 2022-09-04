@@ -8,6 +8,7 @@ class PostPermission(permissions.BasePermission):
         retreive, update : if you are admin or owner
         
     """ 
+    
     def has_permission(self, request, view):
         print('view', view.action)
         if view.action in ['list', 'retrieve']:
@@ -16,7 +17,7 @@ class PostPermission(permissions.BasePermission):
             return False
         if view.action in ['get_comment', 'add_like', 'add_user_saved', 'admin_accept' ,'add_comment', 'mine', 'add_listen']:
             return True
-        elif view.action in ['history', 'create', 'retrieve', 'partial_update', 'destroy', 'update', 'get_count']:
+        elif view.action in ['mine_count', 'history', 'create', 'retrieve', 'partial_update', 'destroy', 'update', 'get_count']:
             return True
         elif view.action =='admin_check':
             return request.user.is_admin or request.user.is_staff
