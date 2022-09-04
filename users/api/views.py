@@ -257,12 +257,16 @@ class CustomVerifyEmail(generics.GenericAPIView):
             activation.delete()
             return Response({'error': 'Invalid token'}, status=status.HTTP_400_BAD_REQUEST)
 
-class CustomCreateUserId(generics.GenericAPIView):
+class CustomUserIdApiView(generics.GenericAPIView):
     """
         create userId
     """
     permission_classes = [IsAuthenticated]
     serializer_class = UserIdSerializer
+    def get(self, *args, **kwargs):
+        if self.request.user.userid != None:
+            return Response(UserIdSerializer(instance=self.request.user.userid).data)
+        return Response(data={'detail': 'user dosent have user_id'}, status=status.HTTP_404_NOT_FOUND)
     def post(self, *args, **kwargs):
         serializer_ = UserIdSerializer(data=self.request.data)
         serializer_.is_valid(raise_exception=True)
@@ -279,6 +283,19 @@ class CustomCreateUserId(generics.GenericAPIView):
         user_.userid = obj
         user_.save()
         return Response(status=status.HTTP_200_OK)
+
+class CheckUserIdApiView(generics.GenericAPIView):
+    """
+        status 200 ok
+        status 302 found -> it's duplicate
+    """
+    permission_classes = [IsAuthenticated]
+    serializer_class = UserIdSerializer
+    def post(self, *args, **kwargs):
+        key = self.request.data['userid']
+        if UserId.objects.filter(userid=key).count() > 0:
+            return Response(data={'detail': "it's duplicated"}, status=status.HTTP_302_FOUND)
+        return Response(data={'detail': "it's ok"}, status=status.HTTP_200_OK)
 
 # UserId.objects.create(userid)
 
