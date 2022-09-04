@@ -87,6 +87,9 @@ class MemberShipAdmin(admin.ModelAdmin):
 class ActivityAdmin(admin.ModelAdmin):
     list_display = ['id', 'user', 'number', 'piggy_owner', 'piggy', 'piggy_amount', ]
 
+class ActivationKeyAdmin(admin.ModelAdmin):
+    list_display = ['user', 'key', 'created_at']
+
 
 admin.site.register(CustomeUserModel, CustomUserAdmin)
 admin.site.register(UserBio)
@@ -94,3 +97,12 @@ admin.site.register(ProfileImage)
 admin.site.register(Wallet, WalletAdmin)
 admin.site.register(MemberShip, MemberShipAdmin)
 admin.site.register(Activity, ActivityAdmin)
+admin.site.register(ActivationKey)
+
+
+
+
+
+
+
+

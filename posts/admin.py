@@ -1,4 +1,5 @@
 from django.contrib import admin
+from drf_chunked_upload.models import ChunkedUpload 
 
 from .models import *
 
@@ -17,5 +18,5 @@ admin.site.register(Podcast, PostAdmin)
 admin.site.register(Post, PostAdmin)
 admin.site.register(SuccessfullExperience, ExprienceAdmin)
 admin.site.register(Comment, CommentAdmin)
-
+# admin.site.register(ChunkedUpload)
 

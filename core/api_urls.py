@@ -8,6 +8,8 @@ from rest_framework.routers import DefaultRouter
 from payment.api.views import *
 from posts.api.views import ExprienceViewSet, PostViewSet, PodcastViewSet
 from chat.api.views import ChatViewSet
+from drf_chunked_upload.views import ChunkedUploadView
+
 router = DefaultRouter()
 router.register('payment', PaymentViewSet)
 router.register('exprience', ExprienceViewSet, basename='exprience')
@@ -18,6 +20,7 @@ router.register('transaction', TransactionViewSet, basename='transaction')
 
 
 urlpatterns = [
+    path('test/', ChunkedUploadView.as_view()),
     path('accounts/', include('users.api.urls')),
     path('token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),

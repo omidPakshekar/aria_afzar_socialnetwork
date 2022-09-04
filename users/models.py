@@ -175,7 +175,6 @@ def user_post_save_receiver(sender, instance, created, *args, **kwargs):
         # create wallet 
         wallet = Wallet(owner=instance)
         wallet.save()
-       
 
 from payment.models import PiggyBank
 
@@ -280,6 +279,25 @@ class Message(models.Model):
 
     def __str__(self):
         return "{self.user} - {self.title[0:15]}..." 
+
+
+class ActivationKey(models.Model):
+    user = models.ForeignKey(CustomeUserModel, related_name='custom_activation_key' ,on_delete=models.CASCADE)
+    key = models.PositiveSmallIntegerField()
+    created_at = models.DateTimeField(auto_now_add=True)
+    
+    def __str__(self) -> str:
+        return f"{self.user}---code={self.key}"
+
+
+    # @classmethod
+    # def create(cls, user):
+    #     key = random.randint(100000, 999999)
+    #     return cls._default_manager.create(user=user, key=key)
+
+
+
+
 
 
 

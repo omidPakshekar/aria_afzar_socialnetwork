@@ -3,6 +3,9 @@ from django.db import models
 from django.contrib.contenttypes.fields import ContentType, GenericForeignKey, GenericRelation
 from django.utils.text import slugify
 from django.dispatch import Signal
+from drf_chunked_upload.models import ChunkedUpload
+from django.contrib.auth import get_user_model
+from django.db import models
 
 from users.models import CustomeUserModel
 from datetime import datetime, timedelta
@@ -103,6 +106,23 @@ class SuccessfullExperience(ItemBase):
 
 
 
+User = get_user_model()
+
+# class UploadType(ChunkedUpload):
+#     ALLOWED_CONTENT_TYPES = [User]
+#     MIN_BYTES = 0
+#     MAX_BYTES = 50 * 1024 * 1024
+#     ALLOWED_EXTENSIONS = None
+#     ALLOWED_MIMETYPES = ['video/mp4']
+
+#     file = models.FileField(
+#         max_length=255,        null=True)
+
+#     def allowed_owners(self):
+#         return super(UploadType, self).allowed_owners()
+
+#     def allowed_owner(self, owner_type, owner_id=None, msg=None):
+#         return super(UploadType, self).allowed_owner(owner_type, owner_id, msg)
 
 
 

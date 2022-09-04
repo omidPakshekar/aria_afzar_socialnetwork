@@ -75,7 +75,8 @@ class Dev(Configuration):
         'django_celery_beat',
         "corsheaders",
         'django_countries',
-
+        # 'chunked_upload',
+        # 'drf_chunked_upload',
 
     ]
     SITE_ID = 1
