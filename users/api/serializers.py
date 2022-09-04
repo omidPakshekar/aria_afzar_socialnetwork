@@ -2,7 +2,7 @@ from urllib import request
 from rest_framework import exceptions, serializers
 from dj_rest_auth.registration.serializers import RegisterSerializer
 
-from ..models import CustomeUserModel, MemberShip, ProfileImage, UserBio, Wallet
+from ..models import *
 
 from django.contrib.auth import authenticate, get_user_model
 from dj_rest_auth.serializers import JWTSerializerWithExpiration
@@ -23,6 +23,7 @@ class CustomRegisterSerializer(RegisterSerializer):
     month_of_birth  = serializers.CharField(max_length=20)
     day_of_birth    = serializers.CharField(max_length=20)
     country         = CountryField()
+    username        = serializers.CharField(max_length=30, required=False)
     def get_cleaned_data(self):
         data_dict = super().get_cleaned_data()
         data_dict['name'] = self.validated_data.get('name')
@@ -182,7 +183,16 @@ class UserUpdateSerializer(serializers.ModelSerializer):
         fields = ['name', 'gender', 'country', 'year_of_birth',
                  'month_of_birth', 'day_of_birth']
 
-
+class UserIdSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UserId
+        fields = ["userid"]
+    def validate_userid(self, value):
+        if len(value) < 4:
+            raise serializers.ValidationError("it's too short")
+        if value.startswith('_'):
+            raise serializers.ValidationError("dont start with _")
+        return value
 # for UserCustomLogin
 class CustomJWTSerializer(JWTSerializerWithExpiration):
     user = serializers.SerializerMethodField()

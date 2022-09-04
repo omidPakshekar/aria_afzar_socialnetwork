@@ -31,6 +31,8 @@ urlpatterns = [
     path('wallet/', WalletView.as_view(), name='wallet'),
     path('membership/', MembershipView.as_view(), name='membership'),
     path('account-confirm-email/<str:key>/', ConfirmEmailView.as_view()),
+    path('custom-userid/', CustomCreateUserId.as_view(), name='create-custom-userid' ),
+    
     path('register/', RegisterView.as_view()),
     path('login/', CustomUserLogin.as_view()),
     path('logout/', LogoutView.as_view()),

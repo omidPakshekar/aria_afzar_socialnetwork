@@ -20,7 +20,7 @@ router.register('transaction', TransactionViewSet, basename='transaction')
 
 
 urlpatterns = [
-    path('test/', ChunkedUploadView.as_view()),
+    # path('test/', ChunkedUploadView.as_view()),
     path('accounts/', include('users.api.urls')),
     path('token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),

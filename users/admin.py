@@ -90,6 +90,8 @@ class ActivityAdmin(admin.ModelAdmin):
 class ActivationKeyAdmin(admin.ModelAdmin):
     list_display = ['user', 'key', 'created_at']
 
+class UserIdAdmin(admin.ModelAdmin):
+    list_display = ['email', 'userid', 'admin_check']
 
 admin.site.register(CustomeUserModel, CustomUserAdmin)
 admin.site.register(UserBio)
@@ -97,7 +99,10 @@ admin.site.register(ProfileImage)
 admin.site.register(Wallet, WalletAdmin)
 admin.site.register(MemberShip, MemberShipAdmin)
 admin.site.register(Activity, ActivityAdmin)
-admin.site.register(ActivationKey)
+admin.site.register(ActivationKey, ActivationKeyAdmin)
+admin.site.register(UserId, UserIdAdmin)
+
+
 
 
 

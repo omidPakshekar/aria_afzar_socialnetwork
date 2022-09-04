@@ -257,6 +257,31 @@ class CustomVerifyEmail(generics.GenericAPIView):
             activation.delete()
             return Response({'error': 'Invalid token'}, status=status.HTTP_400_BAD_REQUEST)
 
+class CustomCreateUserId(generics.GenericAPIView):
+    """
+        create userId
+    """
+    permission_classes = [IsAuthenticated]
+    serializer_class = UserIdSerializer
+    def post(self, *args, **kwargs):
+        serializer_ = UserIdSerializer(data=self.request.data)
+        serializer_.is_valid(raise_exception=True)
+        # if userId is exist get userId and delete
+        if not self.request.user.userid == None:
+            userid_ = self.request.user.userid 
+            userid_.delete()
+        obj = serializer_.save()
+        user_ = self.request.user
+        # if admin change he's userid it's admin_check=True
+        if user_.is_admin:
+            obj.admin_check = True 
+            obj.save()
+        user_.userid = obj
+        user_.save()
+        return Response(status=status.HTTP_200_OK)
+
+# UserId.objects.create(userid)
+
 # class RegistrationView(generics.GenericAPIView):
 
 #     serializer_class = RegistrationSerializer

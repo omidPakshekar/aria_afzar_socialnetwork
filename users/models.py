@@ -58,6 +58,14 @@ def create_wallet_key():
     lst[10] = '-'; lst[15] = '-'; lst[25] = ''
     return ''.join(lst)
 
+def create_username():
+    lenght = 30
+    letters = string.ascii_letters
+    number = ''.join(str(i) for i in range(10))
+    letters += number
+    return ''.join([random.choice(letters) for i in range(30)])
+
+
 
 class MyAccountManager(BaseUserManager):
 	def create_user(self, email, username, password=None):
@@ -97,12 +105,21 @@ class UserBio(models.Model):
     def __str__(self):
         return f"{self.owner} bio"
 
+class UserId(models.Model):
+    userid          = models.CharField(max_length=30, unique=True)
+    admin_check     = models.BooleanField(default=False, blank=True, null=True)
+    def __str__(self) -> str:
+        return f"{self.owner} userid:{self.userid}"
+    @property
+    def email(self):
+        return self.owner
 class CustomeUserModel(AbstractBaseUser, PermissionsMixin):
     class Meta:
         verbose_name_plural = 'users'
     
     email 			= models.EmailField(verbose_name="email", max_length=60, unique=True)
     username 		= models.CharField(max_length=30, unique=True)
+    userid          = models.OneToOneField(UserId, related_name='owner', null=True, blank=True, on_delete=models.SET_NULL)
     name            = models.CharField(max_length=30, default='', blank=True, null=True)
     date_joined		= models.DateTimeField(verbose_name='date joined', auto_now_add=True)
     last_login		= models.DateTimeField(verbose_name='last login', auto_now=True)
@@ -110,7 +127,7 @@ class CustomeUserModel(AbstractBaseUser, PermissionsMixin):
     is_active		= models.BooleanField(default=True)
     is_staff		= models.BooleanField(default=False)
     is_superuser	= models.BooleanField(default=False)
-    gender          = models.CharField(max_length=1, choices=GENDER_CHOICES, blank=True, null=True)
+    gender          = models.CharField(max_length=1, choices=GENDER_CHOICES)
     country         = CountryField(blank_label='(select country)')
     profile_pic     = models.OneToOneField(ProfileImage, related_name='owner', blank=True, null=True, on_delete=models.CASCADE)
     user_bio        = models.OneToOneField(UserBio, related_name='owner', null=True, blank=True, on_delete=models.CASCADE)
@@ -123,10 +140,9 @@ class CustomeUserModel(AbstractBaseUser, PermissionsMixin):
     objects = MyAccountManager()
 
     USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = ['username']
 
     def __str__(self):
-        return self.username
+        return self.email
     
     # def has_perm(self, perm, obj=None):
     #     return self.is_admin
@@ -156,13 +172,11 @@ class Wallet(models.Model):
     pre_save  -> create userbio and profileImage
 """
 
-@receiver(pre_save, sender=CustomeUserModel)
-def user_pre_save_receiver(sender, instance, *args, **kwargs):
-    # create profile_pic and bio_bio
-    if instance.user_bio == None:
-        instance.user_bio    = UserBio.objects.create()
-    if instance.profile_pic == None:
-        instance.profile_pic = ProfileImage.objects.create()
+# @receiver(pre_save, sender=CustomeUserModel)
+# def user_pre_save_receiver(sender, instance, *args, **kwargs):
+#     # create profile_pic and bio_bio
+#     if instance.user_bio == None:
+        
 
 @receiver(post_save, sender=CustomeUserModel)
 def user_post_save_receiver(sender, instance, created, *args, **kwargs):
@@ -175,7 +189,11 @@ def user_post_save_receiver(sender, instance, created, *args, **kwargs):
         # create wallet 
         wallet = Wallet(owner=instance)
         wallet.save()
-
+        instance.user_bio    = UserBio.objects.create()
+        instance.profile_pic = ProfileImage.objects.create()
+        instance.username = create_username()
+        instance.save()
+        
 from payment.models import PiggyBank
 
 class Activity(models.Model):

@@ -128,27 +128,28 @@ class ObjectMixin:
         serializer = self.list_serializer(objects_, many=True, context={"request": request})
         return Response(serializer.data)
 
+
     @action(methods=["get"], detail=True, name="get_comment", url_path='get-comment')
     def get_comment(self, request, pk):
         instance = self.get_object()
         serializer = CommentInlineSerializer(instance = instance.comment.all(), many=True)
         return Response(serializer.data)
 
-    @action(methods=["get"], detail=False, name="count", url_path='count')
-    def get_count(self, request):
-        queryset = self.get_queryset()
-        daily =  queryset.filter(created_time__gte=timezone.now() - timedelta(hours=24))
-        weekly = queryset.filter(created_time__gte=timezone.now() - timedelta(days=7))
-        monthly = queryset.filter(created_time__gte=timezone.now() - timedelta(days=30))
-        yearly = queryset.filter(created_time__gte=timezone.now() - timedelta(days=365))
-        data = {
-            'count' : queryset.count(),
-            'number_in_day': daily.count(),
-            'number_in_week': weekly.count(),
-            'number_in_month': monthly.count(),
-            'number_in_year': yearly.count(),
-        }
-        return Response((data))   
+    # @action(methods=["get"], detail=False, name="count", url_path='count')
+    # def get_count(self, request):
+    #     queryset = self.get_queryset()
+    #     daily =  queryset.filter(created_time__gte=timezone.now() - timedelta(hours=24))
+    #     weekly = queryset.filter(created_time__gte=timezone.now() - timedelta(days=7))
+    #     monthly = queryset.filter(created_time__gte=timezone.now() - timedelta(days=30))
+    #     yearly = queryset.filter(created_time__gte=timezone.now() - timedelta(days=365))
+    #     data = {
+    #         'count' : queryset.count(),
+    #         'number_in_day': daily.count(),
+    #         'number_in_week': weekly.count(),
+    #         'number_in_month': monthly.count(),
+    #         'number_in_year': yearly.count(),
+    #     }
+    #     return Response((data))   
 
     @action(methods=["get"], detail=False, name="history", url_path='history')
     def history(self, request):
@@ -167,7 +168,6 @@ class ObjectMixin:
         serializer = self.list_serializer(objects, many=True, context={"request": request})
         return Response(serializer.data)
     
-         
 
     
 
