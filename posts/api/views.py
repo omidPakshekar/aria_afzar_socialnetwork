@@ -14,7 +14,7 @@ from rest_framework import status
 from .serializers import *
 from ..models import Comment, Podcast, Post, SuccessfullExperience
 from users.models import Activity, CustomeUserModel, Wallet
-from posts.api.permissions import PostPermission
+from posts.api.permissions import PostPermission, ProjectPermission
 from payment.models import TransactionHistory
 
 
@@ -297,8 +297,23 @@ class PodcastViewSet(ObjectMixin, viewsets.ModelViewSet):
 
 class ProjectViewSet(viewsets.ModelViewSet):
     queryset = Project.objects.all()
-    permission_classes = [IsAuthenticated]
-    serializer_class = ProjectSerializer
+    permission_classes = [ProjectPermission]
+    serializer_class = ProjectCreateSerializer
+    def get_serializer_class(self):
+        return super().get_serializer_class()
+
+    @action(methods=["put"], detail=True, name="add request", url_path='add-request')
+    def add_request(self, request, pk):
+        instance = self.get_object()
+        instance.requests.add(self.request.user)
+        return Response(status.HTTP_200_OK)
+    
+    @action(methods=["get"], detail=True, name="show all request for project", url_path='show-request')
+    def show_requests(self, request, pk):
+        instance = self.get_object().requests.all()
+        return Response(UserInlineSerializerNonAdmin(instance=instance, context={"request": request}, many=True).data)
+    
+
 
 
 

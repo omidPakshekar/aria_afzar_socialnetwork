@@ -110,6 +110,7 @@ class Project(models.Model):
     user_accepted = models.ForeignKey(CustomeUserModel, related_name="project_accepted", null=True, blank=True, on_delete=models.SET_NULL)
     post          = models.OneToOneField(Post, related_name='project', null=True, blank=True, on_delete=models.SET_NULL)
     requests      = models.ManyToManyField(CustomeUserModel, related_name="project_request", blank=True)
+    amount        = models.DecimalField(blank=False, decimal_places=4, max_digits=12)
     text          = models.TextField(blank=True)
     accpeted      = models.BooleanField(default=False)
     finished      = models.BooleanField(default=False)

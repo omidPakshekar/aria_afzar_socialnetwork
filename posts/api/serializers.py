@@ -1,3 +1,4 @@
+from dataclasses import field
 from rest_framework import serializers
 
 from users.models import CustomeUserModel
@@ -166,6 +167,10 @@ class ProjectSerializer(serializers.ModelSerializer):
         model = Project
         fields = "__all__"
 
+class ProjectCreateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Project 
+        fields = "__all__"
 
 
 
