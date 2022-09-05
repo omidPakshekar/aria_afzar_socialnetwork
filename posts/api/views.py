@@ -295,6 +295,11 @@ class PodcastViewSet(ObjectMixin, viewsets.ModelViewSet):
         return Response(status.HTTP_200_OK)
 
 
+# class ProjectViewSet(viewsets.ModelViewSet):
+#     permission_classes =[ IsAuthenticated]
+
+
+
 
 # class CommentViewSet(LikeSaveMixin, viewsets.ModelViewSet):
 #     permission_classes = [PostPermission]

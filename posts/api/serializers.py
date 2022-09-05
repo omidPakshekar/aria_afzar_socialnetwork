@@ -2,7 +2,7 @@ from rest_framework import serializers
 
 from users.models import CustomeUserModel
 
-from ..models import Comment, Podcast, Post, SuccessfullExperience
+from ..models import Comment, Podcast, Post, Project, SuccessfullExperience
 from payment.api.serializers import UserInlineSerializer
 
 """
@@ -150,5 +150,24 @@ class PodcastAdminCheckSerializer(serializers.ModelSerializer):
     class Meta:
         model = Podcast
         fields = ['id','owner', 'file', 'title', 'description']
+
+
+
+
+
+"""
+    project serializer
+"""
+# class ProjectSerializer(serializers.ModelSerializer):
+    
+#     class Meta:
+#         model = Project
+
+
+
+
+
+
+
 
 
