@@ -1,3 +1,4 @@
+from dataclasses import field
 from urllib import request
 from rest_framework import exceptions, serializers
 from dj_rest_auth.registration.serializers import RegisterSerializer
@@ -91,6 +92,10 @@ class MembershipSerializer(serializers.ModelSerializer):
 """
     CustomeUserModel serializer
 """
+class UserIdInlineSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UserId
+        fields = ['userid']
 class BioInlineSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserBio

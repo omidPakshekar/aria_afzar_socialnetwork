@@ -6,7 +6,7 @@ from rest_framework_simplejwt.views import (
 from rest_framework.routers import DefaultRouter
 
 from payment.api.views import *
-from posts.api.views import ExprienceViewSet, PostViewSet, PodcastViewSet
+from posts.api.views import ExprienceViewSet, PostViewSet, PodcastViewSet, ProjectViewSet
 from chat.api.views import ChatViewSet
 from drf_chunked_upload.views import ChunkedUploadView
 
@@ -17,7 +17,7 @@ router.register('post', PostViewSet, basename='post')
 router.register('podcast', PodcastViewSet, basename='podcast')
 router.register('chat', ChatViewSet, basename='chat')
 router.register('transaction', TransactionViewSet, basename='transaction')
-
+router.register('project', ProjectViewSet, basename='project')
 
 urlpatterns = [
     # path('test/', ChunkedUploadView.as_view()),

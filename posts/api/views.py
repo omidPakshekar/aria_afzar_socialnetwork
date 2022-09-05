@@ -295,9 +295,10 @@ class PodcastViewSet(ObjectMixin, viewsets.ModelViewSet):
         return Response(status.HTTP_200_OK)
 
 
-# class ProjectViewSet(viewsets.ModelViewSet):
-#     permission_classes =[ IsAuthenticated]
-
+class ProjectViewSet(viewsets.ModelViewSet):
+    queryset = Project.objects.all()
+    permission_classes = [IsAuthenticated]
+    serializer_class = ProjectSerializer
 
 
 

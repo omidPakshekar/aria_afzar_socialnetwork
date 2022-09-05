@@ -3,7 +3,7 @@ from rest_framework import serializers
 from users.models import CustomeUserModel
 
 from ..models import Comment, Podcast, Post, Project, SuccessfullExperience
-from payment.api.serializers import UserInlineSerializer
+from payment.api.serializers import UserInlineSerializer, UserInlineSerializerNonAdmin
 
 """
     comment serializer
@@ -43,7 +43,7 @@ class ExprienceAdminUpdateSerializer(serializers.ModelSerializer):
 class ExprienceSerializer(serializers.ModelSerializer):
     likes = serializers.SerializerMethodField(read_only=True)
     save_number = serializers.SerializerMethodField(read_only=True)
-    owner = UserInlineSerializer(read_only=True)
+    owner = UserInlineSerializerNonAdmin(read_only=True)
     # comment = CommentInlineSerializer(many=True ,read_only = True)
     class Meta:
         model = SuccessfullExperience
@@ -78,7 +78,7 @@ class PostCreateSerializer(serializers.ModelSerializer):
 class PostSerializer(serializers.ModelSerializer):
     likes = serializers.SerializerMethodField(read_only=True)
     save_number = serializers.SerializerMethodField(read_only=True)
-    owner = UserInlineSerializer(read_only=True)
+    owner = UserInlineSerializerNonAdmin(read_only=True)
     # comment = CommentInlineSerializer(many=True ,read_only = True)
     class Meta:
         model = Post
@@ -133,7 +133,7 @@ class PodcastAdminUpdateSerializer(serializers.ModelSerializer):
 class PodcastSerializer(serializers.ModelSerializer):
     likes = serializers.SerializerMethodField(read_only=True)
     save_number = serializers.SerializerMethodField(read_only=True)
-    owner = UserInlineSerializer(read_only=True)
+    owner = UserInlineSerializerNonAdmin(read_only=True)
     comment = CommentInlineSerializer(many=True ,read_only = True)
     class Meta:
         model = Podcast
@@ -146,7 +146,7 @@ class PodcastSerializer(serializers.ModelSerializer):
         return obj.user_saved.count()
     
 class PodcastAdminCheckSerializer(serializers.ModelSerializer):
-    owner = UserInlineSerializer(read_only=True)
+    owner = UserInlineSerializerNonAdmin(read_only=True)
     class Meta:
         model = Podcast
         fields = ['id','owner', 'file', 'title', 'description']
@@ -158,10 +158,13 @@ class PodcastAdminCheckSerializer(serializers.ModelSerializer):
 """
     project serializer
 """
-# class ProjectSerializer(serializers.ModelSerializer):
-    
-#     class Meta:
-#         model = Project
+class ProjectSerializer(serializers.ModelSerializer):
+    owner = UserInlineSerializerNonAdmin()
+    post  = PostSerializer()
+    user_accepted = UserInlineSerializerNonAdmin()
+    class Meta:
+        model = Project
+        fields = "__all__"
 
 
 
