@@ -1,5 +1,6 @@
 import json, jwt, os
 from urllib import request
+from django.db.models import Q
 
 from .serializers import UserAllInfoSerializer, UserSeenInfoSerializer
 from users.api.permissions import UserViewSetPermission
@@ -8,6 +9,7 @@ from ..email import send_verification_email
 from ..models import *
 from posts.api.views import calculte_period
 
+from django.db.models import Q
 from django.urls import reverse
 from django.http import HttpResponse
 from django.conf import settings
@@ -303,9 +305,25 @@ class SupportMessageViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
     serializer_class = SupportMessageSerializer
     def get_queryset(self):
-        return SupportMessage.objects.filter(owner=self.request.user) 
+        return SupportMessage.objects.filter(Q(owner=self.request.user) | Q(user_receive=self.request.user)) 
     
-
+    @action(methods=["get"], detail=False, name="user send message", url_path='send')
+    def user_send(self, request):
+        objects_ = self.get_queryset().filter(Q(owner=self.request.user))
+        page = self.paginate_queryset(objects_)
+        if page is not None:
+            return self.get_paginated_response( SupportMessageSerializer(page, many=True, context={"request": request}).data)
+        serializer = SupportMessageSerializer(objects_, many=True, context={"request": request})
+        return Response(serializer.data)
+    
+    @action(methods=["get"], detail=False, name="user send message", url_path='receive')
+    def user_receive(self, request):
+        objects_ = self.get_queryset().filter(Q(user_receive=self.request.user))
+        page = self.paginate_queryset(objects_)
+        if page is not None:
+            return self.get_paginated_response( SupportMessageSerializer(page, many=True, context={"request": request}).data)
+        serializer = SupportMessageSerializer(objects_, many=True, context={"request": request})
+        return Response(serializer.data)
 
 
 # UserId.objects.create(userid)
