@@ -38,3 +38,30 @@ class UserViewSetPermission(permissions.BasePermission):
 
 
 
+
+class SupportMessagePermission(permissions.BasePermission):
+    """
+        every authenticate user can : get 
+        only admin can destory, create,
+    """ 
+    def has_permission(self, request, view):
+        if request.user.is_anonymous:
+            return False
+        if view.action in [ 'list', 'retrieve', 'create']:
+            return True
+        elif view.action in [ 'update', 'partial_update', 'destroy']:
+            return False
+        else:
+            return False
+                                                                                                
+    def has_object_permission(self, request, view, obj):
+        if request.user.is_anonymous :
+            return False
+        if view.action in [ 'update', 'partial_update', 'destroy']:
+            return False
+        elif view.action == 'retrieve':
+            return True
+        # elif view.action in ['retrieve']:
+        #     return obj.owner == request.user or request.user.is_admin or request.user.is_staff
+        else:
+            return False

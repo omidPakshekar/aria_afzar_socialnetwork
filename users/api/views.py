@@ -3,7 +3,7 @@ from urllib import request
 from django.db.models import Q
 
 from .serializers import UserAllInfoSerializer, UserSeenInfoSerializer
-from users.api.permissions import UserViewSetPermission
+from users.api.permissions import SupportMessagePermission, UserViewSetPermission
 from .serializers import *
 from ..email import send_verification_email  
 from ..models import *
@@ -302,7 +302,7 @@ class CheckUserIdApiView(generics.GenericAPIView):
 
 
 class SupportMessageViewSet(viewsets.ModelViewSet):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [SupportMessagePermission]
     serializer_class = SupportMessageSerializer
     def get_queryset(self):
         return SupportMessage.objects.filter(Q(owner=self.request.user) | Q(user_receive=self.request.user)) 
