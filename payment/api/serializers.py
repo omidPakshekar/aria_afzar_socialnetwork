@@ -16,7 +16,7 @@ class UserInlineSerializer(serializers.ModelSerializer):
         model = CustomeUserModel
         fields = ['id', 'username', 'name', 'userid', 'profile_pic']
     def get_profile_pic(self, obj):
-        if not (obj.profile_pic.admin_check or self.context['request'].user.is_admin):
+        if obj.profile_pic.admin_check == False or self.context['request'].user.is_anonymous:
             return self.context['request'].build_absolute_uri('/media/default_image.jpg')
         return ImageInlineSerializer(instance=obj.profile_pic, context={'request' : self.context['request']}).data
 class UserInlineSerializerNonAdmin(serializers.ModelSerializer):
@@ -26,7 +26,7 @@ class UserInlineSerializerNonAdmin(serializers.ModelSerializer):
         model = CustomeUserModel
         fields = ['id', 'username', 'name', 'userid', 'profile_pic']
     def get_profile_pic(self, obj):
-        if not (obj.profile_pic.admin_check or self.context['request'].user.is_admin):
+        if obj.profile_pic.admin_check == False or self.context['request'].user.is_anonymous:
             return self.context['request'].build_absolute_uri('/media/default_image.jpg')
         return ImageInlineSerializer(instance=obj.profile_pic, context={'request' : self.context['request']}).data['image']
     def get_userid(self, obj):

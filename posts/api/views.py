@@ -54,11 +54,12 @@ class ObjectMixin:
     admin_check_serializer = None
     model_ = None
     def get_queryset(self):
-        try:
-            if  self.request.user.is_admin:
-                return self.model_.objects.all()
-        except: pass
-        return self.model_.objects.filter(admin_check=True) | self.model_.objects.filter(owner=self.request.user)
+        user_ = self.request.user
+        if user_.is_anonymous:
+            return self.model_.objects.filter(admin_check=True)
+        elif user_.is_authenticated and not user_.is_admin:
+            return self.model_.objects.filter(admin_check=True) | self.model_.objects.filter(owner=self.request.user)
+        return self.model_.objects.all()
 
     # every time user update the model admin_check = False
     def perform_update(self, serializer):
@@ -312,7 +313,26 @@ class ProjectViewSet(viewsets.ModelViewSet):
     def show_requests(self, request, pk):
         instance = self.get_object().requests.all()
         return Response(UserInlineSerializerNonAdmin(instance=instance, context={"request": request}, many=True).data)
-    
+    @action(methods=["put"], detail=True, name="accept project", url_path='accept-request')
+    def accept_user(self, request, pk):
+        instance = self.get_object()
+        instance.user_accepted = CustomeUserModel.objects.get(id=int(self.request.data['user']))
+        instance.save()
+        return Response(status.HTTP_200_OK)
+    @action(methods=["put"], detail=True, name="finish project", url_path='finish-project')
+    def user_finished(self, request, pk):
+        instance = self.get_object()
+        instance.finished = True 
+        user = instance.user_accpeted
+        w = request.user.wallet
+        w.amount -= Decimal(instance.amount)
+        w.save()
+        w = user.wallet 
+        w.amount += Decimal(instance.amount)
+        w.save(); instance.save()
+        return Response()
+
+        
 
 
 

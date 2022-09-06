@@ -113,7 +113,7 @@ class UserBioSerializer(serializers.ModelSerializer):
         model = CustomeUserModel
         fields = ['name', 'username', 'email', 'profile_pic']
     def get_user_bio(self, obj):
-        if not (obj.user_bio.admin_check or self.context['request'].user.is_admin):
+        if obj.profile_pic.admin_check == False or self.context['request'].user.is_anonymous:
             return ''
         return BioInlineSerializer(instance=obj.user_bio).data
     def get_profile_pic(self, obj):
@@ -150,12 +150,12 @@ class UserAllInfoSerializer( serializers.ModelSerializer):
                     'year_of_birth', 'month_of_birth', 'day_of_birth']
     def get_user_bio(self, obj):
         request =  self.context['request']
-        if not (obj == request.user or obj.user_bio.admin_check or request.user.is_admin):
+        if obj.user_bio.admin_check == False or self.context['request'].user.is_anonymous:
             return ''
         return BioInlineSerializer(instance=obj.user_bio).data
     def get_profile_pic(self, obj):
         request =  self.context['request']
-        if not (obj == request.user or obj.profile_pic.admin_check or request.user.is_admin):
+        if obj.profile_pic.admin_check == False or self.context['request'].user.is_anonymous:
             return request.build_absolute_uri('/media/default_image.jpg')
         return ImageInlineSerializer(instance=obj.profile_pic, context={'request' : self.context['request']}).data
     
@@ -172,11 +172,11 @@ class UserSeenInfoSerializer(serializers.ModelSerializer):
         model = CustomeUserModel
         fields = ['name', 'username', 'profile_pic', 'user_bio', 'gender', 'country', 'flag']
     def get_user_bio(self, obj):
-        if not (obj.user_bio.admin_check or self.context['request'].user.is_admin):
+        if obj.user_bio.admin_check == False or self.context['request'].user.is_anonymous:
             return ''
         return BioInlineSerializer(instance=obj.user_bio).data
     def get_profile_pic(self, obj):
-        if not (obj.profile_pic.admin_check or self.context['request'].user.is_admin):
+        if obj.profile_pic.admin_check == False or self.context['request'].user.is_anonymous:
             return self.context['request'].build_absolute_uri('/media/default_image.jpg')
         return ImageInlineSerializer(instance=obj.profile_pic, context={'request' : self.context['request']}).data
     def get_flag(self, obj):

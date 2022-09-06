@@ -65,7 +65,17 @@ class Comment(models.Model):
     def short_comment_text(self):
         return f'{self.comment_text[0:15]}...'
 
-        
+class Project(models.Model):
+    owner         = models.ForeignKey(CustomeUserModel, related_name="project_created", on_delete=models.CASCADE)
+    user_accepted = models.ForeignKey(CustomeUserModel, related_name="project_accepted", null=True, blank=True, on_delete=models.SET_NULL)
+    requests      = models.ManyToManyField(CustomeUserModel, related_name="project_request", blank=True)
+    amount        = models.DecimalField(blank=False, decimal_places=4, max_digits=12)
+    text          = models.TextField(blank=True)
+    accpeted      = models.BooleanField(default=False)
+    finished      = models.BooleanField(default=False)
+    def __str__(self):
+        return f'{self.id}-{self.owner} project'
+    
 class ItemBase(models.Model):
     owner        = models.ForeignKey(CustomeUserModel, related_name="%(class)s_related", on_delete=models.CASCADE)
     title        = models.CharField(max_length = 250)
@@ -89,8 +99,9 @@ class ItemBase(models.Model):
         return self.short_title
 
 class Post(ItemBase):
-    image        = models.ImageField(max_length=255, upload_to=get_post_image_filepath, null=True, blank=True, default=get_default_post_image)
+    image       = models.ImageField(max_length=255, upload_to=get_post_image_filepath, null=True, blank=True, default=get_default_post_image)
     comment     = GenericRelation(Comment)
+    project     = models.OneToOneField(Project, related_name='post', null=True, blank=True, on_delete=models.SET_NULL)
 
 class Podcast(ItemBase):
     file         = models.FileField(upload_to=get_podcast_filepath)
@@ -105,15 +116,7 @@ class SuccessfullExperience(ItemBase):
         return timezone.now() - self.created_time
 
 
-class Project(models.Model):
-    owner         = models.ForeignKey(CustomeUserModel, related_name="project_created", on_delete=models.CASCADE)
-    user_accepted = models.ForeignKey(CustomeUserModel, related_name="project_accepted", null=True, blank=True, on_delete=models.SET_NULL)
-    post          = models.OneToOneField(Post, related_name='project', null=True, blank=True, on_delete=models.SET_NULL)
-    requests      = models.ManyToManyField(CustomeUserModel, related_name="project_request", blank=True)
-    amount        = models.DecimalField(blank=False, decimal_places=4, max_digits=12)
-    text          = models.TextField(blank=True)
-    accpeted      = models.BooleanField(default=False)
-    finished      = models.BooleanField(default=False)
+
     
 # class UploadType(ChunkedUpload):
 #     ALLOWED_CONTENT_TYPES = [User]

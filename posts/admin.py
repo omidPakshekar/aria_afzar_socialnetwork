@@ -14,7 +14,7 @@ class CommentAdmin(admin.ModelAdmin):
              'created_time', 'content_type', 'item', 'admin_check']
 
 class ProjectAdmin(admin.ModelAdmin):
-    list_display = ['owner', 'post', 'user_accepted', 'amount', 'finished', 'accpeted']
+    list_display = ['owner',  'user_accepted', 'amount', 'finished', 'accpeted']
 
 admin.site.register(Podcast, PostAdmin)
 admin.site.register(Post, PostAdmin)
