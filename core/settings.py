@@ -270,7 +270,7 @@ class Dev(Configuration):
 
     MEDIA_URL = '/media/'
     MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
-
+    CSRF_TRUSTED_ORIGINS = "*"
     # add rest_framework
     REST_FRAMEWORK = {
         "DEFAULT_AUTHENTICATION_CLASSES" : [

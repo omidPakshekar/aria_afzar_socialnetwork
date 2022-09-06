@@ -93,6 +93,10 @@ class ActivationKeyAdmin(admin.ModelAdmin):
 class UserIdAdmin(admin.ModelAdmin):
     list_display = ['email', 'userid', 'admin_check']
 
+class SupportMessageAdmin(admin.ModelAdmin):
+    list_display = ['owner', 'user_receive', 'message_type']
+
+
 admin.site.register(CustomeUserModel, CustomUserAdmin)
 admin.site.register(UserBio)
 admin.site.register(ProfileImage)
@@ -101,8 +105,7 @@ admin.site.register(MemberShip, MemberShipAdmin)
 admin.site.register(Activity, ActivityAdmin)
 admin.site.register(ActivationKey, ActivationKeyAdmin)
 admin.site.register(UserId, UserIdAdmin)
-
-
+admin.site.register(SupportMessage, SupportMessageAdmin)
 
 
 

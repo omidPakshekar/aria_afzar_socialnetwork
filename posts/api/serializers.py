@@ -4,7 +4,7 @@ from rest_framework import serializers
 from users.models import CustomeUserModel
 
 from ..models import Comment, Podcast, Post, Project, SuccessfullExperience
-from payment.api.serializers import UserInlineSerializer, UserInlineSerializerNonAdmin
+from users.api.serializers import UserInlineSerializer, UserInlineSerializerNonAdmin
 
 """
     comment serializer

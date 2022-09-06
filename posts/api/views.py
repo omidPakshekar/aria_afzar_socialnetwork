@@ -11,6 +11,7 @@ from rest_framework.decorators import api_view, action
 from rest_framework.response import Response
 from rest_framework import status
 
+from users.api.serializers import UserInlineSerializerNonAdmin
 from .serializers import *
 from ..models import Comment, Podcast, Post, SuccessfullExperience
 from users.models import Activity, CustomeUserModel, Wallet
@@ -331,9 +332,6 @@ class ProjectViewSet(viewsets.ModelViewSet):
         w.amount += Decimal(instance.amount)
         w.save(); instance.save()
         return Response()
-
-        
-
 
 
 

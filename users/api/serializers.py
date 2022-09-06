@@ -3,6 +3,8 @@ from urllib import request
 from rest_framework import exceptions, serializers
 from dj_rest_auth.registration.serializers import RegisterSerializer
 
+
+
 from ..models import *
 
 from django.contrib.auth import authenticate, get_user_model
@@ -53,7 +55,6 @@ class LoginSerializer(serializers.Serializer):
     def validate(self, attrs):
         email = attrs.get('email')
         password = attrs.get('password')
-        print('eamil', email, 'password', password)
         user = self.authenticate(username=email, password=password)
         print(user)
         if not user:
@@ -214,6 +215,43 @@ class UpdateProfilePicSerializer(serializers.ModelSerializer):
     class Meta:
         model = ProfileImage
         fields = ['image']
+
+
+
+class UserInlineSerializer(serializers.ModelSerializer):
+    profile_pic = serializers.SerializerMethodField(source='profile_pic', read_only=True)
+    class Meta:
+        model = CustomeUserModel
+        fields = ['id', 'username', 'name', 'userid', 'profile_pic']
+    def get_profile_pic(self, obj):
+        if obj.profile_pic.admin_check == False or self.context['request'].user.is_anonymous:
+            return self.context['request'].build_absolute_uri('/media/default_image.jpg')
+        return ImageInlineSerializer(instance=obj.profile_pic, context={'request' : self.context['request']}).data
+class UserInlineSerializerNonAdmin(serializers.ModelSerializer):
+    profile_pic = serializers.SerializerMethodField(source='profile_pic', read_only=True)
+    userid      = serializers.SerializerMethodField()
+    class Meta:
+        model = CustomeUserModel
+        fields = ['id', 'username', 'name', 'userid', 'profile_pic']
+    def get_profile_pic(self, obj):
+        if obj.profile_pic.admin_check == False or self.context['request'].user.is_anonymous:
+            return self.context['request'].build_absolute_uri('/media/default_image.jpg')
+        return ImageInlineSerializer(instance=obj.profile_pic, context={'request' : self.context['request']}).data['image']
+    def get_userid(self, obj):
+        if  obj.userid == None:
+            return None 
+        if obj.userid.admin_check == False and not self.request.user.is_admin:
+            return None
+        return UserIdInlineSerializer(instance=obj.userid).data['userid']
+
+
+
+class SupportMessageSerializer(serializers.ModelSerializer):
+    owner = UserInlineSerializerNonAdmin()
+    user_receive = UserInlineSerializerNonAdmin()
+    class Meta:
+        model = SupportMessage
+        fields = "__all__"
         
 
 # class RegistrationSerializer(serializers.ModelSerializer):

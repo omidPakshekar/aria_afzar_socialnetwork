@@ -288,11 +288,12 @@ def user_post_save_receiver(sender, instance, created, *args, **kwargs):
         u.save()
 
 # send message from user to admin and vice versa
-class Message(models.Model):
-    user        = models.ForeignKey(CustomeUserModel, related_name='messages',  on_delete=models.CASCADE)
+class SupportMessage(models.Model):
+    owner       = models.ForeignKey(CustomeUserModel, related_name='messages',  on_delete=models.CASCADE)
+    user_receive= models.ForeignKey(CustomeUserModel, related_name='message_box',  on_delete=models.CASCADE)
     title       = models.CharField(max_length = 30)
     body        = models.TextField()
-    message_type= models.CharField(max_length=20, choices=MESSAGE_TYPE)
+    message_type= models.CharField(max_length=20, blank=True, choices=MESSAGE_TYPE)
     is_admin    = models.BooleanField(default=False)
 
     def __str__(self):

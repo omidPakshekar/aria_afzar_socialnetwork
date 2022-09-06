@@ -297,6 +297,17 @@ class CheckUserIdApiView(generics.GenericAPIView):
             return Response(data={'detail': "it's duplicated"}, status=status.HTTP_302_FOUND)
         return Response(data={'detail': "it's ok"}, status=status.HTTP_200_OK)
 
+
+
+class SupportMessageViewSet(viewsets.ModelViewSet):
+    permission_classes = [IsAuthenticated]
+    serializer_class = SupportMessageSerializer
+    def get_queryset(self):
+        return SupportMessage.objects.filter(owner=self.request.user) 
+    
+
+
+
 # UserId.objects.create(userid)
 
 # class RegistrationView(generics.GenericAPIView):
