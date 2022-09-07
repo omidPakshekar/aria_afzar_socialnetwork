@@ -2,7 +2,7 @@ import requests
 endpoint = "http://127.0.0.1:8000/api/v1/accounts/login/"
 psw = "amir1234"
 data = {
-    "email" : "amir@gmail.com",
+    "email" : "omid5@gmail.com",
     "password" : psw,
 }
 
@@ -13,7 +13,7 @@ if auth_response.status_code == 200:
     headers = {
         "Authorization" : f"Bearer {token}"
     }
-    endpoint = "http://localhost:8000/api/v1/post/2/like/"
+    endpoint = "http://localhost:8000/api/v1/post/1/like/"
 
     get_response = requests.put( endpoint, headers=headers)
 

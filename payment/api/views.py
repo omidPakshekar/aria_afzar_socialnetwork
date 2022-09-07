@@ -1,12 +1,18 @@
+import json
+from multiprocessing import context
 from django.utils import timezone
 from django.db.models import Sum
 from datetime import timedelta
+from decimal import Decimal
 
 from rest_framework import generics, viewsets
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.decorators import api_view, action 
 from rest_framework.response import Response
 from rest_framework import status, generics
+from users.api.serializers import UserInlineSerializerNonAdmin, UserSeenInfoSerializer
+
+from users.models import Activity
 
 from . import serializers
 from . import permissions
@@ -111,8 +117,29 @@ class TransactionViewSet(viewsets.ModelViewSet):
             print(objects)
         return Response(objects.aggregate(Sum('amount')))
 
-    # @action(methods=["get"], detail=False, name="withdraw", url_path='withdraw')
-    # def withdraw(self, request):
+    @action(methods=["get"], detail=False, name="money box", url_path='moneybox')
+    def money_box(self, request):
+        activity = Activity.objects.filter(user=self.request.user)
+        lst= []
+        for i in activity:
+            piggy = i.piggy
+            number =  Activity.objects.filter(piggy=piggy).aggregate(Sum('number'))['number__sum']
+            money_unit = piggy.amount / number  
+            user_money = float(i.number * money_unit)
+            seconds = piggy.day_left.total_seconds()
+            days = seconds // (3600 * 24)
+            hours = (seconds // 3600) % 24
+            minutes = (seconds // 60) % 60
+            seconds = seconds % 60
+            lst.append({
+                "time_left": '{} minutes, {} hours, {} days'.format(minutes, hours, piggy.day_left.days),
+                "number_of_user": number,
+                "money_unit" : float(money_unit),
+                "user_money" : user_money,
+                "moneybox_owner": UserSeenInfoSerializer(instance=piggy.user, context={'request': request}).data
+            })
+        return Response(lst, status=status.HTTP_200_OK)
+
     #     if request.user.is_admin:
     #         objects = self.get_queryset().filter(kind='withdraw')
     #     else:

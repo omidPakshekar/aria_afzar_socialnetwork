@@ -48,7 +48,6 @@ class ProjectPermission(permissions.BasePermission):
     """ 
     
     def has_permission(self, request, view):
-        print("*****", view.action, request.user.is_anonymous)
         if  request.user.is_anonymous:
             return False
         if view.action in ['list', 'retrieve', 'show_requests', 'add_request', 'accept_user']:
@@ -59,7 +58,6 @@ class ProjectPermission(permissions.BasePermission):
             return False
                                                                                                 
     def has_object_permission(self, request, view, obj):
-        print("*****", view.action, request.user.is_anonymous)
         if request.user.is_anonymous:
             return False
         elif view.action in [ 'update', 'partial_update', 'accept_user']:

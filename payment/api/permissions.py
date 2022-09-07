@@ -45,7 +45,7 @@ class TransactionPermission(permissions.BasePermission):
             return request.user.is_admin or request.user.is_staff
         elif view.action == 'mine':
             return True
-        elif view.action in ['create', 'retrieve', 'update', 'partial_update', 'destroy','income', 'withdraw', 'deposit']:
+        elif view.action in ['create', 'money_box', 'retrieve', 'update', 'partial_update', 'destroy','income', 'withdraw', 'deposit']:
             return True
         else:
             return False
