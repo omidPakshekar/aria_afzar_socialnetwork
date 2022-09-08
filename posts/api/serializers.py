@@ -163,7 +163,11 @@ class PodcastAdminCheckSerializer(serializers.ModelSerializer):
 """
     project serializer
 """
-
+class DemandListSerializer(serializers.ModelSerializer):
+    owner = UserInlineSerializer(read_only=True)
+    class Meta:
+        model = Demand
+        fields = "__all__"
 class DemandSerializer(serializers.ModelSerializer):
     class Meta:
         model = Demand

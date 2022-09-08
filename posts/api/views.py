@@ -326,9 +326,12 @@ class ProjectViewSet(viewsets.ModelViewSet):
     
     @action(methods=["get"], detail=True, name="show all request for project", url_path='show-request')
     def show_requests(self, request, pk):
-        instance = self.get_object().requests.all()
-        return Response(UserInlineSerializerNonAdmin(instance=instance, context={"request": request}, many=True).data)
+        instance = self.get_object().demands.all()
+        print(instance)
+        return Response(DemandListSerializer(instance=instance, many=True, context={"request": self.request}).data)
 
+        # return Response(status.HTTP_200_OK)
+        
     @action(methods=["put"], detail=True, name="accept project", url_path='accept-request')
     def accept_user(self, request, pk):
         instance = self.get_object()
