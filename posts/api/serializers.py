@@ -1,9 +1,9 @@
-from dataclasses import field
+from dataclasses import field, fields
 from rest_framework import serializers
 
 from users.models import CustomeUserModel
 
-from ..models import Comment, Podcast, Post, Project, SuccessfullExperience
+from ..models import Comment, Demand, Podcast, Post, Project, SuccessfullExperience
 from users.api.serializers import UserInlineSerializer, UserInlineSerializerNonAdmin
 
 """
@@ -163,6 +163,12 @@ class PodcastAdminCheckSerializer(serializers.ModelSerializer):
 """
     project serializer
 """
+
+class DemandSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Demand
+        fields= ["suggested_time"]
+
 class ProjectSerializer(serializers.ModelSerializer):
     owner = UserInlineSerializerNonAdmin()
     post  = PostSerializer()

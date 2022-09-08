@@ -64,7 +64,7 @@ class ProjectPermission(permissions.BasePermission):
             return obj.owner == request.user or request.user.is_admin or request.user.is_staff
         elif view.action in ['destroy', 'admin_accept']:
             return request.user.is_admin or request.user.is_staff
-        if view.action in ['show_requests', 'add_request']:
+        elif view.action in ['show_requests', 'add_request']:
             return True
         else:
             return False

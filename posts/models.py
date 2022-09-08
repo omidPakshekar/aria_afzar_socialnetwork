@@ -65,14 +65,22 @@ class Comment(models.Model):
     def short_comment_text(self):
         return f'{self.comment_text[0:15]}...'
 
+class Demand(models.Model):
+    owner         = models.ForeignKey(CustomeUserModel, on_delete=models.CASCADE)
+    suggested_time= models.DateTimeField(blank=True, auto_now=False, auto_now_add=False)  
+    def __str__(self):
+        return f'{self.owner} suggested time = {self.suggested_time}'
+    
 class Project(models.Model):
     owner         = models.ForeignKey(CustomeUserModel, related_name="project_created", on_delete=models.CASCADE)
     user_accepted = models.ForeignKey(CustomeUserModel, related_name="project_accepted", null=True, blank=True, on_delete=models.SET_NULL)
-    requests      = models.ManyToManyField(CustomeUserModel, related_name="project_request", blank=True)
+    demands       = models.ManyToManyField(Demand, related_name="project", blank=True)
     amount        = models.DecimalField(blank=False, decimal_places=4, max_digits=12)
     text          = models.TextField(blank=True)
     accpeted      = models.BooleanField(default=False)
     finished      = models.BooleanField(default=False)
+    Preferred_time= models.DateTimeField(blank=True)
+
     def __str__(self):
         return f'{self.id}-{self.owner} project'
     

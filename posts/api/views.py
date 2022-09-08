@@ -307,28 +307,35 @@ class PodcastViewSet(ObjectMixin, viewsets.ModelViewSet):
 
 class ProjectViewSet(viewsets.ModelViewSet):
     queryset = Project.objects.all()
-    permission_classes = [ProjectPermission]
+    permission_classes = [IsAuthenticated]
     serializer_class = ProjectCreateSerializer
  
     def get_serializer_class(self):
+        if self.action == 'add_request':
+            return DemandSerializer
         return super().get_serializer_class()
 
     @action(methods=["put"], detail=True, name="add request", url_path='add-request')
     def add_request(self, request, pk):
         instance = self.get_object()
-        instance.requests.add(self.request.user)
+        serializer = DemandSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        demand = serializer.save(owner=self.request.user)
+        instance.demands.add(demand)
         return Response(status.HTTP_200_OK)
     
     @action(methods=["get"], detail=True, name="show all request for project", url_path='show-request')
     def show_requests(self, request, pk):
         instance = self.get_object().requests.all()
         return Response(UserInlineSerializerNonAdmin(instance=instance, context={"request": request}, many=True).data)
+
     @action(methods=["put"], detail=True, name="accept project", url_path='accept-request')
     def accept_user(self, request, pk):
         instance = self.get_object()
         instance.user_accepted = CustomeUserModel.objects.get(id=int(self.request.data['user']))
         instance.save()
         return Response(status.HTTP_200_OK)
+        
     @action(methods=["put"], detail=True, name="finish project", url_path='finish-project')
     def user_finished(self, request, pk):
         instance = self.get_object()
