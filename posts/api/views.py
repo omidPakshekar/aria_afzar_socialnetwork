@@ -20,6 +20,7 @@ from payment.models import TransactionHistory
 
 
 user_admin = CustomeUserModel.objects.get(id=1)
+money_per_like = 0.01
 
 def add_activity(piggy, user):
     activity, _ = Activity.objects.get_or_create(piggy=piggy, user=user)
@@ -54,6 +55,9 @@ class ObjectMixin:
     list_serializer = None
     admin_check_serializer = None
     model_ = None
+    like_money = 0.01
+    podcast_money_per_listen = 0.1
+
     def get_queryset(self):
         user_ = self.request.user
         if user_.is_anonymous:
@@ -82,9 +86,9 @@ class ObjectMixin:
         # user member ship --> add money
         # cost money and add to admin if user dosent have member ship
         if self.request.user.have_membership:
-            add_money(self.request.user, instance.owner, 0.01, kind='like')
+            add_money(self.request.user, instance.owner, self.like_money, kind='like')
         else:
-            add_money(self.request.user, user_admin, 0.01, kind='like')
+            add_money(self.request.user, user_admin, self.like_money, kind='like')
         return Response(status.HTTP_200_OK)
     
     @action(methods=["put"], detail=True, name="user saved", url_path='save')
@@ -176,9 +180,13 @@ class ObjectMixin:
         serializer = self.list_serializer(objects, many=True, context={"request": request})
         return Response(serializer.data)
     
-
+    @action(methods=["post"], detail=False, name="change like per money", url_path='money-per-like')
+    def change_like_money(self, request):
+        self.like_money = self.request.data['money']
+        print(self.like_money)
+        return Response(status=status.HTTP_200_OK)
     
-
+    
 class ExprienceViewSet(ObjectMixin, viewsets.ModelViewSet):
     """
         get all item --> /exprinece/
@@ -293,7 +301,7 @@ class PodcastViewSet(ObjectMixin, viewsets.ModelViewSet):
         instance = self.get_object()
         if self.request.user == instance.owner or self.request.user.is_admin or not self.request.user.have_membership:
             return Response(status.HTTP_200_OK)
-        add_money(request.user, instance.owner, 0.1, kind='listen')
+        add_money(request.user, instance.owner, self.podcast_money_per_listen, kind='listen')
         return Response(status.HTTP_200_OK)
 
 
@@ -301,6 +309,7 @@ class ProjectViewSet(viewsets.ModelViewSet):
     queryset = Project.objects.all()
     permission_classes = [ProjectPermission]
     serializer_class = ProjectCreateSerializer
+ 
     def get_serializer_class(self):
         return super().get_serializer_class()
 
@@ -334,7 +343,27 @@ class ProjectViewSet(viewsets.ModelViewSet):
         return Response()
 
 
+class CommentLikeApiView(generics.GenericAPIView):
+    permission_classes = [IsAuthenticated]
+    queryset = Comment.objects.all()
+    serializer_class = CommentLikeSerializer
 
+    def post(self, request, *args, **kwargs):
+        instance = self.get_object()
+        if self.request.user in instance.user_liked.all() or self.request.user == instance.owner:
+            return Response(status.HTTP_200_OK)
+        instance.user_liked.add(self.request.user)
+        # if user is admin dont do anything
+        if self.request.user.is_admin:
+            return Response(status.HTTP_200_OK)
+        # user member ship --> add money
+        # cost money and add to admin if user dosent have member ship
+        if self.request.user.have_membership:
+            add_money(self.request.user, instance.owner, money_per_like, kind='like')
+        else:
+            add_money(self.request.user, user_admin, money_per_like, kind='like')
+        return Response(status.HTTP_200_OK)
+    
 # class CommentViewSet(LikeSaveMixin, viewsets.ModelViewSet):
 #     permission_classes = [PostPermission]
 

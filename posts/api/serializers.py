@@ -22,6 +22,10 @@ class CommentCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Comment
         fields = ['comment_text']
+class CommentLikeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Comment
+        fields = ["id"]
 
 """
     succefullexprience serializer

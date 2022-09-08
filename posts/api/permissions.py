@@ -19,7 +19,7 @@ class PostPermission(permissions.BasePermission):
             return True
         elif view.action in ['mine_count', 'history', 'create', 'retrieve', 'partial_update', 'destroy', 'update', 'get_count']:
             return True
-        elif view.action =='admin_check':
+        elif view.action in ['admin_check', 'change_like_money']:
             return request.user.is_admin or request.user.is_staff
         else:
             return False

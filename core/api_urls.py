@@ -27,6 +27,7 @@ router.register('message', SupportMessageViewSet, basename='message')
 urlpatterns = [
     # path('test/', ChunkedUploadView.as_view()),
     path('accounts/', include('users.api.urls')),
+    path('comment/', include('posts.api.urls')),
     path('token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path('token/verify/', TokenVerifyView.as_view(), name='token_verify'),
