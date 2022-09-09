@@ -16,10 +16,14 @@ class CommentAdmin(admin.ModelAdmin):
 class ProjectAdmin(admin.ModelAdmin):
     list_display = ['owner',  'user_accepted', 'amount', 'finished', 'accpeted']
 
+class HoldProjectMoneyAdmin(admin.ModelAdmin):
+    list_display = ['sender',  'receiver', 'amount', 'project']
+
 admin.site.register(Podcast, PostAdmin)
 admin.site.register(Post, PostAdmin)
 admin.site.register(SuccessfullExperience, ExprienceAdmin)
 admin.site.register(Comment, CommentAdmin)
 admin.site.register(Project, ProjectAdmin)
+admin.site.register(HoldProjectMoney, HoldProjectMoneyAdmin)
 # admin.site.register(ChunkedUpload)
 

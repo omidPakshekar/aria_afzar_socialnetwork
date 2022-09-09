@@ -13,7 +13,7 @@ from rest_framework import status
 
 from users.api.serializers import UserInlineSerializerNonAdmin
 from .serializers import *
-from ..models import Comment, Podcast, Post, SuccessfullExperience
+from ..models import Comment, HoldProjectMoney, Podcast, Post, SuccessfullExperience
 from users.models import Activity, CustomeUserModel, Wallet
 from posts.api.permissions import PostPermission, ProjectPermission
 from payment.models import TransactionHistory
@@ -309,7 +309,7 @@ class ProjectViewSet(viewsets.ModelViewSet):
     queryset = Project.objects.all()
     permission_classes = [IsAuthenticated]
     serializer_class = ProjectCreateSerializer
- 
+    
     def get_serializer_class(self):
         if self.action == 'add_request':
             return DemandSerializer
@@ -323,19 +323,28 @@ class ProjectViewSet(viewsets.ModelViewSet):
         demand = serializer.save(owner=self.request.user)
         instance.demands.add(demand)
         return Response(status.HTTP_200_OK)
-    
+
+
     @action(methods=["get"], detail=True, name="show all request for project", url_path='show-request')
     def show_requests(self, request, pk):
         instance = self.get_object().demands.all()
         print(instance)
         return Response(DemandListSerializer(instance=instance, many=True, context={"request": self.request}).data)
-
-        # return Response(status.HTTP_200_OK)
         
     @action(methods=["put"], detail=True, name="accept project", url_path='accept-request')
     def accept_user(self, request, pk):
         instance = self.get_object()
-        instance.user_accepted = CustomeUserModel.objects.get(id=int(self.request.data['user']))
+        if request.user.wallet.amount > instance.amount:
+            return Response({'detail' : 'you dont have enough money'}, status=status.HTTP_400_BAD_REQUEST)
+        if request.user.accepted != None:
+            return Response({'detail' : 'another user accepted'}, status=status.HTTP_400_BAD_REQUEST)
+        w = request.user.wallet
+        w -= w.amount - instance.amount
+        w.save()
+        # user receiver 
+        receiver = CustomeUserModel.objects.get(id=int(self.request.data['user']))
+        HoldProjectMoney(sender=request.user, receiver=receiver, amount= instance.amount, project=instance)
+        instance.user_accepted = receiver
         instance.save()
         return Response(status.HTTP_200_OK)
         
@@ -351,6 +360,25 @@ class ProjectViewSet(viewsets.ModelViewSet):
         w.amount += Decimal(instance.amount)
         w.save(); instance.save()
         return Response()
+
+    @action(methods=["get"], detail=False, name="project that i defined", url_path='mine')
+    def mine(self, request):
+        objects_ = self.get_queryset().filter(owner=request.user)
+        page = self.paginate_queryset(objects_)
+        if page is not None:
+            return self.get_paginated_response(ProjectSerializer(page, many=True, context={"request": request}).data) 
+        serializer = ProjectSerializer(objects_, many=True, context={"request": request})
+        return Response(serializer.data)
+    
+    @action(methods=["get"], detail=False, name="project that i'm accepted", url_path='accepted')
+    def user_accepted(self, request):
+        objects_ = self.get_queryset().filter(user_accepted=request.user)
+        page = self.paginate_queryset(objects_)
+        if page is not None:
+            return self.get_paginated_response(ProjectSerializer(page, many=True, context={"request": request}).data) 
+        serializer = ProjectSerializer(objects_, many=True, context={"request": request})
+        return Response(serializer.data)
+    
 
 
 class CommentLikeApiView(generics.GenericAPIView):

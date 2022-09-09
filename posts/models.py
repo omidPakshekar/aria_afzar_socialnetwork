@@ -83,7 +83,13 @@ class Project(models.Model):
 
     def __str__(self):
         return f'{self.id}-{self.owner} project'
-    
+
+class HoldProjectMoney(models.Model):
+    sender      = models.ForeignKey(CustomeUserModel, related_name="sender_project_money", on_delete=models.CASCADE)
+    receiver    = models.ForeignKey(CustomeUserModel, related_name="receiver_project_money", on_delete=models.CASCADE)
+    project     = models.OneToOneField(Project, on_delete=models.CASCADE)
+    amount      = models.DecimalField(blank=False, decimal_places=4, max_digits=12)
+
 class ItemBase(models.Model):
     owner        = models.ForeignKey(CustomeUserModel, related_name="%(class)s_related", on_delete=models.CASCADE)
     title        = models.CharField(max_length = 250)
