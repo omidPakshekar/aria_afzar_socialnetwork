@@ -14,7 +14,7 @@ class CommentAdmin(admin.ModelAdmin):
              'created_time', 'content_type', 'item', 'admin_check']
 
 class ProjectAdmin(admin.ModelAdmin):
-    list_display = ['owner',  'user_accepted', 'designated_money', 'finished', 'accpeted']
+    list_display = ['owner',  'user_accepted', 'designated_money', 'finished', 'designated_money']
 
 class HoldProjectMoneyAdmin(admin.ModelAdmin):
     list_display = ['sender',  'receiver', 'amount', 'project']

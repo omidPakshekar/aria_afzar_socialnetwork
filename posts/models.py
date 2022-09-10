@@ -80,7 +80,6 @@ class Project(models.Model):
     money_max       = models.DecimalField(default=0, decimal_places=4, max_digits=12)
     designated_money= models.DecimalField(default=0, decimal_places=4, max_digits=12) 
     text            = models.TextField(blank=True)
-    accpeted        = models.BooleanField(default=False)
     finished        = models.BooleanField(default=False)
     Preferred_time  = models.DateTimeField(blank=True)
 

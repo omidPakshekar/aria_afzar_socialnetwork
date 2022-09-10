@@ -265,6 +265,8 @@ class PostViewSet(ObjectMixin, viewsets.ModelViewSet):
     @action(methods=["post"], detail=True, name="add project", url_path='add-project')
     def add_project(self, request, pk):
         instance = self.get_object()
+        if instance.project != None:
+            return Response({"detial" : "you allready create project"})
         serializer = ProjectCreateSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         obj = serializer.save(owner=self.request.user)
@@ -332,17 +334,21 @@ class ProjectViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         serializer.save(owner=self.request.user)
 
+    def update(self, request, *args, **kwargs):
+        return super().update(request, *args, **kwargs)
+
     @action(methods=["put"], detail=True, name="add request", url_path='add-request')
     def add_request(self, request, pk):
         instance = self.get_object()
         serializer = DemandSerializer(data=request.data)
         if float(request.data['suggested_money']) < instance.money_min:
             return Response({"detail" : 'your price is lower than minimum' })
+        if instance.demands.filter(owner=self.request.user):
+            return Response({"detail" : "you send your request befour"})
         serializer.is_valid(raise_exception=True)
         demand = serializer.save(owner=self.request.user)
         instance.demands.add(demand)
         return Response(status.HTTP_200_OK)
-
 
     @action(methods=["get"], detail=True, name="show all request for project", url_path='show-request')
     def show_requests(self, request, pk):
@@ -353,7 +359,7 @@ class ProjectViewSet(viewsets.ModelViewSet):
     @action(methods=["put"], detail=True, name="accept project", url_path='accept-request')
     def accept_user(self, request, pk):
         instance = self.get_object()
-        if request.user.wallet.amount > instance.amount:
+        if request.user.wallet.amount < instance.money_max:
             return Response({'detail' : 'you dont have enough money'}, status=status.HTTP_400_BAD_REQUEST)
         if request.user.accepted != None:
             return Response({'detail' : 'another user accepted'}, status=status.HTTP_400_BAD_REQUEST)
@@ -362,18 +368,22 @@ class ProjectViewSet(viewsets.ModelViewSet):
         w.save()
         # user receiver 
         receiver = CustomeUserModel.objects.get(id=int(self.request.data['user']))
+        # get The requesting user demand 
+        demand_ = Demand.objects.get(project=instance, )
         HoldProjectMoney(sender=request.user, receiver=receiver, amount= instance.amount, project=instance)
         instance.user_accepted = receiver
+        # instance.designated_money = 
         instance.save()
         return Response(status.HTTP_200_OK)
         
     @action(methods=["put"], detail=True, name="finish project", url_path='finish-project')
     def user_finished(self, request, pk):
         instance = self.get_object()
+        if instance.finished:
+            return Response({"detail" : "it's already finished"})
         instance.finished = True 
         user = instance.user_accpeted
-        hold_ = HoldProjectMoney.objects.get(project=instance)
-        
+        hold_ = HoldProjectMoney.objects.get(project=instance)       
         w = user.wallet 
         w.amount += Decimal(hold_.money)
         w.save(); instance.save()
