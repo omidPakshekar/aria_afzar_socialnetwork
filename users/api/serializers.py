@@ -240,9 +240,9 @@ class UserInlineSerializerNonAdmin(serializers.ModelSerializer):
     def get_userid(self, obj):
         if  obj.userid == None:
             return None 
-        if obj.userid.admin_check == False and not self.request.user.is_admin:
+        if obj.userid.admin_check == False and not self.context['request'].user.is_admin:
             return None
-        return UserIdInlineSerializer(instance=obj.userid).data['userid']
+        return UserIdInlineSerializer(instance=obj.userid, context={'request' : self.context['request']}).data['userid']
 
 
 

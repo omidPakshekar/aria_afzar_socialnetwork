@@ -373,6 +373,7 @@ class ProjectViewSet(viewsets.ModelViewSet):
     @action(methods=["get"], detail=False, name="project that i'm accepted", url_path='accepted')
     def user_accepted(self, request):
         objects_ = self.get_queryset().filter(user_accepted=request.user)
+        
         page = self.paginate_queryset(objects_)
         if page is not None:
             return self.get_paginated_response(ProjectSerializer(page, many=True, context={"request": request}).data) 

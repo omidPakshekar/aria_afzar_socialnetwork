@@ -4,7 +4,7 @@ from rest_framework import serializers
 from users.models import CustomeUserModel
 
 from ..models import Comment, Demand, Podcast, Post, Project, SuccessfullExperience
-from users.api.serializers import UserInlineSerializer, UserInlineSerializerNonAdmin
+from users.api.serializers import UserIdInlineSerializer, UserInlineSerializer, UserInlineSerializerNonAdmin
 
 """
     comment serializer
@@ -179,7 +179,9 @@ class ProjectSerializer(serializers.ModelSerializer):
     user_accepted = UserInlineSerializerNonAdmin()
     class Meta:
         model = Project
-        fields = "__all__"
+        exclude = ['demands'] 
+    # def get_userid(self, obj):
+    #     return obj     
 
 class ProjectCreateSerializer(serializers.ModelSerializer):
     class Meta:
