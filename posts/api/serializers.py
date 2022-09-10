@@ -164,18 +164,17 @@ class PodcastAdminCheckSerializer(serializers.ModelSerializer):
     project serializer
 """
 class DemandListSerializer(serializers.ModelSerializer):
-    owner = UserInlineSerializer(read_only=True)
+    owner = UserInlineSerializerNonAdmin(read_only=True)
     class Meta:
         model = Demand
         fields = "__all__"
 class DemandSerializer(serializers.ModelSerializer):
     class Meta:
         model = Demand
-        fields= ["suggested_time"]
+        fields= ["suggested_time", "suggested_money"]
 
 class ProjectSerializer(serializers.ModelSerializer):
     owner = UserInlineSerializerNonAdmin()
-    post  = PostSerializer()
     user_accepted = UserInlineSerializerNonAdmin()
     class Meta:
         model = Project
@@ -183,10 +182,17 @@ class ProjectSerializer(serializers.ModelSerializer):
     # def get_userid(self, obj):
     #     return obj     
 
-class ProjectCreateSerializer(serializers.ModelSerializer):
+class ProjectListSerializer(serializers.ModelSerializer):
+    demands = DemandSerializer(many=True)
     class Meta:
         model = Project 
         fields = "__all__"
+
+class ProjectCreateSerializer(serializers.ModelSerializer):
+    
+    class Meta:
+        model = Project 
+        fields = ["money_min", "money_max", "Preferred_time"]
 
 
 

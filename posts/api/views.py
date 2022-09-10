@@ -308,17 +308,24 @@ class PodcastViewSet(ObjectMixin, viewsets.ModelViewSet):
 class ProjectViewSet(viewsets.ModelViewSet):
     queryset = Project.objects.all()
     permission_classes = [IsAuthenticated]
-    serializer_class = ProjectCreateSerializer
+    serializer_class = ProjectListSerializer
     
     def get_serializer_class(self):
         if self.action == 'add_request':
             return DemandSerializer
+        elif self.action == 'create':
+            return ProjectCreateSerializer        
         return super().get_serializer_class()
+
+    def perform_create(self, serializer):
+        serializer.save(owner=self.request.user)
 
     @action(methods=["put"], detail=True, name="add request", url_path='add-request')
     def add_request(self, request, pk):
         instance = self.get_object()
         serializer = DemandSerializer(data=request.data)
+        if float(request.data['suggested_money']) < instance.money_min:
+            return Response({"detail" : 'your price is lower than minimum' })
         serializer.is_valid(raise_exception=True)
         demand = serializer.save(owner=self.request.user)
         instance.demands.add(demand)
@@ -353,11 +360,10 @@ class ProjectViewSet(viewsets.ModelViewSet):
         instance = self.get_object()
         instance.finished = True 
         user = instance.user_accpeted
-        w = request.user.wallet
-        w.amount -= Decimal(instance.amount)
-        w.save()
+        hold_ = HoldProjectMoney.objects.get(project=instance)
+        
         w = user.wallet 
-        w.amount += Decimal(instance.amount)
+        w.amount += Decimal(hold_.money)
         w.save(); instance.save()
         return Response()
 
@@ -373,7 +379,6 @@ class ProjectViewSet(viewsets.ModelViewSet):
     @action(methods=["get"], detail=False, name="project that i'm accepted", url_path='accepted')
     def user_accepted(self, request):
         objects_ = self.get_queryset().filter(user_accepted=request.user)
-        
         page = self.paginate_queryset(objects_)
         if page is not None:
             return self.get_paginated_response(ProjectSerializer(page, many=True, context={"request": request}).data) 
