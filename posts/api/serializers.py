@@ -27,6 +27,45 @@ class CommentLikeSerializer(serializers.ModelSerializer):
         model = Comment
         fields = ["id"]
 
+
+
+
+"""
+    project serializer
+"""
+class DemandListSerializer(serializers.ModelSerializer):
+    owner = UserInlineSerializerNonAdmin(read_only=True)
+    class Meta:
+        model = Demand
+        fields = "__all__"
+class DemandSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Demand
+        fields= ["suggested_time", "suggested_money"]
+
+class ProjectSerializer(serializers.ModelSerializer):
+    owner = UserInlineSerializerNonAdmin()
+    user_accepted = UserInlineSerializerNonAdmin()
+    class Meta:
+        model = Project
+        exclude = ['demands'] 
+    # def get_userid(self, obj):
+    #     return obj     
+
+class ProjectListSerializer(serializers.ModelSerializer):
+    demands = DemandSerializer(many=True)
+    class Meta:
+        model = Project 
+        fields = "__all__"
+
+class ProjectCreateSerializer(serializers.ModelSerializer):
+    
+    class Meta:
+        model = Project 
+        fields = ["money_min", "money_max", "Preferred_time"]
+
+
+
 """
     succefullexprience serializer
 """
@@ -84,10 +123,10 @@ class PostSerializer(serializers.ModelSerializer):
     likes = serializers.SerializerMethodField(read_only=True)
     save_number = serializers.SerializerMethodField(read_only=True)
     owner = UserInlineSerializerNonAdmin(read_only=True)
-    # comment = CommentInlineSerializer(many=True ,read_only = True)
+    project = ProjectListSerializer()
     class Meta:
         model = Post
-        fields = ['id','owner', 'image', 'title', 'description', 'likes', 'save_number', 'created_time']
+        fields = ['id','owner', 'image', 'title', 'description', 'likes', 'save_number', 'created_time', "project"]
 
     def get_likes(self, obj):
         return obj.user_liked.count()
@@ -156,43 +195,6 @@ class PodcastAdminCheckSerializer(serializers.ModelSerializer):
         model = Podcast
         fields = ['id','owner', 'file', 'title', 'description']
 
-
-
-
-
-"""
-    project serializer
-"""
-class DemandListSerializer(serializers.ModelSerializer):
-    owner = UserInlineSerializerNonAdmin(read_only=True)
-    class Meta:
-        model = Demand
-        fields = "__all__"
-class DemandSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Demand
-        fields= ["suggested_time", "suggested_money"]
-
-class ProjectSerializer(serializers.ModelSerializer):
-    owner = UserInlineSerializerNonAdmin()
-    user_accepted = UserInlineSerializerNonAdmin()
-    class Meta:
-        model = Project
-        exclude = ['demands'] 
-    # def get_userid(self, obj):
-    #     return obj     
-
-class ProjectListSerializer(serializers.ModelSerializer):
-    demands = DemandSerializer(many=True)
-    class Meta:
-        model = Project 
-        fields = "__all__"
-
-class ProjectCreateSerializer(serializers.ModelSerializer):
-    
-    class Meta:
-        model = Project 
-        fields = ["money_min", "money_max", "Preferred_time"]
 
 
 

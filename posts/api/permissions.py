@@ -17,7 +17,7 @@ class PostPermission(permissions.BasePermission):
             return False
         if view.action in ['get_comment', 'add_like', 'add_user_saved', 'admin_accept' ,'add_comment', 'mine', 'add_listen']:
             return True
-        elif view.action in ['mine_count', 'history', 'create', 'retrieve', 'partial_update', 'destroy', 'update', 'get_count']:
+        elif view.action in ['mine_count', 'history', 'create', 'retrieve', 'partial_update', 'destroy', 'update', 'get_count','add_project']:
             return True
         elif view.action in ['admin_check', 'change_like_money']:
             return request.user.is_admin or request.user.is_staff
@@ -29,11 +29,11 @@ class PostPermission(permissions.BasePermission):
             return True
         if not request.user.is_authenticated:
             return False
-        if view.action in ['get_comment', 'add_like', 'add_user_saved' ,'add_comment', 'add_listen']:
+        if view.action in ['get_comment', 'add_project', 'add_like', 'add_user_saved' ,'add_comment', 'add_listen']:
             return True
         elif view.action in [ 'update', 'partial_update']:
             return obj.owner == request.user or request.user.is_admin or request.user.is_staff
-        elif view.action in ['destroy', 'change_status', 'admin_accept', 'get_count', 'admin-check']:
+        elif view.action in ['destroy', 'change_status', 'admin_accept', 'get_count', 'admin_check']:
             return request.user.is_admin or request.user.is_staff
         else:
             return False

@@ -237,13 +237,15 @@ class PostViewSet(ObjectMixin, viewsets.ModelViewSet):
         save item ---> /post/<id>/save/
         accept a item --> only admin can do /post/<id>/admin-accept/
     """
-    permission_classes = [PostPermission]
+    permission_classes = [IsAuthenticated]
     list_serializer = PostSerializer
     admin_check_serializer = PostAdminCheckSerializer
     model_ = Post
 
 
     def get_serializer_class(self):
+        if self.action == 'add_project':
+            return ProjectCreateSerializer
         if self.action == 'create':
             return PostCreateSerializer
         if self.action in [ 'partial_update', 'update']:
@@ -255,10 +257,20 @@ class PostViewSet(ObjectMixin, viewsets.ModelViewSet):
         return PostSerializer
 
     def perform_create(self, serializer):
-        if  self.request.user.is_admin:
+        if self.request.user.is_admin:
             serializer.save(owner=self.request.user, admin_check=True)
         else:
             serializer.save(owner=self.request.user)
+    
+    @action(methods=["post"], detail=True, name="add project", url_path='add-project')
+    def add_project(self, request, pk):
+        instance = self.get_object()
+        serializer = ProjectCreateSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        obj = serializer.save(owner=self.request.user)
+        instance.project = obj
+        instance.save()
+        return Response(status.HTTP_200_OK)
 
 class PodcastViewSet(ObjectMixin, viewsets.ModelViewSet):
     """
