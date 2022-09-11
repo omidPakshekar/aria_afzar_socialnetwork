@@ -321,7 +321,7 @@ class PodcastViewSet(ObjectMixin, viewsets.ModelViewSet):
 
 class ProjectViewSet(viewsets.ModelViewSet):
     queryset = Project.objects.all()
-    permission_classes = [IsAuthenticated]
+    permission_classes = [ProjectPermission]
     serializer_class = ProjectListSerializer
     
     def get_serializer_class(self):

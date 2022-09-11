@@ -148,6 +148,16 @@ class UserViewSet(viewsets.ModelViewSet):
             return self.get_paginated_response( UserBioSerializer(page, many=True, context={"request": request}).data)
         serializer = UserBioSerializer(objects_, many=True, context={"request": request})
         return Response(serializer.data)
+    
+    @action(methods=["get"], detail=False, name="show user feedback", url_path='show-user-feedback')
+    def show_user_feedback(self, request):
+        objects_ =  UserFeedbackOpinion.objects.filter(receiver=self.request.user)
+        page = self.paginate_queryset(objects_)
+        if page is not None:
+            return self.get_paginated_response( UserFeedbackListSerializer(page, many=True, context={"request": request}).data)
+        serializer = UserFeedbackListSerializer(objects_, many=True, context={"request": request})
+        return Response(serializer.data)
+    
 
     @action(methods=["post"], detail=True, name="accpet profile pic", url_path='accept-profile-pic')
     def accept_profile_pic(self, request, username):
@@ -325,6 +335,10 @@ class SupportMessageViewSet(viewsets.ModelViewSet):
         serializer = SupportMessageSerializer(objects_, many=True, context={"request": request})
         return Response(serializer.data)
 
+class UserFeedbackCreateApiView(generics.CreateAPIView):
+    serializer_class = UserFeedbackSerializer
+    def perform_create(self, serializer):
+        serializer.save(sender=self.request.user)
 
 # UserId.objects.create(userid)
 

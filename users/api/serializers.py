@@ -227,6 +227,7 @@ class UserInlineSerializer(serializers.ModelSerializer):
         if obj.profile_pic.admin_check == False or self.context['request'].user.is_anonymous:
             return self.context['request'].build_absolute_uri('/media/default_image.jpg')
         return ImageInlineSerializer(instance=obj.profile_pic, context={'request' : self.context['request']}).data
+
 class UserInlineSerializerNonAdmin(serializers.ModelSerializer):
     profile_pic = serializers.SerializerMethodField(source='profile_pic', read_only=True)
     userid      = serializers.SerializerMethodField()
@@ -252,7 +253,18 @@ class SupportMessageSerializer(serializers.ModelSerializer):
     class Meta:
         model = SupportMessage
         fields = "__all__"
-        
+
+class UserFeedbackSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UserFeedbackOpinion
+        fields = ['receiver', 'point', 'text']
+
+class UserFeedbackListSerializer(serializers.ModelSerializer):
+    sender   = UserInlineSerializerNonAdmin()
+    receiver = UserInlineSerializerNonAdmin()
+    class Meta:
+        model = UserFeedbackOpinion
+        fields = "__all__"
 
 # class RegistrationSerializer(serializers.ModelSerializer):
 #     password2 = serializers.CharField(style={"input_type": "password"}, write_only=True)

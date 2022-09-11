@@ -11,7 +11,7 @@ class UserViewSetPermission(permissions.BasePermission):
             return False
         if view.action in ['blockuser', 'unblockuser', 'list', 'mine', 'admin_accept']:
             return True
-        elif view.action in ['number_register', 'number_active', 'retrieve', 'update', 'partial_update', 'destroy', 'profile']:
+        elif view.action in ['show_user_feedback', 'number_register', 'number_active', 'retrieve', 'update', 'partial_update', 'destroy', 'profile']:
             return True
         elif view.action in ['user_profile_pic', 'user_profile_bio', 'accept_profile_pic']:
             return request.user.is_admin or request.user.is_staff

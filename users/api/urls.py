@@ -36,6 +36,7 @@ urlpatterns = [
     path('register/', RegisterView.as_view()),
     path('login/', CustomUserLogin.as_view()),
     path('logout/', LogoutView.as_view()),
+    path('user-feedback', UserFeedbackCreateApiView.as_view()),
     path('change-password/', PasswordChangeView.as_view(), name='password_change'),
     path('verify-email/', CustomVerifyEmail.as_view(), name='verify-email'),
     path('registration/resend-email/', ResendEmailVerificationView.as_view(), name='resend-email-verification'),

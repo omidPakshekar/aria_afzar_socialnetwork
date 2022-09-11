@@ -11,16 +11,9 @@ from django.contrib.auth.models import PermissionsMixin
 from django.db.models.signals import (pre_save, post_save)
 from django.dispatch import receiver
 from django_countries.fields import CountryField
+from django.core.validators import MaxValueValidator, MinValueValidator
 
-COUNTRY_CHOICES = (
-    ('IR', 'Iran'),
-    ('US', 'United State'),
-    ('UK', 'United Kindom'),
-    ('CH', 'China'),
-    ('BR', 'Brazil'),
-    ('FR', 'French'),
-    ('PL', 'Poland'),
-)
+
 
 GENDER_CHOICES = (
     ('M', 'Male'),
@@ -113,6 +106,7 @@ class UserId(models.Model):
     @property
     def email(self):
         return self.owner
+
 class CustomeUserModel(AbstractBaseUser, PermissionsMixin):
     class Meta:
         verbose_name_plural = 'users'
@@ -315,8 +309,11 @@ class ActivationKey(models.Model):
     #     key = random.randint(100000, 999999)
     #     return cls._default_manager.create(user=user, key=key)
 
-
-
+class UserFeedbackOpinion(models.Model):
+    sender  = models.ForeignKey(CustomeUserModel, related_name='userfeedback_sender',  on_delete=models.CASCADE)
+    receiver= models.ForeignKey(CustomeUserModel, related_name='userfeedback_receiver',  on_delete=models.CASCADE)
+    point   = models.PositiveIntegerField(default=0, validators=[MaxValueValidator(10), MinValueValidator(0)])
+    text    = models.TextField()
 
 
 
