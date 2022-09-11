@@ -25,5 +25,5 @@ admin.site.register(SuccessfullExperience, ExprienceAdmin)
 admin.site.register(Comment, CommentAdmin)
 admin.site.register(Project, ProjectAdmin)
 admin.site.register(HoldProjectMoney, HoldProjectMoneyAdmin)
-# admin.site.register(ChunkedUpload)
+admin.site.register(Demand)
 

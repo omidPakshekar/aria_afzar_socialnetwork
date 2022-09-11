@@ -353,7 +353,6 @@ class ProjectViewSet(viewsets.ModelViewSet):
     @action(methods=["get"], detail=True, name="show all request for project", url_path='show-request')
     def show_requests(self, request, pk):
         instance = self.get_object().demands.all()
-        print(instance)
         return Response(DemandListSerializer(instance=instance, many=True, context={"request": self.request}).data)
         
     @action(methods=["put"], detail=True, name="accept project", url_path='accept-request')
@@ -361,18 +360,19 @@ class ProjectViewSet(viewsets.ModelViewSet):
         instance = self.get_object()
         if request.user.wallet.amount < instance.money_max:
             return Response({'detail' : 'you dont have enough money'}, status=status.HTTP_400_BAD_REQUEST)
-        if request.user.accepted != None:
+        if instance.user_accepted != None:
             return Response({'detail' : 'another user accepted'}, status=status.HTTP_400_BAD_REQUEST)
-        w = request.user.wallet
-        w -= w.amount - instance.amount
-        w.save()
         # user receiver 
         receiver = CustomeUserModel.objects.get(id=int(self.request.data['user']))
         # get The requesting user demand 
-        demand_ = Demand.objects.get(project=instance, )
-        HoldProjectMoney(sender=request.user, receiver=receiver, amount= instance.amount, project=instance)
+        demand_ = instance.demands.get(owner=receiver)
+        HoldProjectMoney(sender=request.user, receiver=receiver, amount= demand_.suggested_money, project=instance)
         instance.user_accepted = receiver
-        # instance.designated_money = 
+        instance.designated_money = demand_.suggested_money
+        instance.Preferred_time = demand_.suggested_time
+        w = request.user.wallet
+        w.amount -= Decimal(demand_.suggested_money)
+        w.save()
         instance.save()
         return Response(status.HTTP_200_OK)
         

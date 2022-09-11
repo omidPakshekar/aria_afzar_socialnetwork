@@ -53,10 +53,11 @@ class ProjectSerializer(serializers.ModelSerializer):
     #     return obj     
 
 class ProjectListSerializer(serializers.ModelSerializer):
-    demands = DemandSerializer(many=True)
+    # demands = DemandSerializer(many=True)
     class Meta:
         model = Project 
-        fields = "__all__"
+        # fields = "__all__"
+        exclude = ['demands'] 
 
 class ProjectCreateSerializer(serializers.ModelSerializer):
     
