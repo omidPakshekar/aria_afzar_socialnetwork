@@ -13,7 +13,7 @@ from rest_framework import status
 
 from users.api.serializers import UserInlineSerializerNonAdmin
 from .serializers import *
-from ..models import Comment, HoldProjectMoney, Podcast, Post, SuccessfullExperience
+from ..models import Comment, HoldProjectMoney, MoneyUnit, Podcast, Post, SuccessfullExperience
 from users.models import Activity, CustomeUserModel, Wallet
 from posts.api.permissions import PostPermission, ProjectPermission
 from payment.models import TransactionHistory
@@ -51,6 +51,13 @@ def calculte_period(period, objects):
         return objects.filter(created_time__gte=timezone.now() - timedelta(days=30))        
     return objects.filter(created_time__gte=timezone.now() - timedelta(days=365))
 
+def get_money_per_like():
+    return MoneyUnit.objects.get(id=1).like_money
+def get_money_per_comment():
+    return MoneyUnit.objects.get(id=1).comment_money
+def get_money_per_listen():
+    return MoneyUnit.objects.get(id=1).podcast_money
+
 class ObjectMixin:
     list_serializer = None
     admin_check_serializer = None
@@ -76,7 +83,6 @@ class ObjectMixin:
     @action(methods=["put"], detail=True, name="user liked", url_path='like')
     def add_like(self, request, pk):
         instance = self.get_object()
-        # add if 
         if self.request.user in instance.user_liked.all() or self.request.user == instance.owner:
             return Response(status.HTTP_200_OK)
         instance.user_liked.add(self.request.user)
@@ -86,9 +92,9 @@ class ObjectMixin:
         # user member ship --> add money
         # cost money and add to admin if user dosent have member ship
         if self.request.user.have_membership:
-            add_money(self.request.user, instance.owner, self.like_money, kind='like')
+            add_money(self.request.user, instance.owner, get_money_per_like() , kind='like')
         else:
-            add_money(self.request.user, user_admin, self.like_money, kind='like')
+            add_money(self.request.user, user_admin, get_money_per_like(), kind='like')
         return Response(status.HTTP_200_OK)
     
     @action(methods=["put"], detail=True, name="user saved", url_path='save')
@@ -147,22 +153,6 @@ class ObjectMixin:
         serializer = CommentInlineSerializer(instance = instance.comment.all(), many=True)
         return Response(serializer.data)
 
-    # @action(methods=["get"], detail=False, name="count", url_path='count')
-    # def get_count(self, request):
-    #     queryset = self.get_queryset()
-    #     daily =  queryset.filter(created_time__gte=timezone.now() - timedelta(hours=24))
-    #     weekly = queryset.filter(created_time__gte=timezone.now() - timedelta(days=7))
-    #     monthly = queryset.filter(created_time__gte=timezone.now() - timedelta(days=30))
-    #     yearly = queryset.filter(created_time__gte=timezone.now() - timedelta(days=365))
-    #     data = {
-    #         'count' : queryset.count(),
-    #         'number_in_day': daily.count(),
-    #         'number_in_week': weekly.count(),
-    #         'number_in_month': monthly.count(),
-    #         'number_in_year': yearly.count(),
-    #     }
-    #     return Response((data))   
-
     @action(methods=["get"], detail=False, name="history", url_path='history')
     def history(self, request):
         if request.user.is_admin:
@@ -180,11 +170,7 @@ class ObjectMixin:
         serializer = self.list_serializer(objects, many=True, context={"request": request})
         return Response(serializer.data)
     
-    @action(methods=["post"], detail=False, name="change like per money", url_path='money-per-like')
-    def change_like_money(self, request):
-        self.like_money = self.request.data['money']
-        print(self.like_money)
-        return Response(status=status.HTTP_200_OK)
+
     
     
 class ExprienceViewSet(ObjectMixin, viewsets.ModelViewSet):
@@ -237,7 +223,7 @@ class PostViewSet(ObjectMixin, viewsets.ModelViewSet):
         save item ---> /post/<id>/save/
         accept a item --> only admin can do /post/<id>/admin-accept/
     """
-    permission_classes = [IsAuthenticated]
+    permission_classes = [PostPermission]
     list_serializer = PostSerializer
     admin_check_serializer = PostAdminCheckSerializer
     model_ = Post
@@ -246,14 +232,16 @@ class PostViewSet(ObjectMixin, viewsets.ModelViewSet):
     def get_serializer_class(self):
         if self.action == 'add_project':
             return ProjectCreateSerializer
-        if self.action == 'create':
+        elif self.action == 'create':
             return PostCreateSerializer
-        if self.action in [ 'partial_update', 'update']:
+        elif self.action in [ 'partial_update', 'update']:
             try:
                 if self.request.user.is_admin:
                     return PostAdminUpdateSerializer
             except: pass
             return PostUpdateSerializer
+        elif self.action == "change_money_unit":
+            return MoneyUnitSerializer
         return PostSerializer
 
     def perform_create(self, serializer):
@@ -262,6 +250,17 @@ class PostViewSet(ObjectMixin, viewsets.ModelViewSet):
         else:
             serializer.save(owner=self.request.user)
     
+    @action(methods=["get"], detail=False, name="show money unit", url_path='show-money-unit')
+    def show_money_unit(self, request):
+        return Response(MoneyUnitSerializer(instance=MoneyUnit.objects.get(id=1)).data)
+
+    @action(methods=["put"], detail=False, name="change money unit", url_path='change-money-unit')
+    def change_money_unit(self, request):
+        serializer = MoneyUnitSerializer(MoneyUnit.objects.get(id=1), data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(status=status.HTTP_200_OK)
+
     @action(methods=["post"], detail=True, name="add project", url_path='add-project')
     def add_project(self, request, pk):
         instance = self.get_object()
@@ -315,7 +314,7 @@ class PodcastViewSet(ObjectMixin, viewsets.ModelViewSet):
         instance = self.get_object()
         if self.request.user == instance.owner or self.request.user.is_admin or not self.request.user.have_membership:
             return Response(status.HTTP_200_OK)
-        add_money(request.user, instance.owner, self.podcast_money_per_listen, kind='listen')
+        add_money(request.user, instance.owner, get_money_per_listen(), kind='listen')
         return Response(status.HTTP_200_OK)
 
 
@@ -372,8 +371,8 @@ class ProjectViewSet(viewsets.ModelViewSet):
         instance.Preferred_time = demand_.suggested_time
         w = request.user.wallet
         w.amount -= Decimal(demand_.suggested_money)
-        w.save()
-        instance.save()
+        w.save(); instance.save()
+        TransactionHistory.objects.create(owner=request.user, amount= -1 * demand_.suggested_money, kind='project')
         return Response(status.HTTP_200_OK)
         
     @action(methods=["put"], detail=True, name="finish project", url_path='finish-project')
@@ -386,6 +385,7 @@ class ProjectViewSet(viewsets.ModelViewSet):
         hold_ = HoldProjectMoney.objects.get(project=instance)       
         w = user.wallet 
         w.amount += Decimal(hold_.amount)
+        TransactionHistory.objects.create(owner=user, amount=hold_.amount, kind='project')
         w.save(); instance.save(); hold_.delete()
         return Response(status.HTTP_200_OK)
 
@@ -425,9 +425,9 @@ class CommentLikeApiView(generics.GenericAPIView):
         # user member ship --> add money
         # cost money and add to admin if user dosent have member ship
         if self.request.user.have_membership:
-            add_money(self.request.user, instance.owner, money_per_like, kind='like')
+            add_money(self.request.user, instance.owner, get_money_per_like(), kind='like')
         else:
-            add_money(self.request.user, user_admin, money_per_like, kind='like')
+            add_money(self.request.user, user_admin, get_money_per_like(), kind='like')
         return Response(status.HTTP_200_OK)
     
 # class CommentViewSet(LikeSaveMixin, viewsets.ModelViewSet):

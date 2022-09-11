@@ -132,6 +132,10 @@ class SuccessfullExperience(ItemBase):
         return timezone.now() - self.created_time
 
 
+class MoneyUnit(models.Model):
+    like_money   = models.DecimalField(default=0.01, decimal_places=4, max_digits=12)
+    podcast_money= models.DecimalField(default=0.01, decimal_places=4, max_digits=12)
+    comment_money= models.DecimalField(default=0.01, decimal_places=4, max_digits=12)
 
     
 # class UploadType(ChunkedUpload):

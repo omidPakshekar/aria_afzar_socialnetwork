@@ -26,4 +26,4 @@ admin.site.register(Comment, CommentAdmin)
 admin.site.register(Project, ProjectAdmin)
 admin.site.register(HoldProjectMoney, HoldProjectMoneyAdmin)
 admin.site.register(Demand)
-
+admin.site.register(MoneyUnit)

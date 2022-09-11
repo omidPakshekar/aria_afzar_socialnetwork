@@ -3,7 +3,7 @@ from rest_framework import serializers
 
 from users.models import CustomeUserModel
 
-from ..models import Comment, Demand, Podcast, Post, Project, SuccessfullExperience
+from ..models import Comment, Demand, MoneyUnit, Podcast, Post, Project, SuccessfullExperience
 from users.api.serializers import UserIdInlineSerializer, UserInlineSerializer, UserInlineSerializerNonAdmin
 
 """
@@ -196,8 +196,13 @@ class PodcastAdminCheckSerializer(serializers.ModelSerializer):
         model = Podcast
         fields = ['id','owner', 'file', 'title', 'description']
 
-
-
+"""
+    MoneyUnit
+"""
+class MoneyUnitSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = MoneyUnit
+        fields = "__all__"
 
 
 
