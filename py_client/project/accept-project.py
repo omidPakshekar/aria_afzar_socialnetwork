@@ -10,7 +10,7 @@ data = {
 
 auth_response = requests.post( endpoint, data=data )
 
-endpoint = "http://localhost:8000/api/v1/project/1/accept-request/"
+endpoint = "http://localhost:8000/api/v1/project/1/finish-project/"
 
 if auth_response.status_code == 200:
     token = auth_response.json()['access_token']    

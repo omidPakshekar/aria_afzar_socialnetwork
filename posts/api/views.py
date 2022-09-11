@@ -366,7 +366,7 @@ class ProjectViewSet(viewsets.ModelViewSet):
         receiver = CustomeUserModel.objects.get(id=int(self.request.data['user']))
         # get The requesting user demand 
         demand_ = instance.demands.get(owner=receiver)
-        HoldProjectMoney(sender=request.user, receiver=receiver, amount= demand_.suggested_money, project=instance)
+        HoldProjectMoney.objects.create(sender=request.user, receiver=receiver, amount= demand_.suggested_money, project=instance)
         instance.user_accepted = receiver
         instance.designated_money = demand_.suggested_money
         instance.Preferred_time = demand_.suggested_time
@@ -382,12 +382,12 @@ class ProjectViewSet(viewsets.ModelViewSet):
         if instance.finished:
             return Response({"detail" : "it's already finished"})
         instance.finished = True 
-        user = instance.user_accpeted
+        user = instance.user_accepted
         hold_ = HoldProjectMoney.objects.get(project=instance)       
         w = user.wallet 
-        w.amount += Decimal(hold_.money)
-        w.save(); instance.save()
-        return Response()
+        w.amount += Decimal(hold_.amount)
+        w.save(); instance.save(); hold_.delete()
+        return Response(status.HTTP_200_OK)
 
     @action(methods=["get"], detail=False, name="project that i defined", url_path='mine')
     def mine(self, request):
