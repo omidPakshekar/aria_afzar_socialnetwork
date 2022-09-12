@@ -250,6 +250,14 @@ class PostViewSet(ObjectMixin, viewsets.ModelViewSet):
         else:
             serializer.save(owner=self.request.user)
     
+    def destroy(self, request, *args, **kwargs):
+        instance = self.get_object()
+        if instance.project == None:
+            return super().destroy(request, *args, **kwargs)
+        if instance.project.user_accepted != None and not instance.project.finished:
+            return Response({"detail" : 'project dosnt finish yet'}, status=status.HTTP_400_BAD_REQUEST)
+        return super().destroy(request, *args, **kwargs)
+
     @action(methods=["get"], detail=False, name="show money unit", url_path='show-money-unit')
     def show_money_unit(self, request):
         return Response(MoneyUnitSerializer(instance=MoneyUnit.objects.get(id=1)).data)
@@ -265,7 +273,7 @@ class PostViewSet(ObjectMixin, viewsets.ModelViewSet):
     def add_project(self, request, pk):
         instance = self.get_object()
         if instance.project != None:
-            return Response({"detial" : "you allready create project"})
+            return Response({"detial" : "you allready create project"}, status=status.HTTP_302_FOUND)
         serializer = ProjectCreateSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         obj = serializer.save(owner=self.request.user)
@@ -341,9 +349,9 @@ class ProjectViewSet(viewsets.ModelViewSet):
         instance = self.get_object()
         serializer = DemandSerializer(data=request.data)
         if float(request.data['suggested_money']) < instance.money_min:
-            return Response({"detail" : 'your price is lower than minimum' })
+            return Response({"detail" : 'your price is lower than minimum' }, status=status.HTTP_400_BAD_REQUEST)
         if instance.demands.filter(owner=self.request.user):
-            return Response({"detail" : "you send your request befour"})
+            return Response({"detail" : "you send your request befour"}, status=status.HTTP_400_BAD_REQUEST)
         serializer.is_valid(raise_exception=True)
         demand = serializer.save(owner=self.request.user)
         instance.demands.add(demand)
@@ -379,7 +387,7 @@ class ProjectViewSet(viewsets.ModelViewSet):
     def user_finished(self, request, pk):
         instance = self.get_object()
         if instance.finished:
-            return Response({"detail" : "it's already finished"})
+            return Response({"detail" : "it's already finished"}, status=status.HTTP_400_BAD_REQUEST)
         instance.finished = True 
         user = instance.user_accepted
         hold_ = HoldProjectMoney.objects.get(project=instance)       

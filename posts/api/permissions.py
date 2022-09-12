@@ -50,7 +50,7 @@ class ProjectPermission(permissions.BasePermission):
     def has_permission(self, request, view):
         if  request.user.is_anonymous:
             return False
-        if view.action in ['list', 'retrieve', 'show_requests', 'add_request', 'accept_user']:
+        if view.action in ['list', 'retrieve', 'show_requests', 'add_request', 'accept_user', 'mine']:
             return True
         elif view.action =='admin_check':
             return request.user.is_admin or request.user.is_staff
@@ -60,7 +60,7 @@ class ProjectPermission(permissions.BasePermission):
     def has_object_permission(self, request, view, obj):
         if request.user.is_anonymous:
             return False
-        elif view.action in [ 'update', 'partial_update', 'accept_user']:
+        elif view.action in [ 'update', 'partial_update', 'accept_user','retrieve']:
             return obj.owner == request.user or request.user.is_admin or request.user.is_staff
         elif view.action in ['destroy', 'admin_accept']:
             return request.user.is_admin or request.user.is_staff
