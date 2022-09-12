@@ -106,11 +106,11 @@ class Podcast(ItemBase):
 class Project(ItemBase):
     user_accepted   = models.ForeignKey(CustomeUserModel, related_name="project_accepted", null=True, blank=True, on_delete=models.SET_NULL)
     demands         = models.ManyToManyField(Demand, related_name="project", blank=True)
-    preferred_time  = models.DateTimeField(blank=True)
-    money_min       = models.DecimalField(default=0, decimal_places=4, max_digits=12)
-    money_max       = models.DecimalField(default=0, decimal_places=4, max_digits=12)
-    designated_money= models.DecimalField(default=0, decimal_places=4, max_digits=12) 
-    designated_time = models.DateTimeField(blank=True)
+    preferred_time  = models.DateTimeField()
+    money_min       = models.DecimalField(decimal_places=4, max_digits=12)
+    money_max       = models.DecimalField(decimal_places=4, max_digits=12)
+    designated_money= models.DecimalField(blank=True, null=True,  decimal_places=4, max_digits=12) 
+    designated_time = models.DateTimeField(blank=True, null=True)
     finished        = models.BooleanField(default=False)
     
     def __str__(self):

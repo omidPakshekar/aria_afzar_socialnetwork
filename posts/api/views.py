@@ -319,17 +319,22 @@ class ProjectViewSet(ObjectMixin, viewsets.ModelViewSet):
     permission_classes = [PostPermission]
     # set value for mixin variable
     list_serializer = ProjectListSerializer
-    admin_check_serializer = PodcastAdminCheckSerializer
+    admin_check_serializer = ProjectAdminCheckSerializer
     model_ = Project
+    #  def create(self, request, *args, **kwargs):
+    #     return 
+    # def create
+    def create(self, request, *args, **kwargs):
+        return super().create(request, *args, **kwargs)
 
     def get_serializer_class(self):
         if self.request.user.is_anonymous:
             return ProjectSerializer
         if self.action == 'add_request':
             return DemandSerializer
-        elif self.action == 'accept_request':
+        if self.action == 'accept_request':
             return DemandIdSerializer
-        elif self.action == 'create':
+        if self.action == 'create':
             return ProjectCreateSerializer
         if self.action in [ 'partial_update', 'update']:
             if self.request.user.is_admin:

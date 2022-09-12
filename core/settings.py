@@ -235,7 +235,7 @@ class Dev(Configuration):
     )
 
     from django.urls import reverse_lazy, reverse
-    LOGIN_REDIRECT_URL = reverse_lazy('users:profile')
+    # LOGIN_REDIRECT_URL = reverse_lazy('users:profile')
     # LOGIN_REDIRECT_URL = '/'
     ACCOUNT_CONFIRM_EMAIL_ON_GET = True
     LOGIN_URL = 'http://localhost:8000/api/v1/accounts/login'

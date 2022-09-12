@@ -80,10 +80,9 @@ class ProjectListSerializer(serializers.ModelSerializer):
         exclude = ['demands'] 
 
 class ProjectCreateSerializer(serializers.ModelSerializer):
-    
     class Meta:
         model = Project 
-        fields = ["money_min", "money_max", "preferred_time"]
+        fields = ["title", "description", "money_min", "money_max", "preferred_time"]
 
 class ProjectAdminCheckSerializer(serializers.ModelSerializer):
     owner = UserInlineSerializerNonAdmin(read_only=True)
