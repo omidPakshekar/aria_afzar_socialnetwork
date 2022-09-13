@@ -26,10 +26,6 @@ class CommentLikeSerializer(serializers.ModelSerializer):
     class Meta:
         model = Comment
         fields = ["id"]
-
-
-
-
 """
     project serializer
 """
@@ -44,13 +40,21 @@ class DemandSerializer(serializers.ModelSerializer):
         fields= ["suggested_time", "suggested_money"]
 
 class ProjectSerializer(serializers.ModelSerializer):
-    owner = UserInlineSerializerNonAdmin()
+    owner = UserInlineSerializerNonAdmin(read_only=True)
     user_accepted = UserInlineSerializerNonAdmin()
+    likes = serializers.SerializerMethodField(read_only=True)
+    save_number = serializers.SerializerMethodField(read_only=True)
+    request_number = serializers.SerializerMethodField(read_only=True)
     class Meta:
         model = Project
-        exclude = ['demands'] 
-    # def get_userid(self, obj):
-    #     return obj     
+        exclude = ['demands', 'user_liked', 'user_saved', 'updated_time'] 
+   
+    def get_likes(self, obj):
+        return obj.user_liked.count()
+    def get_save_number(self, obj):
+        return obj.user_saved.count()  
+    def get_request_number(self, obj):
+        return obj.demands.count()
 
 class ProjectListSerializer(serializers.ModelSerializer):
     # demands = DemandSerializer(many=True)
@@ -65,7 +69,11 @@ class ProjectCreateSerializer(serializers.ModelSerializer):
         model = Project 
         fields = ["money_min", "money_max", "Preferred_time"]
 
-
+class ProjectAdminCheckSerializer(serializers.ModelSerializer):
+    owner = UserInlineSerializerNonAdmin(read_only=True)
+    class Meta:
+        model = Podcast
+        fields = ['id','owner', 'file', 'title', 'description', 'admin_check']
 
 """
     succefullexprience serializer
@@ -124,10 +132,9 @@ class PostSerializer(serializers.ModelSerializer):
     likes = serializers.SerializerMethodField(read_only=True)
     save_number = serializers.SerializerMethodField(read_only=True)
     owner = UserInlineSerializerNonAdmin(read_only=True)
-    project = ProjectListSerializer()
     class Meta:
         model = Post
-        fields = ['id','owner', 'image', 'title', 'description', 'likes', 'save_number', 'created_time', "project"]
+        fields = ['id','owner', 'image', 'title', 'description', 'likes', 'save_number', 'created_time']
 
     def get_likes(self, obj):
         return obj.user_liked.count()
@@ -194,7 +201,7 @@ class PodcastAdminCheckSerializer(serializers.ModelSerializer):
     owner = UserInlineSerializerNonAdmin(read_only=True)
     class Meta:
         model = Podcast
-        fields = ['id','owner', 'file', 'title', 'description']
+        fields = ['id','owner', 'file', 'title', 'description', 'admin_check']
 
 """
     MoneyUnit

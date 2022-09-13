@@ -72,7 +72,13 @@ class ObjectMixin:
         elif user_.is_authenticated and not user_.is_admin:
             return self.model_.objects.filter(admin_check=True) | self.model_.objects.filter(owner=self.request.user)
         return self.model_.objects.all()
-
+    
+    def perform_create(self, serializer):
+        if  self.request.user.is_admin:
+            serializer.save(owner=self.request.user, admin_check=True)
+        else:
+            serializer.save(owner=self.request.user)
+    
     # every time user update the model admin_check = False
     def perform_update(self, serializer):
         if self.request.user.is_admin:
@@ -202,11 +208,7 @@ class ExprienceViewSet(ObjectMixin, viewsets.ModelViewSet):
             return ExprienceUpdateSerializer
         return ExprienceSerializer
 
-    def perform_create(self, serializer):
-        if  self.request.user.is_admin:
-            serializer.save(owner=self.request.user, admin_check=True)
-        else:
-            serializer.save(owner=self.request.user)
+    
     
 
 
@@ -230,9 +232,7 @@ class PostViewSet(ObjectMixin, viewsets.ModelViewSet):
 
 
     def get_serializer_class(self):
-        if self.action == 'add_project':
-            return ProjectCreateSerializer
-        elif self.action == 'create':
+        if self.action == 'create':
             return PostCreateSerializer
         elif self.action in [ 'partial_update', 'update']:
             try:
@@ -244,20 +244,7 @@ class PostViewSet(ObjectMixin, viewsets.ModelViewSet):
             return MoneyUnitSerializer
         return PostSerializer
 
-    def perform_create(self, serializer):
-        if self.request.user.is_admin:
-            serializer.save(owner=self.request.user, admin_check=True)
-        else:
-            serializer.save(owner=self.request.user)
     
-    def destroy(self, request, *args, **kwargs):
-        instance = self.get_object()
-        if instance.project == None:
-            return super().destroy(request, *args, **kwargs)
-        if instance.project.user_accepted != None and not instance.project.finished:
-            return Response({"detail" : 'project dosnt finish yet'}, status=status.HTTP_400_BAD_REQUEST)
-        return super().destroy(request, *args, **kwargs)
-
     @action(methods=["get"], detail=False, name="show money unit", url_path='show-money-unit')
     def show_money_unit(self, request):
         return Response(MoneyUnitSerializer(instance=MoneyUnit.objects.get(id=1)).data)
@@ -268,18 +255,6 @@ class PostViewSet(ObjectMixin, viewsets.ModelViewSet):
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return Response(status=status.HTTP_200_OK)
-
-    @action(methods=["post"], detail=True, name="add project", url_path='add-project')
-    def add_project(self, request, pk):
-        instance = self.get_object()
-        if instance.project != None:
-            return Response({"detial" : "you allready create project"}, status=status.HTTP_302_FOUND)
-        serializer = ProjectCreateSerializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        obj = serializer.save(owner=self.request.user)
-        instance.project = obj
-        instance.save()
-        return Response(status.HTTP_200_OK)
 
 class PodcastViewSet(ObjectMixin, viewsets.ModelViewSet):
     """
@@ -310,12 +285,6 @@ class PodcastViewSet(ObjectMixin, viewsets.ModelViewSet):
             except: pass
             return PodcastUpdateSerializer
         return PodcastSerializer
-
-    def perform_create(self, serializer):
-        if  self.request.user.is_admin:
-            serializer.save(owner=self.request.user, admin_check=True)
-        else:
-            serializer.save(owner=self.request.user)
             
     @action(methods=["post"], detail=True, name="listen", url_path='listen')
     def add_listen(self, request, pk):
@@ -326,23 +295,20 @@ class PodcastViewSet(ObjectMixin, viewsets.ModelViewSet):
         return Response(status.HTTP_200_OK)
 
 
-class ProjectViewSet(viewsets.ModelViewSet):
+class ProjectViewSet(ObjectMixin, viewsets.ModelViewSet):
     queryset = Project.objects.all()
     permission_classes = [ProjectPermission]
-    serializer_class = ProjectListSerializer
-    
+    # set value for mixin variable
+    list_serializer = ProjectListSerializer
+    admin_check_serializer = PodcastAdminCheckSerializer
+    model_ = Project
+
     def get_serializer_class(self):
         if self.action == 'add_request':
             return DemandSerializer
         elif self.action == 'create':
             return ProjectCreateSerializer        
-        return super().get_serializer_class()
-
-    def perform_create(self, serializer):
-        serializer.save(owner=self.request.user)
-
-    def update(self, request, *args, **kwargs):
-        return super().update(request, *args, **kwargs)
+        return ProjectSerializer
 
     @action(methods=["put"], detail=True, name="add request", url_path='add-request')
     def add_request(self, request, pk):
@@ -438,23 +404,3 @@ class CommentLikeApiView(generics.GenericAPIView):
             add_money(self.request.user, user_admin, get_money_per_like(), kind='like')
         return Response(status.HTTP_200_OK)
     
-# class CommentViewSet(LikeSaveMixin, viewsets.ModelViewSet):
-#     permission_classes = [PostPermission]
-
-#     def get_queryset(self):
-#         if  self.request.user.have_membership:
-#             return Comment.objects.all()
-#         return Comment.objects.filter(admin_check=True)
-
-#     def get_serializer_class(self):
-#         if self.action == 'create':
-#             return CommentCreateSerializer
-#         return CommentSerializer
-
-#     def perform_create(self, serializer):
-#         if  self.request.user.is_admin:
-#             serializer.save(owner=self.request.user, admin_check=True)
-#         else:
-#             serializer.save(owner=self.request.user)
-
-

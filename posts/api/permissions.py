@@ -31,9 +31,9 @@ class PostPermission(permissions.BasePermission):
             return False
         if view.action in ['get_comment', 'add_project', 'add_like', 'add_user_saved' ,'add_comment', 'add_listen']:
             return True
-        elif view.action in [ 'update', 'partial_update']:
+        elif view.action in [ 'update', 'partial_update', 'destroy']:
             return obj.owner == request.user or request.user.is_admin or request.user.is_staff
-        elif view.action in ['destroy', 'change_status', 'admin_accept', 'get_count', 'admin_check']:
+        elif view.action in [ 'change_status', 'admin_accept', 'get_count', 'admin_check']:
             return request.user.is_admin or request.user.is_staff
         else:
             return False
@@ -60,11 +60,11 @@ class ProjectPermission(permissions.BasePermission):
     def has_object_permission(self, request, view, obj):
         if request.user.is_anonymous:
             return False
-        elif view.action in [ 'update', 'partial_update', 'accept_user','retrieve']:
+        elif view.action in [ 'update', 'partial_update', 'accept_user']:
             return obj.owner == request.user or request.user.is_admin or request.user.is_staff
         elif view.action in ['destroy', 'admin_accept']:
             return request.user.is_admin or request.user.is_staff
-        elif view.action in ['show_requests', 'add_request']:
+        elif view.action in ['show_requests', 'add_request', 'retrieve']:
             return True
         else:
             return False
