@@ -41,7 +41,7 @@ class DemandSerializer(serializers.ModelSerializer):
 
 class ProjectSerializer(serializers.ModelSerializer):
     owner = UserInlineSerializerNonAdmin(read_only=True)
-    user_accepted = UserInlineSerializerNonAdmin()
+    user_accepted = UserInlineSerializerNonAdmin(read_only=True)
     likes = serializers.SerializerMethodField(read_only=True)
     save_number = serializers.SerializerMethodField(read_only=True)
     request_number = serializers.SerializerMethodField(read_only=True)
@@ -56,6 +56,16 @@ class ProjectSerializer(serializers.ModelSerializer):
     def get_request_number(self, obj):
         return obj.demands.count()
 
+class ProjectUpdateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Project 
+        fields = ['title', 'description', 'money_max', 'money_min', 'preferred_time']
+
+class ProjectAdminUpdateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Project 
+        fields = ['title', 'description', 'money_max', 'money_min', 'preferred_time', 'admin_check']
+
 class ProjectListSerializer(serializers.ModelSerializer):
     # demands = DemandSerializer(many=True)
     class Meta:
@@ -67,7 +77,7 @@ class ProjectCreateSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = Project 
-        fields = ["money_min", "money_max", "Preferred_time"]
+        fields = ["money_min", "money_max", "preferred_time"]
 
 class ProjectAdminCheckSerializer(serializers.ModelSerializer):
     owner = UserInlineSerializerNonAdmin(read_only=True)

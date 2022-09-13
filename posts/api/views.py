@@ -297,17 +297,23 @@ class PodcastViewSet(ObjectMixin, viewsets.ModelViewSet):
 
 class ProjectViewSet(ObjectMixin, viewsets.ModelViewSet):
     queryset = Project.objects.all()
-    permission_classes = [ProjectPermission]
+    permission_classes = [PostPermission]
     # set value for mixin variable
     list_serializer = ProjectListSerializer
     admin_check_serializer = PodcastAdminCheckSerializer
     model_ = Project
 
     def get_serializer_class(self):
+        if self.request.user.is_anonymous:
+            return ProjectSerializer
         if self.action == 'add_request':
             return DemandSerializer
         elif self.action == 'create':
-            return ProjectCreateSerializer        
+            return ProjectCreateSerializer
+        if self.action in [ 'partial_update', 'update']:
+            if self.request.user.is_admin:
+                return ProjectAdminUpdateSerializer
+            return ProjectUpdateSerializer     
         return ProjectSerializer
 
     @action(methods=["put"], detail=True, name="add request", url_path='add-request')
@@ -342,7 +348,7 @@ class ProjectViewSet(ObjectMixin, viewsets.ModelViewSet):
         HoldProjectMoney.objects.create(sender=request.user, receiver=receiver, amount= demand_.suggested_money, project=instance)
         instance.user_accepted = receiver
         instance.designated_money = demand_.suggested_money
-        instance.Preferred_time = demand_.suggested_time
+        instance.designated_time = demand_.suggested_time
         w = request.user.wallet
         w.amount -= Decimal(demand_.suggested_money)
         w.save(); instance.save()

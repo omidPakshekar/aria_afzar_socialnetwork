@@ -10,7 +10,6 @@ class PostPermission(permissions.BasePermission):
     """ 
     
     def has_permission(self, request, view):
-        print('view', view.action)
         if view.action in ['list', 'retrieve']:
             return True
         if not request.user.is_authenticated:
@@ -29,9 +28,9 @@ class PostPermission(permissions.BasePermission):
             return True
         if not request.user.is_authenticated:
             return False
-        if view.action in ['get_comment', 'add_project', 'add_like', 'add_user_saved' ,'add_comment', 'add_listen']:
+        if view.action in ['get_comment','show_requests', 'add_request', 'add_project', 'add_like', 'add_user_saved' ,'add_comment', 'add_listen']:
             return True
-        elif view.action in [ 'update', 'partial_update', 'destroy']:
+        elif view.action in [ 'update', 'partial_update', 'destroy', 'accept_user']:
             return obj.owner == request.user or request.user.is_admin or request.user.is_staff
         elif view.action in [ 'change_status', 'admin_accept', 'get_count', 'admin_check']:
             return request.user.is_admin or request.user.is_staff
