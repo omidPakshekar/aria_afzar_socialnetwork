@@ -308,6 +308,8 @@ class ProjectViewSet(ObjectMixin, viewsets.ModelViewSet):
             return ProjectSerializer
         if self.action == 'add_request':
             return DemandSerializer
+        elif self.action == 'accept_request':
+            return DemandIdSerializer
         elif self.action == 'create':
             return ProjectCreateSerializer
         if self.action in [ 'partial_update', 'update']:
@@ -334,29 +336,26 @@ class ProjectViewSet(ObjectMixin, viewsets.ModelViewSet):
         instance = self.get_object().demands.all()
         return Response(DemandListSerializer(instance=instance, many=True, context={"request": self.request}).data)
         
-    @action(methods=["put"], detail=True, name="accept project", url_path='accept-request')
-    def accept_user(self, request, pk):
+    @action(methods=["put"], detail=True, name="accept request", url_path='accept-request')
+    def accept_request(self, request, pk):
         instance = self.get_object()
         if request.user.wallet.amount < instance.money_max:
             return Response({'detail' : 'you dont have enough money'}, status=status.HTTP_400_BAD_REQUEST)
         if instance.user_accepted != None:
             return Response({'detail' : 'another user accepted'}, status=status.HTTP_400_BAD_REQUEST)
-        # user receiver 
-        receiver = CustomeUserModel.objects.get(id=int(self.request.data['user']))
-        # get The requesting user demand 
-        demand_ = instance.demands.get(owner=receiver)
+        demand_ = Demand.objects.get(id=int(request.data['id']))
+        receiver = demand_.owner # user receiver 
         HoldProjectMoney.objects.create(sender=request.user, receiver=receiver, amount= demand_.suggested_money, project=instance)
         instance.user_accepted = receiver
         instance.designated_money = demand_.suggested_money
         instance.designated_time = demand_.suggested_time
-        w = request.user.wallet
-        w.amount -= Decimal(demand_.suggested_money)
+        w = request.user.wallet; w.amount -= Decimal(demand_.suggested_money)
         w.save(); instance.save()
         TransactionHistory.objects.create(owner=request.user, amount= -1 * demand_.suggested_money, kind='project')
         return Response(status.HTTP_200_OK)
         
-    @action(methods=["put"], detail=True, name="finish project", url_path='finish-project')
-    def user_finished(self, request, pk):
+    @action(methods=["put"], detail=True, name="finish project", url_path='project-finished')
+    def project_finished(self, request, pk):
         instance = self.get_object()
         if instance.finished:
             return Response({"detail" : "it's already finished"}, status=status.HTTP_400_BAD_REQUEST)
@@ -378,9 +377,9 @@ class ProjectViewSet(ObjectMixin, viewsets.ModelViewSet):
         serializer = ProjectSerializer(objects_, many=True, context={"request": request})
         return Response(serializer.data)
     
-    @action(methods=["get"], detail=False, name="project that i'm accepted", url_path='accepted')
+    @action(methods=["get"], detail=False, name="project that i'm accepted", url_path='user-accepted')
     def user_accepted(self, request):
-        objects_ = self.get_queryset().filter(user_accepted=request.user)
+        objects_ = Project.objects.filter(user_accepted=request.user)
         page = self.paginate_queryset(objects_)
         if page is not None:
             return self.get_paginated_response(ProjectSerializer(page, many=True, context={"request": request}).data) 

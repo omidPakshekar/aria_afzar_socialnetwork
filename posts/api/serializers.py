@@ -6,6 +6,10 @@ from users.models import CustomeUserModel
 from ..models import Comment, Demand, MoneyUnit, Podcast, Post, Project, SuccessfullExperience
 from users.api.serializers import UserIdInlineSerializer, UserInlineSerializer, UserInlineSerializerNonAdmin
 
+
+class IdSerializer(serializers.Serializer):
+    user_id = serializers.IntegerField()
+
 """
     comment serializer
 """
@@ -38,7 +42,9 @@ class DemandSerializer(serializers.ModelSerializer):
     class Meta:
         model = Demand
         fields= ["suggested_time", "suggested_money"]
-
+class DemandIdSerializer(serializers.Serializer):
+    id = serializers.IntegerField()
+    
 class ProjectSerializer(serializers.ModelSerializer):
     owner = UserInlineSerializerNonAdmin(read_only=True)
     user_accepted = UserInlineSerializerNonAdmin(read_only=True)
@@ -166,7 +172,6 @@ class PostAdminCheckSerializer(serializers.ModelSerializer):
     class Meta:
         model = Post
         fields = ['id','title', 'description', 'image' ,'admin_check']
-
 
 """
     podcast serializer
