@@ -296,6 +296,25 @@ class PodcastViewSet(ObjectMixin, viewsets.ModelViewSet):
 
 
 class ProjectViewSet(ObjectMixin, viewsets.ModelViewSet):
+    """
+        get all item --> /project/
+        get one item --> /project/<id>/
+        get all item that user create --> /project/mine/
+        create item --> /project/
+        destory --> /project/<id>/
+        get all comment for item --> /project/id/get-comment/
+        add comment for item --> /project/id/add-comment/
+        like item ---> /project/<id>/like/
+        save item ---> /project/<id>/save/
+        accept a item --> only admin can do /project/<id>/admin-accept/
+        **new
+        add request to prject --> /project/id/add-request/
+        show all request to sepecific projce  --> /project/id/show-request/
+        get all project that user accept --> /project/mine/
+        finish project ---> /projcet/id/project-finished/
+        show all request that user acceoted --> /project/id/user_accepted/
+    """
+
     queryset = Project.objects.all()
     permission_classes = [PostPermission]
     # set value for mixin variable
