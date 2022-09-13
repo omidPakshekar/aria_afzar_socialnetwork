@@ -71,26 +71,7 @@ class Demand(models.Model):
     suggested_time= models.DateTimeField(blank=True, auto_now=False, auto_now_add=False)  
     def __str__(self):
         return f'{self.owner} suggested time = {self.suggested_time}'
-    
-class Project(models.Model):
-    owner           = models.ForeignKey(CustomeUserModel, related_name="project_created", on_delete=models.CASCADE)
-    user_accepted   = models.ForeignKey(CustomeUserModel, related_name="project_accepted", null=True, blank=True, on_delete=models.SET_NULL)
-    demands         = models.ManyToManyField(Demand, related_name="project", blank=True)
-    money_min       = models.DecimalField(default=0, decimal_places=4, max_digits=12)
-    money_max       = models.DecimalField(default=0, decimal_places=4, max_digits=12)
-    designated_money= models.DecimalField(default=0, decimal_places=4, max_digits=12) 
-    text            = models.TextField(blank=True)
-    finished        = models.BooleanField(default=False)
-    Preferred_time  = models.DateTimeField(blank=True)
-
-    def __str__(self):
-        return f'{self.id}-{self.owner} project'
-
-class HoldProjectMoney(models.Model):
-    sender      = models.ForeignKey(CustomeUserModel, related_name="sender_project_money", on_delete=models.CASCADE)
-    receiver    = models.ForeignKey(CustomeUserModel, related_name="receiver_project_money", on_delete=models.CASCADE)
-    project     = models.OneToOneField(Project, on_delete=models.CASCADE)
-    amount      = models.DecimalField(blank=False, decimal_places=4, max_digits=12)
+   
 
 class ItemBase(models.Model):
     owner        = models.ForeignKey(CustomeUserModel, related_name="%(class)s_related", on_delete=models.CASCADE)
@@ -117,11 +98,28 @@ class ItemBase(models.Model):
 class Post(ItemBase):
     image       = models.ImageField(max_length=255, upload_to=get_post_image_filepath, null=True, blank=True, default=get_default_post_image)
     comment     = GenericRelation(Comment)
-    project     = models.OneToOneField(Project, related_name='post', null=True, blank=True, on_delete=models.SET_NULL)
-
+    
 class Podcast(ItemBase):
     file         = models.FileField(upload_to=get_podcast_filepath)
     comment     = GenericRelation(Comment)
+
+class Project(ItemBase):
+    user_accepted   = models.ForeignKey(CustomeUserModel, related_name="project_accepted", null=True, blank=True, on_delete=models.SET_NULL)
+    demands         = models.ManyToManyField(Demand, related_name="project", blank=True)
+    money_min       = models.DecimalField(default=0, decimal_places=4, max_digits=12)
+    money_max       = models.DecimalField(default=0, decimal_places=4, max_digits=12)
+    designated_money= models.DecimalField(default=0, decimal_places=4, max_digits=12) 
+    finished        = models.BooleanField(default=False)
+    Preferred_time  = models.DateTimeField(blank=True)
+
+    def __str__(self):
+        return f'{self.id}-{self.owner} project'
+ 
+class HoldProjectMoney(models.Model):
+    sender      = models.ForeignKey(CustomeUserModel, related_name="sender_project_money", on_delete=models.CASCADE)
+    receiver    = models.ForeignKey(CustomeUserModel, related_name="receiver_project_money", on_delete=models.CASCADE)
+    project     = models.OneToOneField(Project, on_delete=models.CASCADE)
+    amount      = models.DecimalField(blank=False, decimal_places=4, max_digits=12)
 
 class SuccessfullExperience(ItemBase):
     user_liked   = models.ManyToManyField(CustomeUserModel, related_name="exprience_liked", blank=True)
