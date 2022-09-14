@@ -17,7 +17,7 @@ class CommentInlineSerializer(serializers.ModelSerializer):
     comment_likes = serializers.SerializerMethodField(read_only=True)
     class Meta:
         model = Comment
-        fields = ['id', 'owner', 'comment_text', 'comment_likes']
+        fields = ['id', 'owner', 'parent_id', 'comment_text', 'comment_likes']
 
     def get_comment_likes(self, obj):
         return obj.user_liked.count()
@@ -25,7 +25,7 @@ class CommentInlineSerializer(serializers.ModelSerializer):
 class CommentCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Comment
-        fields = ['comment_text']
+        fields = ['comment_text', 'parent_id']
 class CommentLikeSerializer(serializers.ModelSerializer):
     class Meta:
         model = Comment
@@ -179,7 +179,7 @@ class PostAdminCheckSerializer(serializers.ModelSerializer):
 class PodcastCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Podcast
-        fields = ['file', 'title', 'description']
+        fields = ['file', 'title', 'cover', 'description']
     
     def validate_file(self, value):
         if 'mp3' not in value._name:
@@ -189,21 +189,21 @@ class PodcastCreateSerializer(serializers.ModelSerializer):
 class PodcastUpdateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Podcast
-        fields = ['id','title', 'description', 'file']
+        fields = ['id','title', 'cover', 'description', 'file']
 
 class PodcastAdminUpdateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Podcast
-        fields = ['id','title', 'description','file', 'admin_check']
+        fields = ['id','title', 'cover', 'description','file', 'admin_check']
 
 class PodcastSerializer(serializers.ModelSerializer):
     likes = serializers.SerializerMethodField(read_only=True)
     save_number = serializers.SerializerMethodField(read_only=True)
     owner = UserInlineSerializerNonAdmin(read_only=True)
     comment = CommentInlineSerializer(many=True ,read_only = True)
-    class Meta:
+    class Meta: 
         model = Podcast
-        fields = ['id','owner', 'file', 'title', 'description', 'likes', 'save_number', 'comment']
+        fields = ['id','owner', 'cover', 'file', 'title', 'description', 'likes', 'save_number', 'comment']
 
     def get_likes(self, obj):
         return obj.user_liked.count()
@@ -215,7 +215,7 @@ class PodcastAdminCheckSerializer(serializers.ModelSerializer):
     owner = UserInlineSerializerNonAdmin(read_only=True)
     class Meta:
         model = Podcast
-        fields = ['id','owner', 'file', 'title', 'description', 'admin_check']
+        fields = ['id','owner', 'file', 'cover', 'title', 'description', 'admin_check']
 
 """
     MoneyUnit

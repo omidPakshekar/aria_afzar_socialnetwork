@@ -25,6 +25,9 @@ def get_podcast_filepath(self, filename):
 def get_post_image_filepath(self, filename):
     return f'post/image/{self.title[0:15] + ".png"}'
 
+def get_podcast_cover_image_filepath(self, filename):
+    return f'podcast/cover/{self.title[0:15] + ".png"}'
+
 def get_default_post_image():
     return "default_image.jpg" 
 
@@ -55,12 +58,12 @@ class Comment(models.Model):
     object_id   = models.PositiveIntegerField()
     item        = GenericForeignKey('content_type', 'object_id')
     owner       = models.ForeignKey(CustomeUserModel, on_delete=models.RESTRICT, null=False, blank=False)
-    comment_text= models.TextField(max_length=100, blank=True, null=True)
+    comment_text= models.TextField(max_length=100)
     user_liked  = models.ManyToManyField(CustomeUserModel, related_name="comment_liked", blank=True)
     created_time= models.DateTimeField(auto_now_add = True)
     updated_time= models.DateTimeField(auto_now = True)
     admin_check = models.BooleanField(default=False)
-    
+    parent_id   = models.ForeignKey('Comment', on_delete=models.SET_NULL, related_name='child_comment', blank=True, null=True)
     @property
     def short_comment_text(self):
         return f'{self.comment_text[0:15]}...'
@@ -100,7 +103,8 @@ class Post(ItemBase):
     comment     = GenericRelation(Comment)
     
 class Podcast(ItemBase):
-    file         = models.FileField(upload_to=get_podcast_filepath)
+    file        = models.FileField(blank=False, null=False, upload_to=get_podcast_filepath)
+    cover       = models.ImageField(max_length=255, upload_to=get_podcast_cover_image_filepath, null=True, blank=True, default=get_default_post_image)
     comment     = GenericRelation(Comment)
 
 class Project(ItemBase):
