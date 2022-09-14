@@ -198,6 +198,8 @@ class ExprienceViewSet(ObjectMixin, viewsets.ModelViewSet):
     model_ = SuccessfullExperience
 
     def get_serializer_class(self):
+        if self.action == 'add_comment':
+            return CommentCreateSerializer
         if self.action == 'create':
             return ExprienceCreateSerializer
         if self.action in [ 'partial_update', 'update']:
@@ -230,15 +232,16 @@ class PostViewSet(ObjectMixin, viewsets.ModelViewSet):
     admin_check_serializer = PostAdminCheckSerializer
     model_ = Post
 
-
     def get_serializer_class(self):
+        if self.request.user.is_anonymous:
+            return PostSerializer
+        if self.action == 'add_comment':
+            return CommentCreateSerializer
         if self.action == 'create':
             return PostCreateSerializer
         elif self.action in [ 'partial_update', 'update']:
-            try:
-                if self.request.user.is_admin:
-                    return PostAdminUpdateSerializer
-            except: pass
+            if self.request.user.is_admin:
+                return PostAdminUpdateSerializer
             return PostUpdateSerializer
         elif self.action == "change_money_unit":
             return MoneyUnitSerializer
@@ -276,13 +279,13 @@ class PodcastViewSet(ObjectMixin, viewsets.ModelViewSet):
     model_ = Podcast
 
     def get_serializer_class(self):
+        if self.request.user.is_anonymous:
+            return PodcastSerializer
         if self.action == 'create':
             return PodcastCreateSerializer
         if self.action in [ 'partial_update', 'update']:
-            try:
-                if self.request.user.is_admin:
-                    return PodcastAdminUpdateSerializer
-            except: pass
+            if self.request.user.is_admin:
+                return PodcastAdminUpdateSerializer
             return PodcastUpdateSerializer
         return PodcastSerializer
             
@@ -328,6 +331,8 @@ class ProjectViewSet(ObjectMixin, viewsets.ModelViewSet):
         return super().create(request, *args, **kwargs)
 
     def get_serializer_class(self):
+        if self.action == 'add_comment':
+            return CommentCreateSerializer
         if self.request.user.is_anonymous:
             return ProjectSerializer
         if self.action == 'add_request':
