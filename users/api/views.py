@@ -2,6 +2,8 @@ import json, jwt, os
 from urllib import request
 from django.db.models import Q
 
+from posts.models import Podcast, Post, Project, SuccessfullExperience
+
 from .serializers import UserAllInfoSerializer, UserSeenInfoSerializer
 from users.api.permissions import SupportMessagePermission, UserViewSetPermission
 from .serializers import *
@@ -101,10 +103,12 @@ class UserViewSet(viewsets.ModelViewSet):
     lookup_field = 'username'
 
     def get_serializer_class(self):
-        try:
-            if self.request.user.is_admin:
-                return UserAllInfoSerializer
-        except: pass
+        if self.action in ['count_user_post', 'count_user_podcast', 'count_user_project', 'count_user_exprience']:
+            return CountSerializer
+        if self.request.user.is_anonymous:
+            return UserSeenInfoSerializer
+        if self.request.user.is_admin:
+            return UserAllInfoSerializer
         if self.action in ['update', 'partial_update']:
             return UserUpdateSerializer
         return UserSeenInfoSerializer
@@ -116,6 +120,51 @@ class UserViewSet(viewsets.ModelViewSet):
     def profile(self, request):
         return Response(UserAllInfoSerializer(instance=request.user, context={"request": request}).data)
 
+    @action(methods=["get"], detail=True, name="count user post", url_path='count-user-post')
+    def count_user_post(self, request, username):
+        instance = self.get_object()
+        count = Post.objects.filter(owner=instance).count()
+        return Response({'count' : count})
+    
+    @action(methods=["get"], detail=True, name="count user podcast", url_path='count-user-podcast')
+    def count_user_podcast(self, request, username):
+        instance = self.get_object()
+        count = Podcast.objects.filter(owner=instance).count()
+        return Response({'count' : count})
+    
+    @action(methods=["get"], detail=True, name="count user experience", url_path='count-user-experience')
+    def count_user_experience(self, request, username):
+        instance = self.get_object()
+        count = SuccessfullExperience.objects.filter(owner=instance).count()
+        return Response({'count' : count})
+    
+    @action(methods=["get"], detail=True, name="count user project", url_path='count-user-project')
+    def count_user_project(self, request, username):
+        instance = self.get_object()
+        count = Project.objects.filter(owner=instance).count()
+        return Response({'count' : count})
+
+    @action(methods=["get"], detail=True, name="user post", url_path='user-post')
+    def user_post(self, request, username):
+        instance = self.get_object()
+        print(instance)
+        return Response(status.HTTP_200_OK)
+
+    @action(methods=["put"], detail=True, name="user podcast", url_path='user-podcast')
+    def user_podcast(self, request, username):
+        instance = self.get_object()
+        # objects = Podcast.objects.filter(owner=instance)
+        return Response(status.HTTP_200_OK)
+        
+    @action(methods=["put"], detail=True, name="user prject", url_path='user-project')
+    def user_project(self, request, username):
+        instance = self.get_object()
+        return Response(status.HTTP_200_OK)
+    
+    @action(methods=["put"], detail=True, name="user exprience", url_path='user-exprience')
+    def user_exprience(self, request, username):
+        instance = self.get_object()
+        return Response(status.HTTP_200_OK)
 
     @action(methods=["put"], detail=True, name="block user", url_path='blockuser')
     def blockuser(self, request, username):
@@ -308,7 +357,6 @@ class CheckUserIdApiView(generics.GenericAPIView):
         if UserId.objects.filter(userid=key).count() > 0:
             return Response(data={'detail': "it's duplicated"}, status=status.HTTP_302_FOUND)
         return Response(data={'detail': "it's ok"}, status=status.HTTP_200_OK)
-
 
 
 class SupportMessageViewSet(viewsets.ModelViewSet):

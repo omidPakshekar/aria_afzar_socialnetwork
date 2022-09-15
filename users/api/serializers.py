@@ -12,6 +12,8 @@ from dj_rest_auth.serializers import JWTSerializerWithExpiration
 from django_countries.serializers import CountryFieldMixin
 from django_countries.serializer_fields import CountryField
 
+class CountSerializer(serializers.Serializer):
+    count           = serializers.IntegerField()
 
 """
     customAuthentication
