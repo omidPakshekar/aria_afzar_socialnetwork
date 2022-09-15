@@ -23,7 +23,7 @@ class UserViewSetPermission(permissions.BasePermission):
         print('view')
         if not request.user.is_authenticated or view.action == 'create':
             return False
-        if view.action in ['unblockuser', 'blockuser', 'retrieve', 'user_post', 'count_user_post', 'count_user_podcast', 'count_user_experience', 'count_user_project']:
+        if view.action in ['unblockuser', 'blockuser', 'retrieve', 'user_post', 'count_user_post', 'count_user_podcast', 'count_user_experience', 'count_user_project', 'user_podcast', 'user_project', 'user_post', 'user_exprience']:
             return True
         elif view.action == 'profile':
             return obj == request.user

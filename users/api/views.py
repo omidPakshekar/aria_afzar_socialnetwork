@@ -1,6 +1,7 @@
 import json, jwt, os
 from urllib import request
 from django.db.models import Q
+from posts.api.serializers import ExprienceSerializer, PodcastSerializer, PostSerializer, ProjectSerializer
 
 from posts.models import Podcast, Post, Project, SuccessfullExperience
 
@@ -105,6 +106,14 @@ class UserViewSet(viewsets.ModelViewSet):
     def get_serializer_class(self):
         if self.action in ['count_user_post', 'count_user_podcast', 'count_user_project', 'count_user_exprience']:
             return CountSerializer
+        if self.action == 'user_post':
+            return PostSerializer
+        elif self.action == 'user_podcast':
+            return PodcastSerializer
+        elif self.action == 'user_project':
+            return ProjectSerializer
+        elif self.action == 'user_experience':
+            return ExprienceSerializer
         if self.request.user.is_anonymous:
             return UserSeenInfoSerializer
         if self.request.user.is_admin:
@@ -147,24 +156,38 @@ class UserViewSet(viewsets.ModelViewSet):
     @action(methods=["get"], detail=True, name="user post", url_path='user-post')
     def user_post(self, request, username):
         instance = self.get_object()
-        print(instance)
-        return Response(status.HTTP_200_OK)
+        objects_ = Post.objects.filter(owner=instance)
+        page = self.paginate_queryset(objects_)
+        if page is not None:
+            return self.get_paginated_response(PostSerializer(page, many=True, context={"request": request}).data)
+        return Response(PostSerializer(objects_, many=True, context={"request": request}).data)
 
-    @action(methods=["put"], detail=True, name="user podcast", url_path='user-podcast')
+    @action(methods=["get"], detail=True, name="user podcast", url_path='user-podcast')
     def user_podcast(self, request, username):
         instance = self.get_object()
-        # objects = Podcast.objects.filter(owner=instance)
-        return Response(status.HTTP_200_OK)
-        
-    @action(methods=["put"], detail=True, name="user prject", url_path='user-project')
+        objects_ = Podcast.objects.filter(owner=instance)
+        page = self.paginate_queryset(objects_)
+        if page is not None:
+            return self.get_paginated_response(PodcastSerializer(page, many=True, context={"request": request}).data)
+        return Response(PodcastSerializer(objects_, many=True, context={"request": request}).data)
+
+    @action(methods=["get"], detail=True, name="user prject", url_path='user-project')
     def user_project(self, request, username):
         instance = self.get_object()
-        return Response(status.HTTP_200_OK)
-    
-    @action(methods=["put"], detail=True, name="user exprience", url_path='user-exprience')
+        objects_ = Project.objects.filter(owner=instance)
+        page = self.paginate_queryset(objects_)
+        if page is not None:
+            return self.get_paginated_response(ProjectSerializer(page, many=True, context={"request": request}).data)
+        return Response(ProjectSerializer(objects_, many=True, context={"request": request}).data)
+
+    @action(methods=["get"], detail=True, name="user exprience", url_path='user-exprience')
     def user_exprience(self, request, username):
         instance = self.get_object()
-        return Response(status.HTTP_200_OK)
+        objects_ = SuccessfullExperience.objects.filter(owner=instance)
+        page = self.paginate_queryset(objects_)
+        if page is not None:
+            return self.get_paginated_response(ExprienceSerializer(page, many=True, context={"request": request}).data)
+        return Response(ExprienceSerializer(objects_, many=True, context={"request": request}).data)
 
     @action(methods=["put"], detail=True, name="block user", url_path='blockuser')
     def blockuser(self, request, username):
