@@ -88,6 +88,7 @@ class ItemBase(models.Model):
     # objects     = MyCustomManager()
     class Meta:
         abstract = True
+        ordering = ['created_time']
 
     @property
     def short_title(self):

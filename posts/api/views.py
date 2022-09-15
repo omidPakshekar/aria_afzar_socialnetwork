@@ -7,7 +7,7 @@ from django.db.models import Q
 from django.utils import timezone
 from rest_framework import generics, viewsets
 from rest_framework.permissions import IsAuthenticated
-from rest_framework.decorators import api_view, action 
+from rest_framework.decorators import api_view, action
 from rest_framework.response import Response
 from rest_framework import status
 
@@ -26,21 +26,21 @@ def add_activity(piggy, user):
     activity, _ = Activity.objects.get_or_create(piggy=piggy, user=user)
     activity.number += 1
     activity.save()
-            
+
 def add_money(owner, user, amount, kind):
     piggy = owner.user_piggy.filter( Q(started_time__lte=timezone.now()) )[0]
     piggyLong = owner.user_piggy.filter(long=True)[0]
     if piggy.amount > amount:
         w = Wallet.objects.get(id=user.id)
         w.amount += Decimal(amount)
-        w.save()    
+        w.save()
         TransactionHistory.objects.create(owner=user, amount=amount, kind=kind)
         TransactionHistory.objects.create(owner=owner, amount=-1*amount, kind='piggy')
         piggy.amount = piggy.amount - Decimal(amount)
         piggy.save()
         add_activity(piggy, user)
         add_activity(piggyLong, user)
-        
+
 
 def calculte_period(period, objects):
     if period =='daily':
@@ -48,7 +48,7 @@ def calculte_period(period, objects):
     elif period =='weekly':
         return objects.filter(created_time__gte=timezone.now() - timedelta(days=7))
     elif period == 'monthly':
-        return objects.filter(created_time__gte=timezone.now() - timedelta(days=30))        
+        return objects.filter(created_time__gte=timezone.now() - timedelta(days=30))
     return objects.filter(created_time__gte=timezone.now() - timedelta(days=365))
 
 def get_money_per_like():
@@ -72,13 +72,13 @@ class ObjectMixin:
         elif user_.is_authenticated and not user_.is_admin:
             return self.model_.objects.filter(admin_check=True) | self.model_.objects.filter(owner=self.request.user)
         return self.model_.objects.all()
-    
+
     def perform_create(self, serializer):
         if  self.request.user.is_admin:
             serializer.save(owner=self.request.user, admin_check=True)
         else:
             serializer.save(owner=self.request.user)
-    
+
     # every time user update the model admin_check = False
     def perform_update(self, serializer):
         if self.request.user.is_admin:
@@ -102,7 +102,7 @@ class ObjectMixin:
         else:
             add_money(self.request.user, user_admin, get_money_per_like(), kind='like')
         return Response(status.HTTP_200_OK)
-    
+
     @action(methods=["put"], detail=True, name="user saved", url_path='save')
     def add_user_saved(self, request, pk):
         instance = self.get_object()
@@ -114,19 +114,19 @@ class ObjectMixin:
         instance = self.get_object()
         serializer = CommentCreateSerializer(data=request.data)
         if serializer.is_valid():
-            serializer.save(owner=request.user, item=instance)    
-            return Response(serializer.data, status.HTTP_200_OK)
+            serializer.save(owner=request.user)
+            return Response(serializer.data)
         return Response(status.HTTP_400_BAD_REQUEST)
-    
+
     @action(methods=["get"], detail=False, name="admin_check", url_path='admin-check')
     def admin_check(self, request):
         objects_ = self.model_.objects.filter(admin_check=False)
         page = self.paginate_queryset(objects_)
         if page is not None:
-            return self.get_paginated_response(self.admin_check_serializer(page, many=True, context={"request": request}).data) 
+            return self.get_paginated_response(self.admin_check_serializer(page, many=True, context={"request": request}).data)
         serializer = self.admin_check_serializer(objects_, many=True, context={"request": request})
         return Response(serializer.data)
-    
+
     @action(methods=["put"], detail=True, name="admin_accpet", url_path='admin-accept')
     def admin_accept(self, request, pk):
         """
@@ -136,7 +136,7 @@ class ObjectMixin:
         instance.admin_check = True
         instance.save()
         return Response(status.HTTP_200_OK)
-    
+
     @action(methods=["get"], detail=False, name="user Item created", url_path='mine')
     def mine(self, request):
         objects_ = self.model_.objects.filter(owner=request.user)
@@ -151,7 +151,7 @@ class ObjectMixin:
         return Response({
                 'number' : count
             })
-        
+
 
     @action(methods=["get"], detail=True, name="get_comment", url_path='get-comment')
     def get_comment(self, request, pk):
@@ -175,10 +175,10 @@ class ObjectMixin:
             return self.get_paginated_response(self.list_serializer(page, many=True, context={"request": request}).data)
         serializer = self.list_serializer(objects, many=True, context={"request": request})
         return Response(serializer.data)
-    
 
-    
-    
+
+
+
 class ExprienceViewSet(ObjectMixin, viewsets.ModelViewSet):
     """
         get all item --> /exprinece/
@@ -200,6 +200,8 @@ class ExprienceViewSet(ObjectMixin, viewsets.ModelViewSet):
     def get_serializer_class(self):
         if self.action == 'add_comment':
             return CommentCreateSerializer
+        if self.action == 'get_comment':
+            return CommentInlineSerializer
         if self.action == 'create':
             return ExprienceCreateSerializer
         if self.action in [ 'partial_update', 'update']:
@@ -210,8 +212,8 @@ class ExprienceViewSet(ObjectMixin, viewsets.ModelViewSet):
             return ExprienceUpdateSerializer
         return ExprienceSerializer
 
-    
-    
+
+
 
 
 class PostViewSet(ObjectMixin, viewsets.ModelViewSet):
@@ -233,10 +235,12 @@ class PostViewSet(ObjectMixin, viewsets.ModelViewSet):
     model_ = Post
 
     def get_serializer_class(self):
-        if self.request.user.is_anonymous:
-            return PostSerializer
         if self.action == 'add_comment':
             return CommentCreateSerializer
+        if self.action == 'get_comment':
+            return CommentInlineSerializer
+        if self.request.user.is_anonymous:
+            return PostSerializer
         if self.action == 'create':
             return PostCreateSerializer
         elif self.action in [ 'partial_update', 'update']:
@@ -247,7 +251,7 @@ class PostViewSet(ObjectMixin, viewsets.ModelViewSet):
             return MoneyUnitSerializer
         return PostSerializer
 
-    
+
     @action(methods=["get"], detail=False, name="show money unit", url_path='show-money-unit')
     def show_money_unit(self, request):
         return Response(MoneyUnitSerializer(instance=MoneyUnit.objects.get(id=1)).data)
@@ -279,6 +283,10 @@ class PodcastViewSet(ObjectMixin, viewsets.ModelViewSet):
     model_ = Podcast
 
     def get_serializer_class(self):
+        if self.action == 'add_comment':
+            return CommentCreateSerializer
+        if self.action == 'get_comment':
+            return CommentInlineSerializer
         if self.request.user.is_anonymous:
             return PodcastSerializer
         if self.action == 'create':
@@ -288,7 +296,7 @@ class PodcastViewSet(ObjectMixin, viewsets.ModelViewSet):
                 return PodcastAdminUpdateSerializer
             return PodcastUpdateSerializer
         return PodcastSerializer
-            
+
     @action(methods=["post"], detail=True, name="listen", url_path='listen')
     def add_listen(self, request, pk):
         instance = self.get_object()
@@ -325,7 +333,7 @@ class ProjectViewSet(ObjectMixin, viewsets.ModelViewSet):
     admin_check_serializer = ProjectAdminCheckSerializer
     model_ = Project
     #  def create(self, request, *args, **kwargs):
-    #     return 
+    #     return
     # def create
     def create(self, request, *args, **kwargs):
         return super().create(request, *args, **kwargs)
@@ -333,6 +341,8 @@ class ProjectViewSet(ObjectMixin, viewsets.ModelViewSet):
     def get_serializer_class(self):
         if self.action == 'add_comment':
             return CommentCreateSerializer
+        if self.action == 'get_comment':
+            return CommentInlineSerializer
         if self.request.user.is_anonymous:
             return ProjectSerializer
         if self.action == 'add_request':
@@ -344,7 +354,7 @@ class ProjectViewSet(ObjectMixin, viewsets.ModelViewSet):
         if self.action in [ 'partial_update', 'update']:
             if self.request.user.is_admin:
                 return ProjectAdminUpdateSerializer
-            return ProjectUpdateSerializer     
+            return ProjectUpdateSerializer
         return ProjectSerializer
 
     @action(methods=["put"], detail=True, name="add request", url_path='add-request')
@@ -364,7 +374,7 @@ class ProjectViewSet(ObjectMixin, viewsets.ModelViewSet):
     def show_requests(self, request, pk):
         instance = self.get_object().demands.all()
         return Response(DemandListSerializer(instance=instance, many=True, context={"request": self.request}).data)
-        
+
     @action(methods=["put"], detail=True, name="accept request", url_path='accept-request')
     def accept_request(self, request, pk):
         instance = self.get_object()
@@ -373,7 +383,7 @@ class ProjectViewSet(ObjectMixin, viewsets.ModelViewSet):
         if instance.user_accepted != None:
             return Response({'detail' : 'another user accepted'}, status=status.HTTP_400_BAD_REQUEST)
         demand_ = Demand.objects.get(id=int(request.data['id']))
-        receiver = demand_.owner # user receiver 
+        receiver = demand_.owner # user receiver
         HoldProjectMoney.objects.create(sender=request.user, receiver=receiver, amount= demand_.suggested_money, project=instance)
         instance.user_accepted = receiver
         instance.designated_money = demand_.suggested_money
@@ -382,16 +392,16 @@ class ProjectViewSet(ObjectMixin, viewsets.ModelViewSet):
         w.save(); instance.save()
         TransactionHistory.objects.create(owner=request.user, amount= -1 * demand_.suggested_money, kind='project')
         return Response(status.HTTP_200_OK)
-        
+
     @action(methods=["put"], detail=True, name="finish project", url_path='project-finished')
     def project_finished(self, request, pk):
         instance = self.get_object()
         if instance.finished:
             return Response({"detail" : "it's already finished"}, status=status.HTTP_400_BAD_REQUEST)
-        instance.finished = True 
+        instance.finished = True
         user = instance.user_accepted
-        hold_ = HoldProjectMoney.objects.get(project=instance)       
-        w = user.wallet 
+        hold_ = HoldProjectMoney.objects.get(project=instance)
+        w = user.wallet
         w.amount += Decimal(hold_.amount)
         TransactionHistory.objects.create(owner=user, amount=hold_.amount, kind='project')
         w.save(); instance.save(); hold_.delete()
@@ -402,19 +412,19 @@ class ProjectViewSet(ObjectMixin, viewsets.ModelViewSet):
         objects_ = self.get_queryset().filter(owner=request.user)
         page = self.paginate_queryset(objects_)
         if page is not None:
-            return self.get_paginated_response(ProjectSerializer(page, many=True, context={"request": request}).data) 
+            return self.get_paginated_response(ProjectSerializer(page, many=True, context={"request": request}).data)
         serializer = ProjectSerializer(objects_, many=True, context={"request": request})
         return Response(serializer.data)
-    
+
     @action(methods=["get"], detail=False, name="project that i'm accepted", url_path='user-accepted')
     def user_accepted(self, request):
         objects_ = Project.objects.filter(user_accepted=request.user)
         page = self.paginate_queryset(objects_)
         if page is not None:
-            return self.get_paginated_response(ProjectSerializer(page, many=True, context={"request": request}).data) 
+            return self.get_paginated_response(ProjectSerializer(page, many=True, context={"request": request}).data)
         serializer = ProjectSerializer(objects_, many=True, context={"request": request})
         return Response(serializer.data)
-    
+
 
 
 class CommentLikeApiView(generics.GenericAPIView):
@@ -437,4 +447,3 @@ class CommentLikeApiView(generics.GenericAPIView):
         else:
             add_money(self.request.user, user_admin, get_money_per_like(), kind='like')
         return Response(status.HTTP_200_OK)
-    
